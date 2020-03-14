@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YoutubeDownloader"
         mc:Ignorable="d"
-        Title="MainWindow" Height="210" Width="600">
+        Title="MainWindow" Height="360" Width="600">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -17,19 +17,40 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Column="0" Grid.Row="0" Content="Download folder" Margin="0,10,0,0"/>
-        <TextBox Grid.Column="0" Grid.Row="1" Margin="5" Text="{Binding DownloadFolderPath}"/>
-        <Button Grid.Column="1" Grid.Row="1" Width="100" HorizontalAlignment="Left" Content="Browse..." Margin="5"
-                Command="{Binding BrowseButtonClick}"/>
+        <Label Grid.Column="0" Grid.Row="0" Content="Choose what you want to download:" Margin="0,10,0,0" />
+        <ComboBox Grid.Column="0" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=DownloadOptions}"
+                  DisplayMemberPath="Name"
+                  SelectedValuePath="Name"
+                  SelectedValue="{Binding Path=DownloadOption, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                  IsSynchronizedWithCurrentItem="True"
+                  SelectedIndex="0" />
 
-        <Label Grid.Column="0" Grid.Row="2" Content="Put YouTube link here!" Margin="0,10,0,0"/>
-        <TextBox Grid.Column="0" Grid.Row="3" Margin="5" Text="{Binding YouTubeLink}"/>
-        <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left" Content="Clear" Margin="5"
-                Command="{Binding ClearButtonClick}"/>
+        <Label Grid.Column="0" Grid.Row="2" Content="Select download folder:" Margin="0,10,0,0" />
+        <TextBox Grid.Column="0" Grid.Row="3" Margin="5" Text="{Binding DownloadFolderPath}" IsReadOnly="True" 
+                 TextChanged="DownloadFolderPath_OnTextChanged"/>
+        <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left" Content="Browse..." Margin="5"
+                Click="BrowseButton_OnClick" />
 
-        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Width="200" Height="30" HorizontalAlignment="Center" Content="Download!"
-                Margin="10" Command="{Binding DownloadButtonClick}"/>
+        <Label Grid.Column="0" Grid.Row="4" Content="Put YouTube link here:" Margin="0,10,0,0" />
+        <TextBox Grid.Column="0" Grid.Row="5" Margin="5" 
+                 Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="YouTubeLink_OnTextChanged" 
+                 DataObject.Pasting="YouTubeLink_OnPasting"/>
+        <Button Grid.Column="1" Grid.Row="5" Width="100" HorizontalAlignment="Left" Content="Clear" Margin="5"
+                Command="{Binding ClearButtonClick}" />
+
+        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Width="200" Height="50" HorizontalAlignment="Center"
+                Content="Download!"
+                Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}" />
+
+        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Width="150" Height="25" HorizontalAlignment="Center"
+                Content="Show Downloaded Items"
+                Margin="10" Command="{Binding OpenDownloadFolderButtonClick}" 
+                IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}" />
     </Grid>
 </Window>
