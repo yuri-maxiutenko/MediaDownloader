@@ -106,4 +106,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy $(SolutionDir)third-party $(TargetDir) /E /Y</PostBuildEvent>
+  </PropertyGroup>
 </Project>

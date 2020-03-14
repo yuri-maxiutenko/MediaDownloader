@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
+using System.Threading;
 using System.Windows.Input;
+
 using Syroot.Windows.IO;
 
 namespace YoutubeDownloader
@@ -19,18 +23,30 @@ namespace YoutubeDownloader
         public DownloadFormat Format { get; set; }
         public string Name { get; set; }
         public string Option { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
+        private const string DownloaderFileName = "youtube-dl.exe";
+        private const string FfmpegDirectory = @"ffmpeg\bin";
+
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
-        private ICommand _openDownloadFolderButtonClick;
+        
+        private string _downloaderPath;
+        private string _ffmpegPath;
+        private string _downloadFolderPath;
 
         private bool _isDownloadButtonEnabled;
         private bool _isOpenDownloadFolderButtonEnabled;
+        private ICommand _openDownloadFolderButtonClick;
 
-        private string _downloadFolderPath;
+        private DownloadOption _selectedDownloadOption;
         private string _userDownloadsFolder;
         private string _youTubeLink;
 
@@ -44,6 +60,16 @@ namespace YoutubeDownloader
             (_userDownloadsFolder = new KnownFolder(KnownFolderType.DownloadsLocalized).ExpandedPath);
 
         public List<DownloadOption> DownloadOptions { get; private set; }
+
+        public DownloadOption SelectedDownloadOption
+        {
+            get => _selectedDownloadOption;
+            set
+            {
+                _selectedDownloadOption = value;
+                OnPropertyChanged("SelectedDownloadOption");
+            }
+        }
 
         public ICommand ClearButtonClick
         {
@@ -100,10 +126,7 @@ namespace YoutubeDownloader
             get
             {
                 return _downloadButtonClick ?? (_downloadButtonClick = new RelayCommand(
-                    param =>
-                    {
-
-                    },
+                    param => { ThreadPool.QueueUserWorkItem(DownloadItemAsync); },
                     param => true));
             }
         }
@@ -115,10 +138,7 @@ namespace YoutubeDownloader
                 return _openDownloadFolderButtonClick ?? (_openDownloadFolderButtonClick = new RelayCommand(
                     param =>
                     {
-                        if (Directory.Exists(DownloadFolderPath))
-                        {
-                            Process.Start(DownloadFolderPath);
-                        }
+                        if (Directory.Exists(DownloadFolderPath)) Process.Start(DownloadFolderPath);
                     },
                     param => true));
             }
@@ -140,6 +160,9 @@ namespace YoutubeDownloader
 
         private void Initialize()
         {
+            _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DownloaderFileName);
+            _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FfmpegDirectory);
+
             DownloadFolderPath = UserDownloadsFolder;
             DownloadOptions = new List<DownloadOption>
             {
@@ -164,6 +187,33 @@ namespace YoutubeDownloader
             };
 
             ValidateDownload();
+        }
+
+        private void DownloadItemAsync(object o)
+        {
+            var arguments = new StringBuilder();
+            arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
+            arguments.Append(" ");
+            arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s-%(id)s.%(ext)s\"");
+            arguments.Append(" ");
+            arguments.Append($"--ffmpeg-location \"{_ffmpegPath}\"");
+            arguments.Append(" ");
+            arguments.Append(YouTubeLink);
+            var downloadProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = _downloaderPath,
+                    Arguments = arguments.ToString(),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                }
+            };
+            downloadProcess.Start();
+            var output = downloadProcess.StandardOutput.ReadToEnd();
+            var errorOutput = downloadProcess.StandardError.ReadToEnd();
+            downloadProcess.WaitForExit();
         }
     }
 }
