@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace YoutubeDownloader
 {
@@ -33,7 +34,7 @@ namespace YoutubeDownloader
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 _model.DownloadFolderPath = selectFolderDialog.SelectedPath;
-            } 
+            }
         }
 
         private void YouTubeLink_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -58,6 +59,15 @@ namespace YoutubeDownloader
         private void DownloadFolderPath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             _model.ValidateDownload();
+        }
+
+        private void DownloadLog_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox downloadLog)
+            {
+                downloadLog.CaretIndex = downloadLog.Text.Length;
+                downloadLog.ScrollToEnd();
+            }
         }
     }
 }

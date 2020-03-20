@@ -54,6 +54,7 @@
         <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Text="{Binding DownloadLog}"
                  Margin="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 IsReadOnly="True" TextWrapping="Wrap" />
+                 IsReadOnly="True" TextWrapping="Wrap" 
+                 TextChanged="DownloadLog_OnTextChanged"/>
     </Grid>
 </Window>
