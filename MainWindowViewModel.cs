@@ -261,6 +261,7 @@ namespace YoutubeDownloader
                     FileName = _downloaderPath,
                     Arguments = arguments.ToString(),
                     UseShellExecute = false,
+                    CreateNoWindow = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true
                 }
