@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Input;
-
 using Syroot.Windows.IO;
 
 namespace YoutubeDownloader
@@ -20,9 +19,23 @@ namespace YoutubeDownloader
 
     internal class DownloadOption
     {
-        public DownloadFormat Format { get; set; }
-        public string Name { get; set; }
-        public string Option { get; set; }
+        public DownloadFormat Format
+        {
+            get;
+            set;
+        }
+
+        public string Name
+        {
+            get;
+            set;
+        }
+
+        public string Option
+        {
+            get;
+            set;
+        }
 
         public override string ToString()
         {
@@ -32,15 +45,18 @@ namespace YoutubeDownloader
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
+        readonly object _logWritingLock = new object();
+
         private const string DownloaderFileName = "youtube-dl.exe";
         private const string FfmpegDirectory = @"ffmpeg\bin";
 
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
-        
+
         private string _downloaderPath;
-        private string _ffmpegPath;
         private string _downloadFolderPath;
+        private readonly StringBuilder _downloadLog = new StringBuilder();
+        private string _ffmpegPath;
 
         private bool _isDownloadButtonEnabled;
         private bool _isOpenDownloadFolderButtonEnabled;
@@ -59,7 +75,11 @@ namespace YoutubeDownloader
             _userDownloadsFolder ??
             (_userDownloadsFolder = new KnownFolder(KnownFolderType.DownloadsLocalized).ExpandedPath);
 
-        public List<DownloadOption> DownloadOptions { get; private set; }
+        public List<DownloadOption> DownloadOptions
+        {
+            get;
+            private set;
+        }
 
         public DownloadOption SelectedDownloadOption
         {
@@ -76,7 +96,10 @@ namespace YoutubeDownloader
             get
             {
                 return _clearButtonClick ?? (_clearButtonClick = new RelayCommand(
-                    param => { YouTubeLink = string.Empty; },
+                    param =>
+                    {
+                        YouTubeLink = string.Empty;
+                    },
                     param => true));
             }
         }
@@ -98,6 +121,25 @@ namespace YoutubeDownloader
             {
                 _youTubeLink = value;
                 OnPropertyChanged("YouTubeLink");
+            }
+        }
+
+        public string DownloadLog
+        {
+            get
+            {
+                lock (_logWritingLock)
+                {
+                    return _downloadLog.ToString();
+                }
+            }
+            set
+            {
+                lock (_logWritingLock)
+                {
+                    _downloadLog.Append(value);
+                }
+                OnPropertyChanged("DownloadLog");
             }
         }
 
@@ -126,7 +168,10 @@ namespace YoutubeDownloader
             get
             {
                 return _downloadButtonClick ?? (_downloadButtonClick = new RelayCommand(
-                    param => { ThreadPool.QueueUserWorkItem(DownloadItemAsync); },
+                    param =>
+                    {
+                        ThreadPool.QueueUserWorkItem(DownloadItemAsync);
+                    },
                     param => true));
             }
         }
@@ -138,7 +183,10 @@ namespace YoutubeDownloader
                 return _openDownloadFolderButtonClick ?? (_openDownloadFolderButtonClick = new RelayCommand(
                     param =>
                     {
-                        if (Directory.Exists(DownloadFolderPath)) Process.Start(DownloadFolderPath);
+                        if (Directory.Exists(DownloadFolderPath))
+                        {
+                            Process.Start(DownloadFolderPath);
+                        }
                     },
                     param => true));
             }
@@ -182,7 +230,7 @@ namespace YoutubeDownloader
                 {
                     Format = DownloadFormat.AudioOnly,
                     Name = "Audio only",
-                    Option = "bestaudio"
+                    Option = "mp3/ogg/m4a/aac"
                 }
             };
 
@@ -191,10 +239,17 @@ namespace YoutubeDownloader
 
         private void DownloadItemAsync(object o)
         {
+            lock (_logWritingLock)
+            {
+                _downloadLog.Clear();
+            }
+
+            DownloadLog = string.Empty;
+
             var arguments = new StringBuilder();
             arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
             arguments.Append(" ");
-            arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s-%(id)s.%(ext)s\"");
+            arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s.%(ext)s\"");
             arguments.Append(" ");
             arguments.Append($"--ffmpeg-location \"{_ffmpegPath}\"");
             arguments.Append(" ");
@@ -207,12 +262,26 @@ namespace YoutubeDownloader
                     Arguments = arguments.ToString(),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
-                    RedirectStandardError = true,
+                    RedirectStandardError = true
                 }
             };
+            downloadProcess.OutputDataReceived += (sender, e) =>
+            {
+                DownloadLog = e.Data;
+                DownloadLog = Environment.NewLine;
+            };
+
+            downloadProcess.ErrorDataReceived += (sender, e) =>
+            {
+                DownloadLog = e.Data;
+                DownloadLog = Environment.NewLine;
+            };
+
             downloadProcess.Start();
-            var output = downloadProcess.StandardOutput.ReadToEnd();
-            var errorOutput = downloadProcess.StandardError.ReadToEnd();
+
+            downloadProcess.BeginErrorReadLine();
+            downloadProcess.BeginOutputReadLine();
+
             downloadProcess.WaitForExit();
         }
     }
