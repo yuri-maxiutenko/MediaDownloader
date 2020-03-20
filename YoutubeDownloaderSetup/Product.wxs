@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <?ifndef ProductName ?>
+    <?define ProductName = "Youtube Downloader"?>
+    <?endif?>
+
+    <?ifndef ProductVersion ?>
+    <?define ProductVersion="!(bind.FileVersion.YoutubeDownloader.exe)"?>
+    <?endif?>
+
+    <?ifndef Manufacturer ?>
+    <?define Manufacturer = "Wolfcub"?>
+    <?endif?>
+
+    <?ifndef UpgradeCode ?>
+    <?define UpgradeCode = "006c680b-7607-4170-9f90-53d7a69866ec"?>
+    <?endif?>
+
+    <Product Id="*"
+             Name="$(var.ProductName)"
+             Language="1033"
+             Version="$(var.ProductVersion)"
+             Manufacturer="$(var.Manufacturer)"
+             UpgradeCode="$(var.UpgradeCode)">
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" />
+
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
+        <MediaTemplate />
+
+        <Feature Id="ProductFeature" Title="[ProductName]" Level="1">
+            <ComponentGroupRef Id="ProductComponents" />
+        </Feature>
+    </Product>
+
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="LocalAppDataFolder">
+                <Directory Id="MANUFACTURERDIR" Name="$(var.Manufacturer)">
+                    <Directory Id="INSTALLFOLDER" Name="$(var.ProductName)">
+                        <Directory Id="FFMPEGFOLDER" Name="ffmpeg">
+                            <Directory Id="FFMPEGBINFOLDER" Name="bin" />
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </Directory>
+    </Fragment>
+
+    <Fragment>
+        <ComponentGroup Id="ProductComponents">
+            <Component Id="RemoveManufacturerDirComponent" Directory="MANUFACTURERDIR" Guid="{3AC0B1A3-78E5-4AA7-B9F7-3A84AF0EDB2C}">
+                <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
+                               Name='RemoveManufacturerDirComponent'
+                               Value='Installed'
+                               Type='string'
+                               KeyPath='yes' />
+                <RemoveFolder Id='MANUFACTURERDIR' On='uninstall' />
+            </Component>
+            <Component Id="ProductComponent" Directory="INSTALLFOLDER" Guid="{66CF73EA-F47C-4617-88D9-3D03204DDD95}">
+                <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
+                               Name='ProductComponent'
+                               Value='Installed'
+                               Type='string'
+                               KeyPath='yes' />
+                <File Name="YoutubeDownloader.exe" Id="YoutubeDownloader.exe" Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe" />
+                <File Name="YoutubeDownloader.exe.config" Id="YoutubeDownloader.exe.config" Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe.config" />
+                <File Name="youtube-dl.exe" Id="youtube_dl.exe" Source="..\third-party\youtube-dl.exe" />
+                <File Name="Syroot.KnownFolders.dll" Id="Syroot.KnownFolders.dll" Source="$(var.YoutubeDownloader.TargetDir)Syroot.KnownFolders.dll" />
+                <File Name="System.Security.Principal.Windows.dll" Id="System.Security.Principal.Windows.dll" Source="$(var.YoutubeDownloader.TargetDir)System.Security.Principal.Windows.dll" />
+                <RemoveFolder Id='INSTALLFOLDER' On='uninstall' />
+            </Component>
+            <Component Id="FfmpegComponent" Directory="FFMPEGFOLDER" Guid="{C9264541-31EB-4A49-A9C1-1313D83645C9}">
+                <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
+                               Name='FfmpegComponent'
+                               Value='Installed'
+                               Type='string'
+                               KeyPath='yes' />
+                <File Name="LICENSE.TXT" Id="FfmpegLicenseFile" Source="..\third-party\ffmpeg\LICENSE.TXT" />
+                <File Name="README.TXT" Id="FfmpegReadmeFile" Source="..\third-party\ffmpeg\README.TXT" />
+                <RemoveFolder Id='FFMPEGFOLDER' On='uninstall' />
+            </Component>
+            <Component Id="FfmpegBinComponent" Directory="FFMPEGBINFOLDER" Guid="{78AB21B6-0DC1-4151-AB95-BD3A0E05A2B0}">
+                <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
+                               Name='FfmpegBinComponent'
+                               Value='Installed'
+                               Type='string'
+                               KeyPath='yes' />
+                <File Name="ffmpeg.exe" Id="ffmpeg.exe" Source="..\third-party\ffmpeg\bin\ffmpeg.exe" />
+                <RemoveFolder Id='FFMPEGBINFOLDER' On='uninstall' />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>
