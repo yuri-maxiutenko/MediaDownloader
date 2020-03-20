@@ -247,6 +247,8 @@ namespace YoutubeDownloader
             DownloadLog = string.Empty;
 
             var arguments = new StringBuilder();
+            arguments.Append("--encoding utf-8");
+            arguments.Append(" ");
             arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
             arguments.Append(" ");
             arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s.%(ext)s\"");
@@ -263,7 +265,9 @@ namespace YoutubeDownloader
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
-                    RedirectStandardError = true
+                    RedirectStandardError = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8,
                 }
             };
             downloadProcess.OutputDataReceived += (sender, e) =>
