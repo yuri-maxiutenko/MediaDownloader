@@ -20,6 +20,13 @@ namespace YoutubeDownloader
         AudioOnly
     }
 
+    internal enum DownloadStatus
+    {
+        Success,
+        Fail,
+        Cancel
+    }
+
     internal class DownloadOption
     {
         public DownloadFormat Format
@@ -48,7 +55,7 @@ namespace YoutubeDownloader
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        private const int _processWaitTimeoutMs = 500;
+        private const int ProcessWaitTimeoutMs = 500;
 
         private CancellationTokenSource _cancellation;
 
@@ -63,12 +70,14 @@ namespace YoutubeDownloader
         private readonly StringBuilder _downloadLog = new StringBuilder();
 
         private Visibility _downloadProgressVisibility;
-        private string _ffmpegPath;
+        private string _converterPath;
 
         private bool _isDownloadButtonEnabled;
 
         private bool _isGeneralInterfaceEnabled;
         private bool _isOpenDownloadFolderButtonEnabled;
+
+        private DownloadStatus _lastDownloadStatus;
         private readonly object _logWritingLock = new object();
         private ICommand _openDownloadFolderButtonClick;
 
@@ -300,6 +309,22 @@ namespace YoutubeDownloader
 
         private void OnDownloadItemCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            DownloadLog = Environment.NewLine;
+            DownloadLog = Environment.NewLine;
+
+            switch (_lastDownloadStatus)
+            {
+                case DownloadStatus.Success:
+                    DownloadLog = string.Format(Resources.LogMessageDownloadSuccess, LastDownloadedFilePath);
+                    break;
+                case DownloadStatus.Fail:
+                    DownloadLog = Resources.LogMessageDownloadFail;
+                    break;
+                case DownloadStatus.Cancel:
+                    DownloadLog = Resources.LogMessageDownloadCancel;
+                    break;
+            }
+
             IsDownloadButtonEnabled = false;
             DownloadButtonText = Resources.StartDownloadButtonText;
             DownloadButtonClick = StartDownloadCommand;
@@ -334,7 +359,7 @@ namespace YoutubeDownloader
             DownloadProgressVisibility = Visibility.Hidden;
 
             _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.DownloaderFileName);
-            _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.ConverterDirectoryName,
+            _converterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.ConverterDirectoryName,
                 Resources.BinDirectoryName);
 
             DownloadFolderPath = UserDownloadsFolder;
@@ -406,14 +431,13 @@ namespace YoutubeDownloader
             downloaderProcess.BeginErrorReadLine();
             downloaderProcess.BeginOutputReadLine();
 
-            downloaderProcess.WaitForExit();
-
             while (!downloaderProcess.HasExited)
             {
-                downloaderProcess.WaitForExit(_processWaitTimeoutMs);
+                downloaderProcess.WaitForExit(ProcessWaitTimeoutMs);
                 if (_cancellation.IsCancellationRequested)
                 {
                     downloaderProcess.Kill();
+                    downloaderProcess.WaitForExit();
                     _cancellation.Token.ThrowIfCancellationRequested();
                 }
             }
@@ -427,7 +451,10 @@ namespace YoutubeDownloader
         {
             try
             {
+                _lastDownloadStatus = DownloadStatus.Fail;
+
                 _cancellation.Token.ThrowIfCancellationRequested();
+
                 lock (_logWritingLock)
                 {
                     _downloadLog.Clear();
@@ -437,8 +464,12 @@ namespace YoutubeDownloader
 
                 if (RetrieveItemFileName() != 0)
                 {
+                    _lastDownloadStatus = DownloadStatus.Fail;
                     return;
                 }
+
+                DownloadLog =
+                    $"{Environment.NewLine}{Resources.LogMessageDownloadStart}{Environment.NewLine}{Environment.NewLine}";
 
                 _cancellation.Token.ThrowIfCancellationRequested();
 
@@ -449,7 +480,7 @@ namespace YoutubeDownloader
                 arguments.Append(" ");
                 arguments.Append($"-o \"{Path.Combine(DownloadFolderPath, LastDownloadedFilePath)}\"");
                 arguments.Append(" ");
-                arguments.Append($"{Resources.DownloaderConverterLocationOption} \"{_ffmpegPath}\"");
+                arguments.Append($"{Resources.DownloaderConverterLocationOption} \"{_converterPath}\"");
                 arguments.Append(" ");
                 arguments.Append(YouTubeLink);
                 var downloaderProcess = new Process
@@ -485,21 +516,28 @@ namespace YoutubeDownloader
 
                 while (!downloaderProcess.HasExited)
                 {
-                    downloaderProcess.WaitForExit(_processWaitTimeoutMs);
+                    downloaderProcess.WaitForExit(ProcessWaitTimeoutMs);
                     if (_cancellation.IsCancellationRequested)
                     {
                         downloaderProcess.Kill();
+                        downloaderProcess.WaitForExit();
                         _cancellation.Token.ThrowIfCancellationRequested();
                     }
                 }
+
+                _lastDownloadStatus = downloaderProcess.ExitCode == 0
+                    ? DownloadStatus.Success
+                    : DownloadStatus.Fail;
             }
             catch (OperationCanceledException e)
             {
+                _lastDownloadStatus = DownloadStatus.Cancel;
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
             }
             catch (Exception e)
             {
+                _lastDownloadStatus = DownloadStatus.Fail;
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
             }

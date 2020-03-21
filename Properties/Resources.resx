@@ -180,4 +180,18 @@
   <data name="DownloadLinkCaption" xml:space="preserve">
     <value>Put YouTube link here:</value>
   </data>
+  <data name="LogMessageDownloadStart" xml:space="preserve">
+    <value>Starting to download your video...</value>
+  </data>
+  <data name="LogMessageDownloadSuccess" xml:space="preserve">
+    <value>Congratulations! Your video was successfully downloaded!
+You may find it here: {0}
+</value>
+  </data>
+  <data name="LogMessageDownloadFail" xml:space="preserve">
+    <value>Starting to download your video...</value>
+  </data>
+  <data name="LogMessageDownloadCancel" xml:space="preserve">
+    <value>You have cancelled the download of your video.</value>
+  </data>
 </root>

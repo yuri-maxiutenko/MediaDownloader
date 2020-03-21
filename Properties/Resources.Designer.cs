@@ -241,6 +241,44 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have cancelled the download of your video..
+        /// </summary>
+        public static string LogMessageDownloadCancel {
+            get {
+                return ResourceManager.GetString("LogMessageDownloadCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting to download your video....
+        /// </summary>
+        public static string LogMessageDownloadFail {
+            get {
+                return ResourceManager.GetString("LogMessageDownloadFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting to download your video....
+        /// </summary>
+        public static string LogMessageDownloadStart {
+            get {
+                return ResourceManager.GetString("LogMessageDownloadStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Congratulations! Your video was successfully downloaded!
+        ///You may find it here: {0}
+        ///.
+        /// </summary>
+        public static string LogMessageDownloadSuccess {
+            get {
+                return ResourceManager.GetString("LogMessageDownloadSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download!.
         /// </summary>
         public static string StartDownloadButtonText {
