@@ -120,4 +120,64 @@
   <data name="StopDownloadButtonText" xml:space="preserve">
     <value>Stop!</value>
   </data>
+  <data name="BrowseButtonText" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
+  <data name="ClearButtonText" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="DownloaderFileName" xml:space="preserve">
+    <value>youtube-dl.exe</value>
+  </data>
+  <data name="ConverterDirectoryName" xml:space="preserve">
+    <value>ffmpeg</value>
+  </data>
+  <data name="BinDirectoryName" xml:space="preserve">
+    <value>bin</value>
+  </data>
+  <data name="DownloaderFormatBestName" xml:space="preserve">
+    <value>Best quality video</value>
+  </data>
+  <data name="DownloaderFormatBestDirectLinkName" xml:space="preserve">
+    <value>Best quality video available by direct link</value>
+  </data>
+  <data name="DownloaderFormatAudioOnlyName" xml:space="preserve">
+    <value>Audio only</value>
+  </data>
+  <data name="DownloaderFormatBestOption" xml:space="preserve">
+    <value>bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best</value>
+  </data>
+  <data name="DownloaderFormatBestDirectLinkOption" xml:space="preserve">
+    <value>(bestvideo+bestaudio/best)[protocol^=http]</value>
+  </data>
+  <data name="DownloaderFormatAudioOnlyOption" xml:space="preserve">
+    <value>mp3/ogg/m4a/aac</value>
+  </data>
+  <data name="DownloaderEncodingUtf8Option" xml:space="preserve">
+    <value>--encoding utf-8</value>
+  </data>
+  <data name="DownloaderGetFilenameOption" xml:space="preserve">
+    <value>--get-filename</value>
+  </data>
+  <data name="DownloaderItemTitleTemplate" xml:space="preserve">
+    <value>%(title)s.%(ext)s</value>
+  </data>
+  <data name="DownloaderConverterLocationOption" xml:space="preserve">
+    <value>--ffmpeg-location</value>
+  </data>
+  <data name="ExplorerFileName" xml:space="preserve">
+    <value>explorer.exe</value>
+  </data>
+  <data name="ExplorerSelectOption" xml:space="preserve">
+    <value>/select</value>
+  </data>
+  <data name="DownloadFormatCaption" xml:space="preserve">
+    <value>Choose what you want to download:</value>
+  </data>
+  <data name="DownloadFolderCaption" xml:space="preserve">
+    <value>Select download folder:</value>
+  </data>
+  <data name="DownloadLinkCaption" xml:space="preserve">
+    <value>Put YouTube link here:</value>
+  </data>
 </root>

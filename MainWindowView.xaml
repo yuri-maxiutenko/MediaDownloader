@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YoutubeDownloader"
+        xmlns:properties="clr-namespace:YoutubeDownloader.Properties"
         mc:Ignorable="d" Icon="Images/icon.png"
         Title="MainWindow" Height="500" Width="600">
     <Grid>
@@ -23,43 +24,48 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Column="0" Grid.Row="0" Content="Choose what you want to download:" Margin="0,10,0,0" />
+        <Label Grid.Column="0" Grid.Row="0" Content="{x:Static properties:Resources.DownloadFormatCaption}"
+               Margin="0,10,0,0" />
         <ComboBox Grid.Column="0" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=DownloadOptions}"
                   SelectedValue="{Binding SelectedDownloadOption, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                  IsSynchronizedWithCurrentItem="True"/>
+                  IsSynchronizedWithCurrentItem="True" />
 
-        <Label Grid.Column="0" Grid.Row="2" Content="Select download folder:" Margin="0,10,0,0" />
-        <TextBox Grid.Column="0" Grid.Row="3" Margin="5" Text="{Binding DownloadFolderPath}" IsReadOnly="True" 
-                 TextChanged="DownloadFolderPath_OnTextChanged"/>
-        <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left" Content="Browse..." Margin="5"
+        <Label Grid.Column="0" Grid.Row="2" Content="{x:Static properties:Resources.DownloadFolderCaption}"
+               Margin="0,10,0,0" />
+        <TextBox Grid.Column="0" Grid.Row="3" Margin="5" Text="{Binding DownloadFolderPath}" IsReadOnly="True"
+                 TextChanged="DownloadFolderPath_OnTextChanged" />
+        <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left"
+                Content="{x:Static properties:Resources.BrowseButtonText}" Margin="5"
                 Click="BrowseButton_OnClick" />
 
-        <Label Grid.Column="0" Grid.Row="4" Content="Put YouTube link here:" Margin="0,10,0,0" />
-        <TextBox Grid.Column="0" Grid.Row="5" Margin="5" 
-                 Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="YouTubeLink_OnTextChanged" 
-                 DataObject.Pasting="YouTubeLink_OnPasting"/>
-        <Button Grid.Column="1" Grid.Row="5" Width="100" HorizontalAlignment="Left" Content="Clear" Margin="5"
+        <Label Grid.Column="0" Grid.Row="4" Content="{x:Static properties:Resources.DownloadLinkCaption}"
+               Margin="0,10,0,0" />
+        <TextBox Grid.Column="0" Grid.Row="5" Margin="5"
+                 Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 TextChanged="YouTubeLink_OnTextChanged"
+                 DataObject.Pasting="YouTubeLink_OnPasting" />
+        <Button Grid.Column="1" Grid.Row="5" Width="100" HorizontalAlignment="Left"
+                Content="{x:Static properties:Resources.ClearButtonText}" Margin="5"
                 Command="{Binding ClearButtonClick}" />
 
         <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Width="200" Height="50" HorizontalAlignment="Center"
                 Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}"
-                Content="{Binding DownloadButtonText}">
-        </Button>
+                Content="{Binding DownloadButtonText}" />
 
-        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Width="150" Height="25" HorizontalAlignment="Center" Margin="10">
-            <Button 
-                    Content="Show Downloaded Items"
-                     Command="{Binding OpenDownloadFolderButtonClick}" 
-                    IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}" 
-                    Visibility="{Binding ShowDownloadedItemsButtonVisibility}"/>
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Width="150" Height="25" HorizontalAlignment="Center"
+              Margin="10">
+            <Button
+                Content="Show Downloaded Items"
+                Command="{Binding OpenDownloadFolderButtonClick}"
+                IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}"
+                Visibility="{Binding ShowDownloadedItemsButtonVisibility}" />
             <ProgressBar IsIndeterminate="True" Visibility="{Binding DownloadProgressVisibility}" />
         </Grid>
 
         <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Text="{Binding DownloadLog}"
                  Margin="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 IsReadOnly="True" TextWrapping="Wrap" 
-                 TextChanged="DownloadLog_OnTextChanged"/>
+                 IsReadOnly="True" TextWrapping="Wrap"
+                 TextChanged="DownloadLog_OnTextChanged" />
     </Grid>
 </Window>

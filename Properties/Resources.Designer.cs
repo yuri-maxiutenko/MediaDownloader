@@ -22,7 +22,7 @@ namespace YoutubeDownloader.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace YoutubeDownloader.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("YoutubeDownloader.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace YoutubeDownloader.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,9 +61,189 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to bin.
+        /// </summary>
+        public static string BinDirectoryName {
+            get {
+                return ResourceManager.GetString("BinDirectoryName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Browse....
+        /// </summary>
+        public static string BrowseButtonText {
+            get {
+                return ResourceManager.GetString("BrowseButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear.
+        /// </summary>
+        public static string ClearButtonText {
+            get {
+                return ResourceManager.GetString("ClearButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ffmpeg.
+        /// </summary>
+        public static string ConverterDirectoryName {
+            get {
+                return ResourceManager.GetString("ConverterDirectoryName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --ffmpeg-location.
+        /// </summary>
+        public static string DownloaderConverterLocationOption {
+            get {
+                return ResourceManager.GetString("DownloaderConverterLocationOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --encoding utf-8.
+        /// </summary>
+        public static string DownloaderEncodingUtf8Option {
+            get {
+                return ResourceManager.GetString("DownloaderEncodingUtf8Option", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to youtube-dl.exe.
+        /// </summary>
+        public static string DownloaderFileName {
+            get {
+                return ResourceManager.GetString("DownloaderFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audio only.
+        /// </summary>
+        public static string DownloaderFormatAudioOnlyName {
+            get {
+                return ResourceManager.GetString("DownloaderFormatAudioOnlyName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mp3/ogg/m4a/aac.
+        /// </summary>
+        public static string DownloaderFormatAudioOnlyOption {
+            get {
+                return ResourceManager.GetString("DownloaderFormatAudioOnlyOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Best quality video available by direct link.
+        /// </summary>
+        public static string DownloaderFormatBestDirectLinkName {
+            get {
+                return ResourceManager.GetString("DownloaderFormatBestDirectLinkName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (bestvideo+bestaudio/best)[protocol^=http].
+        /// </summary>
+        public static string DownloaderFormatBestDirectLinkOption {
+            get {
+                return ResourceManager.GetString("DownloaderFormatBestDirectLinkOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Best quality video.
+        /// </summary>
+        public static string DownloaderFormatBestName {
+            get {
+                return ResourceManager.GetString("DownloaderFormatBestName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best.
+        /// </summary>
+        public static string DownloaderFormatBestOption {
+            get {
+                return ResourceManager.GetString("DownloaderFormatBestOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --get-filename.
+        /// </summary>
+        public static string DownloaderGetFilenameOption {
+            get {
+                return ResourceManager.GetString("DownloaderGetFilenameOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to %(title)s.%(ext)s.
+        /// </summary>
+        public static string DownloaderItemTitleTemplate {
+            get {
+                return ResourceManager.GetString("DownloaderItemTitleTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select download folder:.
+        /// </summary>
+        public static string DownloadFolderCaption {
+            get {
+                return ResourceManager.GetString("DownloadFolderCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Choose what you want to download:.
+        /// </summary>
+        public static string DownloadFormatCaption {
+            get {
+                return ResourceManager.GetString("DownloadFormatCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Put YouTube link here:.
+        /// </summary>
+        public static string DownloadLinkCaption {
+            get {
+                return ResourceManager.GetString("DownloadLinkCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to explorer.exe.
+        /// </summary>
+        public static string ExplorerFileName {
+            get {
+                return ResourceManager.GetString("ExplorerFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to /select.
+        /// </summary>
+        public static string ExplorerSelectOption {
+            get {
+                return ResourceManager.GetString("ExplorerSelectOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download!.
         /// </summary>
-        internal static string StartDownloadButtonText {
+        public static string StartDownloadButtonText {
             get {
                 return ResourceManager.GetString("StartDownloadButtonText", resourceCulture);
             }
@@ -72,7 +252,7 @@ namespace YoutubeDownloader.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Stop!.
         /// </summary>
-        internal static string StopDownloadButtonText {
+        public static string StopDownloadButtonText {
             get {
                 return ResourceManager.GetString("StopDownloadButtonText", resourceCulture);
             }

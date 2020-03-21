@@ -48,8 +48,7 @@ namespace YoutubeDownloader
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        private const string DownloaderFileName = "youtube-dl.exe";
-        private const string FfmpegDirectory = @"ffmpeg\bin";
+        private const int _processWaitTimeoutMs = 500;
 
         private CancellationTokenSource _cancellation;
 
@@ -272,7 +271,7 @@ namespace YoutubeDownloader
                     {
                         if (File.Exists(LastDownloadedFilePath))
                         {
-                            Process.Start("explorer.exe", $"/select, \"{LastDownloadedFilePath}\"");
+                            Process.Start(Resources.ExplorerFileName, $"{Resources.ExplorerSelectOption}, \"{LastDownloadedFilePath}\"");
                         }
                         else if (Directory.Exists(DownloadFolderPath))
                         {
@@ -316,8 +315,8 @@ namespace YoutubeDownloader
             ShowDownloadedItemsButtonVisibility = Visibility.Visible;
             DownloadProgressVisibility = Visibility.Hidden;
 
-            _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DownloaderFileName);
-            _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FfmpegDirectory);
+            _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.DownloaderFileName);
+            _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.ConverterDirectoryName, Resources.BinDirectoryName);
 
             DownloadFolderPath = UserDownloadsFolder;
             DownloadOptions = new List<DownloadOption>
@@ -325,20 +324,20 @@ namespace YoutubeDownloader
                 new DownloadOption
                 {
                     Format = DownloadFormat.Best,
-                    Name = "Best quality video",
-                    Option = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+                    Name = Resources.DownloaderFormatBestName,
+                    Option = Resources.DownloaderFormatBestOption
                 },
                 new DownloadOption
                 {
                     Format = DownloadFormat.BestDirectLink,
-                    Name = "Best quality video available by direct link",
-                    Option = "(bestvideo+bestaudio/best)[protocol^=http]"
+                    Name = Resources.DownloaderFormatBestDirectLinkName,
+                    Option = Resources.DownloaderFormatBestDirectLinkOption
                 },
                 new DownloadOption
                 {
                     Format = DownloadFormat.AudioOnly,
-                    Name = "Audio only",
-                    Option = "mp3/ogg/m4a/aac"
+                    Name = Resources.DownloaderFormatAudioOnlyName,
+                    Option = Resources.DownloaderFormatAudioOnlyOption
                 }
             };
 
@@ -350,11 +349,11 @@ namespace YoutubeDownloader
             LastDownloadedFilePath = string.Empty;
 
             var arguments = new StringBuilder();
-            arguments.Append("--encoding utf-8");
+            arguments.Append(Resources.DownloaderEncodingUtf8Option);
             arguments.Append(" ");
-            arguments.Append("--get-filename");
+            arguments.Append(Resources.DownloaderGetFilenameOption);
             arguments.Append(" ");
-            arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s.%(ext)s\"");
+            arguments.Append($"-o \"{DownloadFolderPath}\\{Resources.DownloaderItemTitleTemplate}\"");
             arguments.Append(" ");
             arguments.Append(YouTubeLink);
             var downloaderProcess = new Process
@@ -392,7 +391,7 @@ namespace YoutubeDownloader
 
             while (!downloaderProcess.HasExited)
             {
-                downloaderProcess.WaitForExit(500);
+                downloaderProcess.WaitForExit(_processWaitTimeoutMs);
                 if (_cancellation.IsCancellationRequested)
                 {
                     downloaderProcess.Kill();
@@ -425,13 +424,13 @@ namespace YoutubeDownloader
                 _cancellation.Token.ThrowIfCancellationRequested();
 
                 var arguments = new StringBuilder();
-                arguments.Append("--encoding utf-8");
+                arguments.Append(Resources.DownloaderEncodingUtf8Option);
                 arguments.Append(" ");
                 arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
                 arguments.Append(" ");
                 arguments.Append($"-o \"{Path.Combine(DownloadFolderPath, LastDownloadedFilePath)}\"");
                 arguments.Append(" ");
-                arguments.Append($"--ffmpeg-location \"{_ffmpegPath}\"");
+                arguments.Append($"{Resources.DownloaderConverterLocationOption} \"{_ffmpegPath}\"");
                 arguments.Append(" ");
                 arguments.Append(YouTubeLink);
                 var downloaderProcess = new Process
@@ -467,7 +466,7 @@ namespace YoutubeDownloader
 
                 while (!downloaderProcess.HasExited)
                 {
-                    downloaderProcess.WaitForExit(500);
+                    downloaderProcess.WaitForExit(_processWaitTimeoutMs);
                     if (_cancellation.IsCancellationRequested)
                     {
                         downloaderProcess.Kill();
