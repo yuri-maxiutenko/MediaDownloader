@@ -45,7 +45,7 @@ namespace YoutubeDownloader
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        readonly object _logWritingLock = new object();
+        private readonly object _logWritingLock = new object();
 
         private const string DownloaderFileName = "youtube-dl.exe";
         private const string FfmpegDirectory = @"ffmpeg\bin";
@@ -69,6 +69,12 @@ namespace YoutubeDownloader
         public MainWindowViewModel()
         {
             Initialize();
+        }
+
+        public string LastDownloadedFilePath
+        {
+            get;
+            set;
         }
 
         public string UserDownloadsFolder =>
@@ -139,6 +145,7 @@ namespace YoutubeDownloader
                 {
                     _downloadLog.Append(value);
                 }
+
                 OnPropertyChanged("DownloadLog");
             }
         }
@@ -183,7 +190,11 @@ namespace YoutubeDownloader
                 return _openDownloadFolderButtonClick ?? (_openDownloadFolderButtonClick = new RelayCommand(
                     param =>
                     {
-                        if (Directory.Exists(DownloadFolderPath))
+                        if (File.Exists(LastDownloadedFilePath))
+                        {
+                            Process.Start("explorer.exe", $"/select, \"{LastDownloadedFilePath}\"");
+                        }
+                        else if (Directory.Exists(DownloadFolderPath))
                         {
                             Process.Start(DownloadFolderPath);
                         }
@@ -237,6 +248,54 @@ namespace YoutubeDownloader
             ValidateDownload();
         }
 
+        private int RetrieveItemFileName()
+        {
+            var arguments = new StringBuilder();
+            arguments.Append("--encoding utf-8");
+            arguments.Append(" ");
+            arguments.Append("--get-filename");
+            arguments.Append(" ");
+            arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s.%(ext)s\"");
+            arguments.Append(" ");
+            arguments.Append(YouTubeLink);
+            var downloadProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = _downloaderPath,
+                    Arguments = arguments.ToString(),
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8
+                }
+            };
+            downloadProcess.OutputDataReceived += (sender, e) =>
+            {
+                DownloadLog = e.Data;
+                DownloadLog = Environment.NewLine;
+            };
+
+            downloadProcess.ErrorDataReceived += (sender, e) =>
+            {
+                DownloadLog = e.Data;
+                DownloadLog = Environment.NewLine;
+            };
+
+            downloadProcess.Start();
+
+            downloadProcess.BeginErrorReadLine();
+            downloadProcess.BeginOutputReadLine();
+
+            downloadProcess.WaitForExit();
+
+            LastDownloadedFilePath = downloadProcess.ExitCode == 0 ? DownloadLog.Trim() : string.Empty;
+
+            return downloadProcess.ExitCode;
+        }
+
         private void DownloadItemAsync(object o)
         {
             lock (_logWritingLock)
@@ -246,12 +305,17 @@ namespace YoutubeDownloader
 
             DownloadLog = string.Empty;
 
+            if (RetrieveItemFileName() != 0)
+            {
+                return;
+            }
+
             var arguments = new StringBuilder();
             arguments.Append("--encoding utf-8");
             arguments.Append(" ");
             arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
             arguments.Append(" ");
-            arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s.%(ext)s\"");
+            arguments.Append($"-o \"{Path.Combine(DownloadFolderPath, LastDownloadedFilePath)}\"");
             arguments.Append(" ");
             arguments.Append($"--ffmpeg-location \"{_ffmpegPath}\"");
             arguments.Append(" ");
@@ -267,7 +331,7 @@ namespace YoutubeDownloader
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     StandardOutputEncoding = Encoding.UTF8,
-                    StandardErrorEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8
                 }
             };
             downloadProcess.OutputDataReceived += (sender, e) =>
