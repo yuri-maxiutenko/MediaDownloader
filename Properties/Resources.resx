@@ -194,6 +194,9 @@ You may find it here: {0}
   <data name="LogMessageDownloadCancel" xml:space="preserve">
     <value>You have cancelled the download of your video.</value>
   </data>
+  <data name="LogMessageFileNameRetrieved" xml:space="preserve">
+    <value>File name successfully retrieved: {0}</value>
+  </data>
   <data name="SearchPatternDownloadProgress" xml:space="preserve">
     <value>(\[download\]\s*)(\S*)% of</value>
   </data>

@@ -279,6 +279,15 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File name successfully retrieved: {0}.
+        /// </summary>
+        public static string LogMessageFileNameRetrieved {
+            get {
+                return ResourceManager.GetString("LogMessageFileNameRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (\[download\]\s*)(\S*)% of.
         /// </summary>
         public static string SearchPatternDownloadProgress {
