@@ -279,6 +279,15 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (\[download\]\s*)(\S*)% of.
+        /// </summary>
+        public static string SearchPatternDownloadProgress {
+            get {
+                return ResourceManager.GetString("SearchPatternDownloadProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download!.
         /// </summary>
         public static string StartDownloadButtonText {

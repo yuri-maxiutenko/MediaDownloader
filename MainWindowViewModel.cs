@@ -4,11 +4,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using Syroot.Windows.IO;
-
 using YoutubeDownloader.Properties;
 
 namespace YoutubeDownloader
@@ -60,6 +60,7 @@ namespace YoutubeDownloader
         private CancellationTokenSource _cancellation;
 
         private ICommand _clearButtonClick;
+        private string _converterPath;
         private ICommand _downloadButtonClick;
 
         private string _downloadButtonText;
@@ -68,11 +69,12 @@ namespace YoutubeDownloader
 
         private string _downloadFolderPath;
         private readonly StringBuilder _downloadLog = new StringBuilder();
+        private int _downloadProgressValue;
 
         private Visibility _downloadProgressVisibility;
-        private string _converterPath;
 
         private bool _isDownloadButtonEnabled;
+        private bool _isDownloadProgressIndeterminate;
 
         private bool _isGeneralInterfaceEnabled;
         private bool _isOpenDownloadFolderButtonEnabled;
@@ -213,6 +215,26 @@ namespace YoutubeDownloader
             }
         }
 
+        public bool IsDownloadProgressIndeterminate
+        {
+            get => _isDownloadProgressIndeterminate;
+            set
+            {
+                _isDownloadProgressIndeterminate = value;
+                OnPropertyChanged("IsDownloadProgressIndeterminate");
+            }
+        }
+
+        public int DownloadProgressValue
+        {
+            get => _downloadProgressValue;
+            set
+            {
+                _downloadProgressValue = value;
+                OnPropertyChanged("DownloadProgressValue");
+            }
+        }
+
         public Visibility ShowDownloadedItemsButtonVisibility
         {
             get => _showDownloadedItemsButtonVisibility;
@@ -263,6 +285,7 @@ namespace YoutubeDownloader
                         DownloadButtonClick = StopDownloadCommand;
                         IsDownloadButtonEnabled = true;
 
+                        IsDownloadProgressIndeterminate = true;
                         ShowDownloadedItemsButtonVisibility = Visibility.Hidden;
                         DownloadProgressVisibility = Visibility.Visible;
                     },
@@ -447,6 +470,23 @@ namespace YoutubeDownloader
             return downloaderProcess.ExitCode;
         }
 
+        private bool TryParseDownloadProgress(string record, out double percent)
+        {
+            percent = 0;
+
+            var regex = new Regex(Resources.SearchPatternDownloadProgress,
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            var matches = regex.Match(record);
+
+            if (matches.Success && matches.Groups.Count >= 3)
+            {
+                double.TryParse(matches.Groups[2].ToString(), out percent);
+                return true;
+            }
+
+            return false;
+        }
+
         private void DownloadItemAsync(object sender, DoWorkEventArgs args)
         {
             try
@@ -472,6 +512,9 @@ namespace YoutubeDownloader
                     $"{Environment.NewLine}{Resources.LogMessageDownloadStart}{Environment.NewLine}{Environment.NewLine}";
 
                 _cancellation.Token.ThrowIfCancellationRequested();
+
+                IsDownloadProgressIndeterminate = false;
+                DownloadProgressValue = 0;
 
                 var arguments = new StringBuilder();
                 arguments.Append(Resources.DownloaderEncodingUtf8Option);
@@ -499,6 +542,7 @@ namespace YoutubeDownloader
                 };
                 downloaderProcess.OutputDataReceived += (o, e) =>
                 {
+                    ThreadPool.QueueUserWorkItem(UpdateDownloadProgressAsync, e.Data);
                     DownloadLog = e.Data;
                     DownloadLog = Environment.NewLine;
                 };
@@ -525,6 +569,8 @@ namespace YoutubeDownloader
                     }
                 }
 
+                DownloadProgressValue = 0;
+
                 _lastDownloadStatus = downloaderProcess.ExitCode == 0
                     ? DownloadStatus.Success
                     : DownloadStatus.Fail;
@@ -540,6 +586,19 @@ namespace YoutubeDownloader
                 _lastDownloadStatus = DownloadStatus.Fail;
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
+            }
+        }
+
+        private void UpdateDownloadProgressAsync(object state)
+        {
+            if (!(state is string record))
+            {
+                return;
+            }
+
+            if (TryParseDownloadProgress(record, out var progress))
+            {
+                DownloadProgressValue = (int) Math.Round(progress);
             }
         }
     }

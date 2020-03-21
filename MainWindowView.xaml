@@ -68,7 +68,9 @@
                 Command="{Binding OpenDownloadFolderButtonClick}"
                 IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}"
                 Visibility="{Binding ShowDownloadedItemsButtonVisibility}" />
-            <ProgressBar IsIndeterminate="True" Visibility="{Binding DownloadProgressVisibility}" />
+            <ProgressBar IsIndeterminate="{Binding IsDownloadProgressIndeterminate}"
+                         Visibility="{Binding DownloadProgressVisibility}"
+                         Minimum="0" Maximum="100" Value="{Binding DownloadProgressValue}" />
         </Grid>
 
         <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="{Binding DownloadLog}"
