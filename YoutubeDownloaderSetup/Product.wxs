@@ -25,19 +25,26 @@
              UpgradeCode="$(var.UpgradeCode)">
         <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" />
 
-        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
-        <MediaTemplate />
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+                      AllowSameVersionUpgrades="yes" />
+
+        <Media Id="1" Cabinet="_494C9D65561241F4803B47835AD70ADC" EmbedCab="yes" />
 
         <Property Id="ARPPRODUCTICON" Value="APPICON" />
-        <Icon Id="APPICON" SourceFile="..\Images\icon32.ico" />
+        <Icon Id="APPICON" SourceFile="..\Images\icon.ico" />
 
         <Feature Id="ProductFeature" Title="[ProductName]" Level="1">
             <ComponentGroupRef Id="ProductComponents" />
+            <ComponentGroupRef Id="ShortcutComponents" />
         </Feature>
     </Product>
 
     <Fragment>
         <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="DesktopFolder" />
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)" />
+            </Directory>
             <Directory Id="LocalAppDataFolder">
                 <Directory Id="MANUFACTURERDIR" Name="$(var.Manufacturer)">
                     <Directory Id="INSTALLFOLDER" Name="$(var.ProductName)">
@@ -52,7 +59,8 @@
 
     <Fragment>
         <ComponentGroup Id="ProductComponents">
-            <Component Id="RemoveManufacturerDirComponent" Directory="MANUFACTURERDIR" Guid="{3AC0B1A3-78E5-4AA7-B9F7-3A84AF0EDB2C}">
+            <Component Id="RemoveManufacturerDirComponent" Directory="MANUFACTURERDIR"
+                       Guid="{3AC0B1A3-78E5-4AA7-B9F7-3A84AF0EDB2C}">
                 <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
                                Name='RemoveManufacturerDirComponent'
                                Value='Installed'
@@ -66,11 +74,15 @@
                                Value='Installed'
                                Type='string'
                                KeyPath='yes' />
-                <File Name="YoutubeDownloader.exe" Id="YoutubeDownloader.exe" Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe" />
-                <File Name="YoutubeDownloader.exe.config" Id="YoutubeDownloader.exe.config" Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe.config" />
+                <File Name="YoutubeDownloader.exe" Id="YoutubeDownloader.exe"
+                      Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe" />
+                <File Name="YoutubeDownloader.exe.config" Id="YoutubeDownloader.exe.config"
+                      Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe.config" />
                 <File Name="youtube-dl.exe" Id="youtube_dl.exe" Source="..\third-party\youtube-dl.exe" />
-                <File Name="Syroot.KnownFolders.dll" Id="Syroot.KnownFolders.dll" Source="$(var.YoutubeDownloader.TargetDir)Syroot.KnownFolders.dll" />
-                <File Name="System.Security.Principal.Windows.dll" Id="System.Security.Principal.Windows.dll" Source="$(var.YoutubeDownloader.TargetDir)System.Security.Principal.Windows.dll" />
+                <File Name="Syroot.KnownFolders.dll" Id="Syroot.KnownFolders.dll"
+                      Source="$(var.YoutubeDownloader.TargetDir)Syroot.KnownFolders.dll" />
+                <File Name="System.Security.Principal.Windows.dll" Id="System.Security.Principal.Windows.dll"
+                      Source="$(var.YoutubeDownloader.TargetDir)System.Security.Principal.Windows.dll" />
                 <RemoveFolder Id='INSTALLFOLDER' On='uninstall' />
             </Component>
             <Component Id="FfmpegComponent" Directory="FFMPEGFOLDER" Guid="{C9264541-31EB-4A49-A9C1-1313D83645C9}">
@@ -83,7 +95,8 @@
                 <File Name="README.TXT" Id="FfmpegReadmeFile" Source="..\third-party\ffmpeg\README.TXT" />
                 <RemoveFolder Id='FFMPEGFOLDER' On='uninstall' />
             </Component>
-            <Component Id="FfmpegBinComponent" Directory="FFMPEGBINFOLDER" Guid="{78AB21B6-0DC1-4151-AB95-BD3A0E05A2B0}">
+            <Component Id="FfmpegBinComponent" Directory="FFMPEGBINFOLDER"
+                       Guid="{78AB21B6-0DC1-4151-AB95-BD3A0E05A2B0}">
                 <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
                                Name='FfmpegBinComponent'
                                Value='Installed'
@@ -91,6 +104,31 @@
                                KeyPath='yes' />
                 <File Name="ffmpeg.exe" Id="ffmpeg.exe" Source="..\third-party\ffmpeg\bin\ffmpeg.exe" />
                 <RemoveFolder Id='FFMPEGBINFOLDER' On='uninstall' />
+            </Component>
+        </ComponentGroup>
+
+        <ComponentGroup Id="ShortcutComponents">
+            <Component Id="DesktopShortcutComponent" Guid="*" Directory="DesktopFolder">
+                <Shortcut Id="AppDesktopShortcut"
+                          Name="$(var.ProductName)"
+                          Directory="DesktopFolder"
+                          Target="[#YoutubeDownloader.exe]"
+                          WorkingDirectory="INSTALLFOLDER"
+                          Icon="APPICON" />
+                <!--Remove desktop shortcut on uninstall-->
+                <RemoveFolder Id="DesktopFolder" On="uninstall" />
+                <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="installed"
+                               Type="integer" Value="1" KeyPath="yes" />
+            </Component>
+
+            <Component Id="ApplicationShortcut" Guid="*" Directory="ApplicationProgramsFolder">
+                <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.ProductName)"
+                          Icon="APPICON" Target="[#YoutubeDownloader.exe]" WorkingDirectory="INSTALLFOLDER" />
+                <!--Remove application shortcut from Program Menu on uninstall-->
+                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+                <!--Create application registry entry-->
+                <RegistryValue Root="HKCU" Key="Software\Microsoft\$(var.Manufacturer)\$(var.ProductName)" Name="installed"
+                               Type="integer" Value="1" KeyPath="yes" />
             </Component>
         </ComponentGroup>
     </Fragment>
