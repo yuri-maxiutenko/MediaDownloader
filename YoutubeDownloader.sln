@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader", "Youtub
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "YoutubeDownloaderSetup", "YoutubeDownloaderSetup\YoutubeDownloaderSetup.wixproj", "{5AD17196-207B-4403-81CD-8F95AA74A1E1}"
 EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "YoutubeDownloaderInstaller", "YoutubeDownloaderInstaller\YoutubeDownloaderInstaller.wixproj", "{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,12 @@ Global
 		{5AD17196-207B-4403-81CD-8F95AA74A1E1}.Release|Any CPU.ActiveCfg = Release|x86
 		{5AD17196-207B-4403-81CD-8F95AA74A1E1}.Release|x86.ActiveCfg = Release|x86
 		{5AD17196-207B-4403-81CD-8F95AA74A1E1}.Release|x86.Build.0 = Release|x86
+		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Debug|x86.ActiveCfg = Debug|x86
+		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Debug|x86.Build.0 = Debug|x86
+		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Release|Any CPU.ActiveCfg = Release|x86
+		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Release|x86.ActiveCfg = Release|x86
+		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
