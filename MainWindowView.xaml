@@ -16,43 +16,52 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Column="0" Grid.Row="0" Content="{x:Static properties:Resources.DownloadFormatCaption}"
-               Margin="0,10,0,0" />
-        <ComboBox Grid.Column="0" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=DownloadOptions}"
-                  SelectedValue="{Binding SelectedDownloadOption, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
-                  IsSynchronizedWithCurrentItem="True" />
+        <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" IsEnabled="{Binding IsGeneralInterfaceEnabled}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label Grid.Column="0" Grid.Row="0" Content="{x:Static properties:Resources.DownloadFormatCaption}"
+                   Margin="0,10,0,0" />
+            <ComboBox Grid.Column="0" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=DownloadOptions}"
+                      SelectedValue="{Binding SelectedDownloadOption, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
+                      IsSynchronizedWithCurrentItem="True" />
 
-        <Label Grid.Column="0" Grid.Row="2" Content="{x:Static properties:Resources.DownloadFolderCaption}"
-               Margin="0,10,0,0" />
-        <TextBox Grid.Column="0" Grid.Row="3" Margin="5" Text="{Binding DownloadFolderPath}" IsReadOnly="True"
-                 TextChanged="DownloadFolderPath_OnTextChanged" />
-        <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left"
-                Content="{x:Static properties:Resources.BrowseButtonText}" Margin="5"
-                Click="BrowseButton_OnClick" />
+            <Label Grid.Column="0" Grid.Row="2" Content="{x:Static properties:Resources.DownloadFolderCaption}"
+                   Margin="0,10,0,0" />
+            <TextBox Grid.Column="0" Grid.Row="3" Margin="5" Text="{Binding DownloadFolderPath}" IsReadOnly="True"
+                     TextChanged="DownloadFolderPath_OnTextChanged" />
+            <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left"
+                    Content="{x:Static properties:Resources.BrowseButtonText}" Margin="5"
+                    Click="BrowseButton_OnClick" />
 
-        <Label Grid.Column="0" Grid.Row="4" Content="{x:Static properties:Resources.DownloadLinkCaption}"
-               Margin="0,10,0,0" />
-        <TextBox Grid.Column="0" Grid.Row="5" Margin="5"
-                 Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 TextChanged="YouTubeLink_OnTextChanged"
-                 DataObject.Pasting="YouTubeLink_OnPasting" />
-        <Button Grid.Column="1" Grid.Row="5" Width="100" HorizontalAlignment="Left"
-                Content="{x:Static properties:Resources.ClearButtonText}" Margin="5"
-                Command="{Binding ClearButtonClick}" />
+            <Label Grid.Column="0" Grid.Row="4" Content="{x:Static properties:Resources.DownloadLinkCaption}"
+                   Margin="0,10,0,0" />
+            <TextBox Grid.Column="0" Grid.Row="5" Margin="5"
+                     Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     TextChanged="YouTubeLink_OnTextChanged"
+                     DataObject.Pasting="YouTubeLink_OnPasting" />
+            <Button Grid.Column="1" Grid.Row="5" Width="100" HorizontalAlignment="Left"
+                    Content="{x:Static properties:Resources.ClearButtonText}" Margin="5"
+                    Command="{Binding ClearButtonClick}" />
+        </Grid>
 
-        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Width="200" Height="50" HorizontalAlignment="Center"
+        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Width="200" Height="50" HorizontalAlignment="Center"
                 Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}"
                 Content="{Binding DownloadButtonText}" />
 
-        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Width="150" Height="25" HorizontalAlignment="Center"
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Width="150" Height="25" HorizontalAlignment="Center"
               Margin="10">
             <Button
                 Content="Show Downloaded Items"
@@ -62,7 +71,7 @@
             <ProgressBar IsIndeterminate="True" Visibility="{Binding DownloadProgressVisibility}" />
         </Grid>
 
-        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Text="{Binding DownloadLog}"
+        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="{Binding DownloadLog}"
                  Margin="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Auto"
                  IsReadOnly="True" TextWrapping="Wrap"

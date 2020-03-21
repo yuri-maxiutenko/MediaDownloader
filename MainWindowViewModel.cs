@@ -66,6 +66,8 @@ namespace YoutubeDownloader
         private string _ffmpegPath;
 
         private bool _isDownloadButtonEnabled;
+
+        private bool _isGeneralInterfaceEnabled;
         private bool _isOpenDownloadFolderButtonEnabled;
         private readonly object _logWritingLock = new object();
         private ICommand _openDownloadFolderButtonClick;
@@ -182,6 +184,16 @@ namespace YoutubeDownloader
             }
         }
 
+        public bool IsGeneralInterfaceEnabled
+        {
+            get => _isGeneralInterfaceEnabled;
+            set
+            {
+                _isGeneralInterfaceEnabled = value;
+                OnPropertyChanged("IsGeneralInterfaceEnabled");
+            }
+        }
+
         public string DownloadButtonText
         {
             get => _downloadButtonText;
@@ -229,6 +241,7 @@ namespace YoutubeDownloader
                 return _startDownloadCommand ?? (_startDownloadCommand = new RelayCommand(
                     param =>
                     {
+                        IsGeneralInterfaceEnabled = false;
                         IsDownloadButtonEnabled = false;
                         _cancellation = new CancellationTokenSource();
 
@@ -271,7 +284,8 @@ namespace YoutubeDownloader
                     {
                         if (File.Exists(LastDownloadedFilePath))
                         {
-                            Process.Start(Resources.ExplorerFileName, $"{Resources.ExplorerSelectOption}, \"{LastDownloadedFilePath}\"");
+                            Process.Start(Resources.ExplorerFileName,
+                                $"{Resources.ExplorerSelectOption}, \"{LastDownloadedFilePath}\"");
                         }
                         else if (Directory.Exists(DownloadFolderPath))
                         {
@@ -293,6 +307,8 @@ namespace YoutubeDownloader
 
             DownloadProgressVisibility = Visibility.Hidden;
             ShowDownloadedItemsButtonVisibility = Visibility.Visible;
+
+            IsGeneralInterfaceEnabled = true;
         }
 
         public void ValidateDownload()
@@ -309,6 +325,8 @@ namespace YoutubeDownloader
 
         private void Initialize()
         {
+            IsGeneralInterfaceEnabled = true;
+
             DownloadButtonText = Resources.StartDownloadButtonText;
             DownloadButtonClick = StartDownloadCommand;
 
@@ -316,7 +334,8 @@ namespace YoutubeDownloader
             DownloadProgressVisibility = Visibility.Hidden;
 
             _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.DownloaderFileName);
-            _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.ConverterDirectoryName, Resources.BinDirectoryName);
+            _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.ConverterDirectoryName,
+                Resources.BinDirectoryName);
 
             DownloadFolderPath = UserDownloadsFolder;
             DownloadOptions = new List<DownloadOption>
