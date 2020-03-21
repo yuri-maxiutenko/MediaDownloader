@@ -43,13 +43,18 @@
                 Command="{Binding ClearButtonClick}" />
 
         <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6" Width="200" Height="50" HorizontalAlignment="Center"
-                Content="Download!"
-                Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}" />
+                Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}"
+                Content="{Binding DownloadButtonText}">
+        </Button>
 
-        <Button Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Width="150" Height="25" HorizontalAlignment="Center"
-                Content="Show Downloaded Items"
-                Margin="10" Command="{Binding OpenDownloadFolderButtonClick}" 
-                IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}" />
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Width="150" Height="25" HorizontalAlignment="Center" Margin="10">
+            <Button 
+                    Content="Show Downloaded Items"
+                     Command="{Binding OpenDownloadFolderButtonClick}" 
+                    IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}" 
+                    Visibility="{Binding ShowDownloadedItemsButtonVisibility}"/>
+            <ProgressBar IsIndeterminate="True" Visibility="{Binding DownloadProgressVisibility}" />
+        </Grid>
 
         <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Text="{Binding DownloadLog}"
                  Margin="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled"

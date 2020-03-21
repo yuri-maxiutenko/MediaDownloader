@@ -5,8 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using Syroot.Windows.IO;
+
+using YoutubeDownloader.Properties;
 
 namespace YoutubeDownloader
 {
@@ -45,24 +48,34 @@ namespace YoutubeDownloader
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
-        private readonly object _logWritingLock = new object();
-
         private const string DownloaderFileName = "youtube-dl.exe";
         private const string FfmpegDirectory = @"ffmpeg\bin";
+
+        private CancellationTokenSource _cancellation;
 
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
 
+        private string _downloadButtonText;
+
         private string _downloaderPath;
+
         private string _downloadFolderPath;
         private readonly StringBuilder _downloadLog = new StringBuilder();
+
+        private Visibility _downloadProgressVisibility;
         private string _ffmpegPath;
 
         private bool _isDownloadButtonEnabled;
         private bool _isOpenDownloadFolderButtonEnabled;
+        private readonly object _logWritingLock = new object();
         private ICommand _openDownloadFolderButtonClick;
 
         private DownloadOption _selectedDownloadOption;
+
+        private Visibility _showDownloadedItemsButtonVisibility;
+        private ICommand _startDownloadCommand;
+        private ICommand _stopDownloadCommand;
         private string _userDownloadsFolder;
         private string _youTubeLink;
 
@@ -170,14 +183,81 @@ namespace YoutubeDownloader
             }
         }
 
+        public string DownloadButtonText
+        {
+            get => _downloadButtonText;
+            set
+            {
+                _downloadButtonText = value;
+                OnPropertyChanged("DownloadButtonText");
+            }
+        }
+
+        public Visibility ShowDownloadedItemsButtonVisibility
+        {
+            get => _showDownloadedItemsButtonVisibility;
+            set
+            {
+                _showDownloadedItemsButtonVisibility = value;
+                OnPropertyChanged("ShowDownloadedItemsButtonVisibility");
+            }
+        }
+
+        public Visibility DownloadProgressVisibility
+        {
+            get => _downloadProgressVisibility;
+            set
+            {
+                _downloadProgressVisibility = value;
+                OnPropertyChanged("DownloadProgressVisibility");
+            }
+        }
+
         public ICommand DownloadButtonClick
+        {
+            get => _downloadButtonClick;
+            set
+            {
+                _downloadButtonClick = value;
+                OnPropertyChanged("DownloadButtonClick");
+            }
+        }
+
+        public ICommand StartDownloadCommand
         {
             get
             {
-                return _downloadButtonClick ?? (_downloadButtonClick = new RelayCommand(
+                return _startDownloadCommand ?? (_startDownloadCommand = new RelayCommand(
                     param =>
                     {
-                        ThreadPool.QueueUserWorkItem(DownloadItemAsync);
+                        IsDownloadButtonEnabled = false;
+                        _cancellation = new CancellationTokenSource();
+
+                        var worker = new BackgroundWorker();
+                        worker.DoWork += DownloadItemAsync;
+                        worker.RunWorkerCompleted += OnDownloadItemCompleted;
+                        worker.RunWorkerAsync();
+
+                        DownloadButtonText = Resources.StopDownloadButtonText;
+                        DownloadButtonClick = StopDownloadCommand;
+                        IsDownloadButtonEnabled = true;
+
+                        ShowDownloadedItemsButtonVisibility = Visibility.Hidden;
+                        DownloadProgressVisibility = Visibility.Visible;
+                    },
+                    param => true));
+            }
+        }
+
+        public ICommand StopDownloadCommand
+        {
+            get
+            {
+                return _stopDownloadCommand ?? (_stopDownloadCommand = new RelayCommand(
+                    param =>
+                    {
+                        IsDownloadButtonEnabled = false;
+                        _cancellation.Cancel();
                     },
                     param => true));
             }
@@ -205,6 +285,17 @@ namespace YoutubeDownloader
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private void OnDownloadItemCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            IsDownloadButtonEnabled = false;
+            DownloadButtonText = Resources.StartDownloadButtonText;
+            DownloadButtonClick = StartDownloadCommand;
+            IsDownloadButtonEnabled = true;
+
+            DownloadProgressVisibility = Visibility.Hidden;
+            ShowDownloadedItemsButtonVisibility = Visibility.Visible;
+        }
+
         public void ValidateDownload()
         {
             var downloadDirectoryExists = Directory.Exists(DownloadFolderPath);
@@ -219,6 +310,12 @@ namespace YoutubeDownloader
 
         private void Initialize()
         {
+            DownloadButtonText = Resources.StartDownloadButtonText;
+            DownloadButtonClick = StartDownloadCommand;
+
+            ShowDownloadedItemsButtonVisibility = Visibility.Visible;
+            DownloadProgressVisibility = Visibility.Hidden;
+
             _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DownloaderFileName);
             _ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FfmpegDirectory);
 
@@ -250,6 +347,8 @@ namespace YoutubeDownloader
 
         private int RetrieveItemFileName()
         {
+            LastDownloadedFilePath = string.Empty;
+
             var arguments = new StringBuilder();
             arguments.Append("--encoding utf-8");
             arguments.Append(" ");
@@ -258,7 +357,7 @@ namespace YoutubeDownloader
             arguments.Append($"-o \"{DownloadFolderPath}\\%(title)s.%(ext)s\"");
             arguments.Append(" ");
             arguments.Append(YouTubeLink);
-            var downloadProcess = new Process
+            var downloaderProcess = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -272,86 +371,120 @@ namespace YoutubeDownloader
                     StandardErrorEncoding = Encoding.UTF8
                 }
             };
-            downloadProcess.OutputDataReceived += (sender, e) =>
+            downloaderProcess.OutputDataReceived += (sender, e) =>
             {
                 DownloadLog = e.Data;
                 DownloadLog = Environment.NewLine;
             };
 
-            downloadProcess.ErrorDataReceived += (sender, e) =>
+            downloaderProcess.ErrorDataReceived += (sender, e) =>
             {
                 DownloadLog = e.Data;
                 DownloadLog = Environment.NewLine;
             };
 
-            downloadProcess.Start();
+            downloaderProcess.Start();
 
-            downloadProcess.BeginErrorReadLine();
-            downloadProcess.BeginOutputReadLine();
+            downloaderProcess.BeginErrorReadLine();
+            downloaderProcess.BeginOutputReadLine();
 
-            downloadProcess.WaitForExit();
+            downloaderProcess.WaitForExit();
 
-            LastDownloadedFilePath = downloadProcess.ExitCode == 0 ? DownloadLog.Trim() : string.Empty;
+            while (!downloaderProcess.HasExited)
+            {
+                downloaderProcess.WaitForExit(500);
+                if (_cancellation.IsCancellationRequested)
+                {
+                    downloaderProcess.Kill();
+                    _cancellation.Token.ThrowIfCancellationRequested();
+                }
+            }
 
-            return downloadProcess.ExitCode;
+            LastDownloadedFilePath = downloaderProcess.ExitCode == 0 ? DownloadLog.Trim() : string.Empty;
+
+            return downloaderProcess.ExitCode;
         }
 
-        private void DownloadItemAsync(object o)
+        private void DownloadItemAsync(object sender, DoWorkEventArgs args)
         {
-            lock (_logWritingLock)
+            try
             {
-                _downloadLog.Clear();
-            }
-
-            DownloadLog = string.Empty;
-
-            if (RetrieveItemFileName() != 0)
-            {
-                return;
-            }
-
-            var arguments = new StringBuilder();
-            arguments.Append("--encoding utf-8");
-            arguments.Append(" ");
-            arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
-            arguments.Append(" ");
-            arguments.Append($"-o \"{Path.Combine(DownloadFolderPath, LastDownloadedFilePath)}\"");
-            arguments.Append(" ");
-            arguments.Append($"--ffmpeg-location \"{_ffmpegPath}\"");
-            arguments.Append(" ");
-            arguments.Append(YouTubeLink);
-            var downloadProcess = new Process
-            {
-                StartInfo = new ProcessStartInfo
+                _cancellation.Token.ThrowIfCancellationRequested();
+                lock (_logWritingLock)
                 {
-                    FileName = _downloaderPath,
-                    Arguments = arguments.ToString(),
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    StandardOutputEncoding = Encoding.UTF8,
-                    StandardErrorEncoding = Encoding.UTF8
+                    _downloadLog.Clear();
                 }
-            };
-            downloadProcess.OutputDataReceived += (sender, e) =>
+
+                DownloadLog = string.Empty;
+
+                if (RetrieveItemFileName() != 0)
+                {
+                    return;
+                }
+
+                _cancellation.Token.ThrowIfCancellationRequested();
+
+                var arguments = new StringBuilder();
+                arguments.Append("--encoding utf-8");
+                arguments.Append(" ");
+                arguments.Append($"-f \"{SelectedDownloadOption.Option}\"");
+                arguments.Append(" ");
+                arguments.Append($"-o \"{Path.Combine(DownloadFolderPath, LastDownloadedFilePath)}\"");
+                arguments.Append(" ");
+                arguments.Append($"--ffmpeg-location \"{_ffmpegPath}\"");
+                arguments.Append(" ");
+                arguments.Append(YouTubeLink);
+                var downloaderProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = _downloaderPath,
+                        Arguments = arguments.ToString(),
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        StandardErrorEncoding = Encoding.UTF8
+                    }
+                };
+                downloaderProcess.OutputDataReceived += (o, e) =>
+                {
+                    DownloadLog = e.Data;
+                    DownloadLog = Environment.NewLine;
+                };
+
+                downloaderProcess.ErrorDataReceived += (o, e) =>
+                {
+                    DownloadLog = e.Data;
+                    DownloadLog = Environment.NewLine;
+                };
+
+                downloaderProcess.Start();
+
+                downloaderProcess.BeginErrorReadLine();
+                downloaderProcess.BeginOutputReadLine();
+
+                while (!downloaderProcess.HasExited)
+                {
+                    downloaderProcess.WaitForExit(500);
+                    if (_cancellation.IsCancellationRequested)
+                    {
+                        downloaderProcess.Kill();
+                        _cancellation.Token.ThrowIfCancellationRequested();
+                    }
+                }
+            }
+            catch (OperationCanceledException e)
             {
-                DownloadLog = e.Data;
                 DownloadLog = Environment.NewLine;
-            };
-
-            downloadProcess.ErrorDataReceived += (sender, e) =>
+                DownloadLog = e.Message;
+            }
+            catch (Exception e)
             {
-                DownloadLog = e.Data;
                 DownloadLog = Environment.NewLine;
-            };
-
-            downloadProcess.Start();
-
-            downloadProcess.BeginErrorReadLine();
-            downloadProcess.BeginOutputReadLine();
-
-            downloadProcess.WaitForExit();
+                DownloadLog = e.Message;
+            }
         }
     }
 }
