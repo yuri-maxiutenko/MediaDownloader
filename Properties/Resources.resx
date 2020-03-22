@@ -204,4 +204,13 @@ You may find it here: {0}
     <value>Downloading the file: {0}
 Link: {1}</value>
   </data>
+  <data name="MessageDownloading" xml:space="preserve">
+    <value>Downloading: {0}</value>
+  </data>
+  <data name="MessageDownloadComplete" xml:space="preserve">
+    <value>Download complete!</value>
+  </data>
+  <data name="MessageDownloadPreparing" xml:space="preserve">
+    <value>Preparing to download your files...</value>
+  </data>
 </root>

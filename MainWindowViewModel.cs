@@ -57,6 +57,8 @@ namespace YoutubeDownloader
         private string _downloadFolderPath;
 
         private readonly StringBuilder _downloadLog = new StringBuilder();
+        private string _downloadMessage;
+        private string _downloadPercentText;
         private int _downloadProgressMax;
         private int _downloadProgressMin;
 
@@ -64,6 +66,8 @@ namespace YoutubeDownloader
 
         private int _downloadProgressValue;
         private Visibility _downloadProgressVisibility;
+
+        private int _downloadProgressWidth;
 
         private bool _isDownloadButtonEnabled;
         private bool _isDownloadProgressIndeterminate;
@@ -238,6 +242,36 @@ namespace YoutubeDownloader
             {
                 _downloadProgressMax = value;
                 OnPropertyChanged("DownloadProgressMax");
+            }
+        }
+
+        public int DownloadProgressWidth
+        {
+            get => _downloadProgressWidth;
+            set
+            {
+                _downloadProgressWidth = value;
+                OnPropertyChanged("DownloadProgressWidth");
+            }
+        }
+
+        public string DownloadMessage
+        {
+            get => _downloadMessage;
+            set
+            {
+                _downloadMessage = value;
+                OnPropertyChanged("DownloadMessage");
+            }
+        }
+
+        public string DownloadPercentText
+        {
+            get => _downloadPercentText;
+            set
+            {
+                _downloadPercentText = value;
+                OnPropertyChanged("DownloadPercentText");
             }
         }
 
@@ -430,6 +464,8 @@ namespace YoutubeDownloader
 
                 DownloadLog = string.Empty;
 
+                DownloadMessage = Resources.MessageDownloadPreparing;
+
                 if (!_downloader.TryGetItems(DownloadFolderPath, YouTubeLink, SelectedDownloadOption.Option,
                     (o, eventArgs) =>
                     {
@@ -449,13 +485,13 @@ namespace YoutubeDownloader
 
                 _downloadProgressSectionMin = 0;
 
-                IsDownloadProgressIndeterminate = false;
-
                 foreach (var item in items)
                 {
+                    DownloadMessage = string.Format(Resources.MessageDownloading, item.FileName);
+
                     _cancellation.Token.ThrowIfCancellationRequested();
 
-                    Logger.Info("Downloading: {0}", item);
+                    Logger.Info(Resources.MessageDownloading, item);
 
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
                     DownloadLog = string.Format(Resources.LogMessageDownloadingFile, item.FileName, item.Link);
@@ -484,6 +520,7 @@ namespace YoutubeDownloader
                 }
 
                 DownloadProgressValue = DownloadProgressMax;
+                DownloadMessage = Resources.MessageDownloadComplete;
             }
             catch (OperationCanceledException e)
             {
@@ -510,8 +547,12 @@ namespace YoutubeDownloader
 
             if (Utilities.TryParseDownloadProgress(record, out var progress))
             {
+                IsDownloadProgressIndeterminate = false;
                 var newValue = _downloadProgressSectionMin + (int) Math.Round(progress);
                 DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
+
+                DownloadPercentText =
+                    $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
             }
         }
     }

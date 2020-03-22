@@ -61,7 +61,7 @@
                 Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}"
                 Content="{Binding DownloadButtonText}" />
 
-        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"  Height="25" HorizontalAlignment="Center"
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Height="25" HorizontalAlignment="Stretch"
               Margin="10">
             <Button
                 Width="150"
@@ -69,10 +69,23 @@
                 Command="{Binding OpenDownloadFolderButtonClick}"
                 IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}"
                 Visibility="{Binding ShowDownloadedItemsButtonVisibility}" />
-            <ProgressBar Width="500"
-                         IsIndeterminate="{Binding IsDownloadProgressIndeterminate}"
+            <ProgressBar IsIndeterminate="{Binding IsDownloadProgressIndeterminate}"
                          Visibility="{Binding DownloadProgressVisibility}"
-                         Minimum="{Binding DownloadProgressMin}" Maximum="{Binding DownloadProgressMax}" Value="{Binding DownloadProgressValue}" />
+                         Minimum="{Binding DownloadProgressMin}" Maximum="{Binding DownloadProgressMax}"
+                         Value="{Binding DownloadProgressValue}" />
+            <Grid Margin="20,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Visibility="{Binding DownloadProgressVisibility}">
+                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding DownloadMessage}" />
+                </Label>
+                <Label Grid.Column="1" Content="{Binding DownloadPercentText}" HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="{Binding DownloadProgressVisibility}" />
+            </Grid>
         </Grid>
 
         <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="{Binding DownloadLog}"

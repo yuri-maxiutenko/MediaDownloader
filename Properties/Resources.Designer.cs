@@ -298,6 +298,33 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Download complete!.
+        /// </summary>
+        public static string MessageDownloadComplete {
+            get {
+                return ResourceManager.GetString("MessageDownloadComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading: {0}.
+        /// </summary>
+        public static string MessageDownloading {
+            get {
+                return ResourceManager.GetString("MessageDownloading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing to download your files....
+        /// </summary>
+        public static string MessageDownloadPreparing {
+            get {
+                return ResourceManager.GetString("MessageDownloadPreparing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (\[download\]\s*)(\S*)% of.
         /// </summary>
         public static string SearchPatternDownloadProgress {

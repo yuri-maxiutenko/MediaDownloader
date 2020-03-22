@@ -37,5 +37,10 @@ namespace YoutubeDownloader
             var regex = new Regex($"[{Regex.Escape(regexSearch)}]");
             return regex.Replace(fileName, "_");
         }
+
+        public static int CalculateAbsolutePercent(int value, int maximum)
+        {
+            return (int)Math.Round(100 * (double)value / maximum);
+        }
     }
 }
