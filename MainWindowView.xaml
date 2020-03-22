@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:YoutubeDownloader"
         xmlns:properties="clr-namespace:YoutubeDownloader.Properties"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="600">
+        Title="MainWindow" Width="500" SizeToContent="Height" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -16,7 +16,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" IsEnabled="{Binding IsGeneralInterfaceEnabled}">
@@ -61,11 +61,11 @@
                 Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}"
                 Content="{Binding DownloadButtonText}" />
 
-        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Height="25" HorizontalAlignment="Stretch"
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Height="30" HorizontalAlignment="Stretch"
               Margin="10">
             <Button
                 Width="150"
-                Content="Show Downloaded Items"
+                Content="{x:Static properties:Resources.ShowDownloadedItemsButtonText}"
                 Command="{Binding OpenDownloadFolderButtonClick}"
                 IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}"
                 Visibility="{Binding ShowDownloadedItemsButtonVisibility}" />
@@ -88,10 +88,14 @@
             </Grid>
         </Grid>
 
-        <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="{Binding DownloadLog}"
-                 Margin="10" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 IsReadOnly="True" TextWrapping="Wrap"
-                 TextChanged="DownloadLog_OnTextChanged" />
+        <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Background="Tan"
+                  Header="{x:Static properties:Resources.ShowLogExpanderText}" ExpandDirection="Down" IsExpanded="True"
+                  Margin="10">
+            <TextBox Text="{Binding DownloadLog}" Height="150"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     IsReadOnly="True" TextWrapping="Wrap"
+                     TextChanged="DownloadLog_OnTextChanged" />
+        </Expander>
     </Grid>
 </Window>

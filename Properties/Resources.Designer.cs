@@ -334,6 +334,24 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Downloaded Items.
+        /// </summary>
+        public static string ShowDownloadedItemsButtonText {
+            get {
+                return ResourceManager.GetString("ShowDownloadedItemsButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Log.
+        /// </summary>
+        public static string ShowLogExpanderText {
+            get {
+                return ResourceManager.GetString("ShowLogExpanderText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download!.
         /// </summary>
         public static string StartDownloadButtonText {
