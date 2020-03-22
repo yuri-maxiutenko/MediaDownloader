@@ -16,6 +16,11 @@ namespace YoutubeDownloader
     {
         public string FileName { get; set; }
         public string Link { get; set; }
+
+        public override string ToString()
+        {
+            return $"FileName={FileName} Link={Link}";
+        }
     }
 
     public class Downloader

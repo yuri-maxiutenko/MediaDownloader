@@ -85,6 +85,8 @@
                       Source="$(var.YoutubeDownloader.TargetDir)System.Security.Principal.Windows.dll" />
                 <File Name="Newtonsoft.Json.dll" Id="Newtonsoft.Json.dll"
                       Source="$(var.YoutubeDownloader.TargetDir)Newtonsoft.Json.dll" />
+                <File Name="NLog.dll" Id="NLog.dll"
+                      Source="$(var.YoutubeDownloader.TargetDir)NLog.dll" />
                 <RemoveFolder Id='INSTALLFOLDER' On='uninstall' />
             </Component>
             <Component Id="FfmpegComponent" Directory="FFMPEGFOLDER" Guid="{C9264541-31EB-4A49-A9C1-1313D83645C9}">

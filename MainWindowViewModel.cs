@@ -8,6 +8,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
+using NLog;
+
 using Syroot.Windows.IO;
 
 using YoutubeDownloader.Properties;
@@ -87,6 +89,8 @@ namespace YoutubeDownloader
         }
 
         public string LastDownloadedFilePath { get; set; }
+
+        public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         public string UserDownloadsFolder =>
             _userDownloadsFolder ??
@@ -431,6 +435,7 @@ namespace YoutubeDownloader
                     {
                         DownloadLog = eventArgs.Data;
                         DownloadLog = Environment.NewLine;
+                        Logger.Info(eventArgs.Data);
                     },
                     _cancellation.Token, out var items))
                 {
@@ -450,6 +455,8 @@ namespace YoutubeDownloader
                 {
                     _cancellation.Token.ThrowIfCancellationRequested();
 
+                    Logger.Info("Downloading: {0}", item);
+
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
                     DownloadLog = string.Format(Resources.LogMessageDownloadingFile, item.FileName, item.Link);
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
@@ -463,10 +470,12 @@ namespace YoutubeDownloader
                             ThreadPool.QueueUserWorkItem(UpdateDownloadProgressAsync, eventArgs.Data);
                             DownloadLog = eventArgs.Data;
                             DownloadLog = Environment.NewLine;
+                            Logger.Info(eventArgs.Data);
                         }, (o, eventArgs) =>
                         {
                             DownloadLog = eventArgs.Data;
                             DownloadLog = Environment.NewLine;
+                            Logger.Info(eventArgs.Data);
                         }, _cancellation.Token);
 
                     _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
@@ -478,12 +487,14 @@ namespace YoutubeDownloader
             }
             catch (OperationCanceledException e)
             {
+                Logger.Info(e);
                 _lastDownloadStatus = DownloadStatus.Cancel;
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
             }
             catch (Exception e)
             {
+                Logger.Error(e);
                 _lastDownloadStatus = DownloadStatus.Fail;
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
