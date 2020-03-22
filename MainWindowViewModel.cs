@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+
 using Syroot.Windows.IO;
 
 using YoutubeDownloader.Properties;
@@ -29,23 +30,11 @@ namespace YoutubeDownloader
 
     internal class DownloadOption
     {
-        public DownloadFormat Format
-        {
-            get;
-            set;
-        }
+        public DownloadFormat Format { get; set; }
 
-        public string Name
-        {
-            get;
-            set;
-        }
+        public string Name { get; set; }
 
-        public string Option
-        {
-            get;
-            set;
-        }
+        public string Option { get; set; }
 
         public override string ToString()
         {
@@ -55,6 +44,7 @@ namespace YoutubeDownloader
 
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
+        private const int DownloadProgressSectionStep = 100;
         private CancellationTokenSource _cancellation;
 
         private ICommand _clearButtonClick;
@@ -65,6 +55,10 @@ namespace YoutubeDownloader
         private string _downloadFolderPath;
 
         private readonly StringBuilder _downloadLog = new StringBuilder();
+        private int _downloadProgressMax;
+        private int _downloadProgressMin;
+
+        private int _downloadProgressSectionMin;
 
         private int _downloadProgressValue;
         private Visibility _downloadProgressVisibility;
@@ -92,21 +86,13 @@ namespace YoutubeDownloader
             Initialize();
         }
 
-        public string LastDownloadedFilePath
-        {
-            get;
-            set;
-        }
+        public string LastDownloadedFilePath { get; set; }
 
         public string UserDownloadsFolder =>
             _userDownloadsFolder ??
             (_userDownloadsFolder = new KnownFolder(KnownFolderType.DownloadsLocalized).ExpandedPath);
 
-        public List<DownloadOption> DownloadOptions
-        {
-            get;
-            private set;
-        }
+        public List<DownloadOption> DownloadOptions { get; private set; }
 
         public DownloadOption SelectedDownloadOption
         {
@@ -228,6 +214,26 @@ namespace YoutubeDownloader
             {
                 _downloadProgressValue = value;
                 OnPropertyChanged("DownloadProgressValue");
+            }
+        }
+
+        public int DownloadProgressMin
+        {
+            get => _downloadProgressMin;
+            set
+            {
+                _downloadProgressMin = value;
+                OnPropertyChanged("DownloadProgressMin");
+            }
+        }
+
+        public int DownloadProgressMax
+        {
+            get => _downloadProgressMax;
+            set
+            {
+                _downloadProgressMax = value;
+                OnPropertyChanged("DownloadProgressMax");
             }
         }
 
@@ -432,12 +438,17 @@ namespace YoutubeDownloader
                     return;
                 }
 
+                DownloadProgressMin = 0;
+                DownloadProgressMax = DownloadProgressSectionStep * items.Count;
+                DownloadProgressValue = DownloadProgressMin;
+
+                _downloadProgressSectionMin = 0;
+
                 IsDownloadProgressIndeterminate = false;
 
                 foreach (var item in items)
                 {
                     _cancellation.Token.ThrowIfCancellationRequested();
-                    DownloadProgressValue = 0;
 
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
                     DownloadLog = string.Format(Resources.LogMessageDownloadingFile, item.FileName, item.Link);
@@ -458,10 +469,12 @@ namespace YoutubeDownloader
                             DownloadLog = Environment.NewLine;
                         }, _cancellation.Token);
 
-                    DownloadProgressValue = 100;
-
                     _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
+
+                    _downloadProgressSectionMin += DownloadProgressSectionStep;
                 }
+
+                DownloadProgressValue = DownloadProgressMax;
             }
             catch (OperationCanceledException e)
             {
@@ -486,7 +499,8 @@ namespace YoutubeDownloader
 
             if (Utilities.TryParseDownloadProgress(record, out var progress))
             {
-                DownloadProgressValue = (int)Math.Round(progress);
+                var newValue = _downloadProgressSectionMin + (int) Math.Round(progress);
+                DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
             }
         }
     }

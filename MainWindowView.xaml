@@ -61,16 +61,18 @@
                 Margin="10" Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}"
                 Content="{Binding DownloadButtonText}" />
 
-        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Width="150" Height="25" HorizontalAlignment="Center"
+        <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"  Height="25" HorizontalAlignment="Center"
               Margin="10">
             <Button
+                Width="150"
                 Content="Show Downloaded Items"
                 Command="{Binding OpenDownloadFolderButtonClick}"
                 IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}"
                 Visibility="{Binding ShowDownloadedItemsButtonVisibility}" />
-            <ProgressBar IsIndeterminate="{Binding IsDownloadProgressIndeterminate}"
+            <ProgressBar Width="500"
+                         IsIndeterminate="{Binding IsDownloadProgressIndeterminate}"
                          Visibility="{Binding DownloadProgressVisibility}"
-                         Minimum="0" Maximum="100" Value="{Binding DownloadProgressValue}" />
+                         Minimum="{Binding DownloadProgressMin}" Maximum="{Binding DownloadProgressMax}" Value="{Binding DownloadProgressValue}" />
         </Grid>
 
         <TextBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="{Binding DownloadLog}"
