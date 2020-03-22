@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Input;
+
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace YoutubeDownloader
@@ -68,6 +70,34 @@ namespace YoutubeDownloader
                 downloadLog.CaretIndex = downloadLog.Text.Length;
                 downloadLog.ScrollToEnd();
             }
+        }
+
+        private void YouTubeLink_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            SelectText(sender);
+        }
+
+        private void YouTubeLink_OnGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            SelectText(sender);
+        }
+
+        private void YouTubeLink_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                if (!textBox.IsKeyboardFocusWithin)
+                {
+                    e.Handled = true;
+                    textBox.Focus();
+                }
+            }
+        }
+
+        private void SelectText(object sender)
+        {
+            var textBox = sender as TextBox;
+            textBox?.SelectAll();
         }
     }
 }
