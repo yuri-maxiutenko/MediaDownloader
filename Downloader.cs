@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
+
+using Newtonsoft.Json;
+
 using YoutubeDownloader.Properties;
 
 namespace YoutubeDownloader
 {
+    public class DownloaderItemInfo
+    {
+        public string FileName { get; set; }
+        public string Link { get; set; }
+    }
+
     public class Downloader
     {
         private const int ProcessWaitTimeoutMs = 500;
@@ -21,17 +32,18 @@ namespace YoutubeDownloader
                 Resources.BinDirectoryName);
         }
 
-        public bool TryGetItemFilePath(string downloadFolderPath, string link, string downloadOption,
-            DataReceivedEventHandler onErrorReceived, CancellationToken cancelToken, out string filePath)
+        public bool TryGetItems(string downloadFolderPath, string link, string downloadOption,
+            DataReceivedEventHandler onErrorReceived, CancellationToken cancelToken,
+            out List<DownloaderItemInfo> items)
         {
+            items = new List<DownloaderItemInfo>();
+
             var arguments = new StringBuilder();
             arguments.Append(Resources.DownloaderEncodingUtf8Option);
             arguments.Append(" ");
             arguments.Append($"-f \"{downloadOption}\"");
             arguments.Append(" ");
-            arguments.Append(Resources.DownloaderGetFilenameOption);
-            arguments.Append(" ");
-            arguments.Append($"-o \"{downloadFolderPath}\\{Resources.DownloaderItemTitleTemplate}\"");
+            arguments.Append("-J");
             arguments.Append(" ");
             arguments.Append(link);
             var downloaderProcess = new Process
@@ -51,11 +63,19 @@ namespace YoutubeDownloader
 
             try
             {
+                var outputReader = new StringBuilder();
+
                 downloaderProcess.ErrorDataReceived += onErrorReceived;
+
+                downloaderProcess.OutputDataReceived += (sender, args) =>
+                {
+                    outputReader.Append(args.Data);
+                };
 
                 downloaderProcess.Start();
 
                 downloaderProcess.BeginErrorReadLine();
+                downloaderProcess.BeginOutputReadLine();
 
                 while (!downloaderProcess.HasExited)
                 {
@@ -68,9 +88,24 @@ namespace YoutubeDownloader
                     }
                 }
 
-                filePath = downloaderProcess.ExitCode == 0
-                    ? downloaderProcess.StandardOutput.ReadToEnd().Trim()
-                    : string.Empty;
+                var info = JsonConvert.DeserializeObject<ItemInfo>(outputReader.ToString());
+
+                if (info.entries != null)
+                {
+                    items.AddRange(info.entries.Select(item => new DownloaderItemInfo
+                    {
+                        FileName = Path.ChangeExtension(Utilities.SanitizeFileName(item.title), item.ext),
+                        Link = item.webpage_url
+                    }));
+                }
+                else
+                {
+                    items.Add(new DownloaderItemInfo
+                    {
+                        FileName = Path.ChangeExtension(Utilities.SanitizeFileName(info.title), info.ext),
+                        Link = info.webpage_url
+                    });
+                }
 
                 return downloaderProcess.ExitCode == 0;
             }
@@ -137,6 +172,24 @@ namespace YoutubeDownloader
                 downloaderProcess.OutputDataReceived -= onOutputReceived;
                 downloaderProcess.ErrorDataReceived -= onErrorReceived;
             }
+        }
+
+        private class ItemInfo
+        {
+            public string id { get; set; }
+            public string ext { get; set; }
+            public string title { get; set; }
+            public string webpage_url { get; set; }
+            public ItemInfo[] entries { get; set; }
+            public ItemFormat[] requested_formats { get; set; }
+        }
+
+        private class ItemFormat
+        {
+            public string format { get; set; }
+            public string ext { get; set; }
+            public string vcodec { get; set; }
+            public string acodec { get; set; }
         }
     }
 }

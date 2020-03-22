@@ -259,6 +259,16 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloading the file: {0}
+        ///Link: {1}.
+        /// </summary>
+        public static string LogMessageDownloadingFile {
+            get {
+                return ResourceManager.GetString("LogMessageDownloadingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting to download your video....
         /// </summary>
         public static string LogMessageDownloadStart {

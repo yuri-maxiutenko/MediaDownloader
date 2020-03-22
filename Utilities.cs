@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
 using YoutubeDownloader.Properties;
@@ -28,6 +29,13 @@ namespace YoutubeDownloader
             }
 
             return false;
+        }
+
+        public static string SanitizeFileName(string fileName)
+        {
+            var regexSearch = new string(Path.GetInvalidFileNameChars());
+            var regex = new Regex($"[{Regex.Escape(regexSearch)}]");
+            return regex.Replace(fileName, "_");
         }
     }
 }

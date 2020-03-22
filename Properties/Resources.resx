@@ -200,4 +200,8 @@ You may find it here: {0}
   <data name="SearchPatternDownloadProgress" xml:space="preserve">
     <value>(\[download\]\s*)(\S*)% of</value>
   </data>
+  <data name="LogMessageDownloadingFile" xml:space="preserve">
+    <value>Downloading the file: {0}
+Link: {1}</value>
+  </data>
 </root>

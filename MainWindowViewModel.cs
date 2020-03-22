@@ -420,45 +420,48 @@ namespace YoutubeDownloader
 
                 DownloadLog = string.Empty;
 
-                if (!_downloader.TryGetItemFilePath(DownloadFolderPath, YouTubeLink, SelectedDownloadOption.Option,
+                if (!_downloader.TryGetItems(DownloadFolderPath, YouTubeLink, SelectedDownloadOption.Option,
                     (o, eventArgs) =>
                     {
                         DownloadLog = eventArgs.Data;
                         DownloadLog = Environment.NewLine;
                     },
-                    _cancellation.Token, out var filePath))
+                    _cancellation.Token, out var items))
                 {
                     _lastDownloadStatus = DownloadStatus.Fail;
                     return;
                 }
 
-                LastDownloadedFilePath = filePath;
-                DownloadLog = string.Format(Resources.LogMessageFileNameRetrieved, LastDownloadedFilePath);
-
-                DownloadLog =
-                    $"{Environment.NewLine}{Environment.NewLine}{Resources.LogMessageDownloadStart}{Environment.NewLine}{Environment.NewLine}";
-
-                _cancellation.Token.ThrowIfCancellationRequested();
-
                 IsDownloadProgressIndeterminate = false;
-                DownloadProgressValue = 0;
 
-                var success = _downloader.TryDownloadItem(Path.Combine(DownloadFolderPath, LastDownloadedFilePath),
-                    YouTubeLink, SelectedDownloadOption.Option,
-                    (o, eventArgs) =>
-                    {
-                        ThreadPool.QueueUserWorkItem(UpdateDownloadProgressAsync, eventArgs.Data);
-                        DownloadLog = eventArgs.Data;
-                        DownloadLog = Environment.NewLine;
-                    }, (o, eventArgs) =>
-                    {
-                        DownloadLog = eventArgs.Data;
-                        DownloadLog = Environment.NewLine;
-                    }, _cancellation.Token);
+                foreach (var item in items)
+                {
+                    _cancellation.Token.ThrowIfCancellationRequested();
+                    DownloadProgressValue = 0;
 
-                DownloadProgressValue = 100;
+                    DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
+                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile, item.FileName, item.Link);
+                    DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
 
-                _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
+                    LastDownloadedFilePath = Path.Combine(DownloadFolderPath, item.FileName);
+
+                    var success = _downloader.TryDownloadItem(LastDownloadedFilePath,
+                        YouTubeLink, SelectedDownloadOption.Option,
+                        (o, eventArgs) =>
+                        {
+                            ThreadPool.QueueUserWorkItem(UpdateDownloadProgressAsync, eventArgs.Data);
+                            DownloadLog = eventArgs.Data;
+                            DownloadLog = Environment.NewLine;
+                        }, (o, eventArgs) =>
+                        {
+                            DownloadLog = eventArgs.Data;
+                            DownloadLog = Environment.NewLine;
+                        }, _cancellation.Token);
+
+                    DownloadProgressValue = 100;
+
+                    _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
+                }
             }
             catch (OperationCanceledException e)
             {
