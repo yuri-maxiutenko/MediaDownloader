@@ -61,6 +61,15 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Youtube Downloader.
+        /// </summary>
+        public static string AppName {
+            get {
+                return ResourceManager.GetString("AppName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to bin.
         /// </summary>
         public static string BinDirectoryName {

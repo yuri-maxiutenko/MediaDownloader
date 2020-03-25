@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:YoutubeDownloader"
         xmlns:properties="clr-namespace:YoutubeDownloader.Properties"
         mc:Ignorable="d"
-        Title="MainWindow" Width="500" SizeToContent="Height" ResizeMode="NoResize">
+        Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

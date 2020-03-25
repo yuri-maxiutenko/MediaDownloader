@@ -219,4 +219,7 @@ Link: {1}</value>
   <data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Preparing to download your files...</value>
   </data>
+  <data name="AppName" xml:space="preserve">
+    <value>Youtube Downloader</value>
+  </data>
 </root>
