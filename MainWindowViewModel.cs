@@ -462,6 +462,8 @@ namespace YoutubeDownloader
                     _downloadLog.Clear();
                 }
 
+                DownloadPercentText = string.Empty;
+
                 DownloadLog = string.Empty;
 
                 DownloadMessage = Resources.MessageDownloadPreparing;

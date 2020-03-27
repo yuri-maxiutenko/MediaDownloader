@@ -259,7 +259,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting to download your video....
+        ///   Looks up a localized string similar to Failed to download your video..
         /// </summary>
         public static string LogMessageDownloadFail {
             get {
@@ -334,7 +334,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (\[download\]\s*)(\S*)% of.
+        ///   Looks up a localized string similar to (\[download\]\s*)(\S*)(\s*)% of.
         /// </summary>
         public static string SearchPatternDownloadProgress {
             get {

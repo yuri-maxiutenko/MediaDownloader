@@ -63,9 +63,9 @@
                 Content="{Binding DownloadButtonText}" />
 
         <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Height="30" HorizontalAlignment="Stretch"
-              Margin="10">
+              Margin="5">
             <Button
-                Width="150"
+                HorizontalAlignment="Center" Padding="5,0,5,0"
                 Content="{x:Static properties:Resources.ShowDownloadedItemsButtonText}"
                 Command="{Binding OpenDownloadFolderButtonClick}"
                 IsEnabled="{Binding IsOpenDownloadFolderButtonEnabled}"
@@ -91,7 +91,7 @@
 
         <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Background="Tan"
                   Header="{x:Static properties:Resources.ShowLogExpanderText}" ExpandDirection="Down" IsExpanded="True"
-                  Margin="10">
+                  Margin="5">
             <TextBox Text="{Binding DownloadLog}" Height="150"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"

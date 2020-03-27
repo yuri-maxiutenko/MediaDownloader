@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -24,8 +25,8 @@ namespace YoutubeDownloader
 
             if (matches.Success && matches.Groups.Count >= 3)
             {
-                double.TryParse(matches.Groups[2].ToString(), out percent);
-                return true;
+                return double.TryParse(matches.Groups[2].ToString(), NumberStyles.Number, 
+                    CultureInfo.InvariantCulture, out percent);
             }
 
             return false;
@@ -40,7 +41,7 @@ namespace YoutubeDownloader
 
         public static int CalculateAbsolutePercent(int value, int maximum)
         {
-            return (int)Math.Round(100 * (double)value / maximum);
+            return (int) Math.Round(100 * (double) value / maximum);
         }
     }
 }
