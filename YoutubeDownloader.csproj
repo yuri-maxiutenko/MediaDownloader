@@ -77,6 +77,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Downloader.cs" />
+    <Compile Include="Models\DownloadItem.cs" />
+    <Compile Include="Models\DownloadItemJson.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Utilities.cs" />
     <Page Include="MainWindowView.xaml">
@@ -127,6 +129,7 @@
   <ItemGroup>
     <Resource Include="icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy $(SolutionDir)third-party $(TargetDir) /E /Y</PostBuildEvent>

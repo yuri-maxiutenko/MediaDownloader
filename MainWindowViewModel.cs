@@ -52,6 +52,8 @@ namespace YoutubeDownloader
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
 
+        private bool _isMultipleFiles;
+
         private string _downloadButtonText;
         private Downloader _downloader;
         private string _downloadFolderPath;
@@ -92,7 +94,7 @@ namespace YoutubeDownloader
             Initialize();
         }
 
-        public string LastDownloadedFilePath { get; set; }
+        public string LastItemDownloadPath { get; set; }
 
         public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
@@ -354,10 +356,10 @@ namespace YoutubeDownloader
                 return _openDownloadFolderButtonClick ?? (_openDownloadFolderButtonClick = new RelayCommand(
                     param =>
                     {
-                        if (File.Exists(LastDownloadedFilePath))
+                        if (File.Exists(LastItemDownloadPath) || Directory.Exists(LastItemDownloadPath))
                         {
                             Process.Start(Resources.ExplorerFileName,
-                                $"{Resources.ExplorerSelectOption}, \"{LastDownloadedFilePath}\"");
+                                $"{Resources.ExplorerOptionSelect}, \"{LastItemDownloadPath}\"");
                         }
                         else if (Directory.Exists(DownloadFolderPath))
                         {
@@ -378,7 +380,11 @@ namespace YoutubeDownloader
             switch (_lastDownloadStatus)
             {
                 case DownloadStatus.Success:
-                    DownloadLog = string.Format(Resources.LogMessageDownloadSuccess, LastDownloadedFilePath);
+                    DownloadLog = Resources.LogMessageDownloadSuccess;
+                    DownloadLog = Environment.NewLine;
+                    DownloadLog = _isMultipleFiles
+                        ? string.Format(Resources.LogMessageLocationOfFiles, LastItemDownloadPath)
+                        : string.Format(Resources.LogMessageLocationOfFile, LastItemDownloadPath);
                     break;
                 case DownloadStatus.Fail:
                     DownloadLog = Resources.LogMessageDownloadFail;
@@ -430,19 +436,19 @@ namespace YoutubeDownloader
                 {
                     Format = DownloadFormat.Best,
                     Name = Resources.DownloaderFormatBestName,
-                    Option = Resources.DownloaderFormatBestOption
+                    Option = Resources.DownloaderOptionFormatBest
                 },
                 new DownloadOption
                 {
                     Format = DownloadFormat.BestDirectLink,
                     Name = Resources.DownloaderFormatBestDirectLinkName,
-                    Option = Resources.DownloaderFormatBestDirectLinkOption
+                    Option = Resources.DownloaderOptionFormatBestDirectLink
                 },
                 new DownloadOption
                 {
                     Format = DownloadFormat.AudioOnly,
                     Name = Resources.DownloaderFormatAudioOnlyName,
-                    Option = Resources.DownloaderFormatAudioOnlyOption
+                    Option = Resources.DownloaderOptionFormatAudioOnly
                 }
             };
 
@@ -468,57 +474,62 @@ namespace YoutubeDownloader
 
                 DownloadMessage = Resources.MessageDownloadPreparing;
 
-                if (!_downloader.TryGetItems(DownloadFolderPath, YouTubeLink, SelectedDownloadOption.Option,
+                if (!_downloader.TryGetItems(YouTubeLink, SelectedDownloadOption.Option,
                     (o, eventArgs) =>
                     {
-                        DownloadLog = eventArgs.Data;
-                        DownloadLog = Environment.NewLine;
-                        Logger.Info(eventArgs.Data);
+                        ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
                     },
-                    _cancellation.Token, out var items))
+                    _cancellation.Token, out var item))
                 {
                     _lastDownloadStatus = DownloadStatus.Fail;
                     return;
                 }
 
                 DownloadProgressMin = 0;
-                DownloadProgressMax = DownloadProgressSectionStep * items.Count;
+                DownloadProgressMax = DownloadProgressSectionStep * item.Entries.Count;
                 DownloadProgressValue = DownloadProgressMin;
 
                 _downloadProgressSectionMin = 0;
 
-                foreach (var item in items)
+                LastItemDownloadPath = DownloadFolderPath;
+
+                _isMultipleFiles = item.Entries.Count > 1;
+
+                if (_isMultipleFiles)
                 {
-                    DownloadMessage = string.Format(Resources.MessageDownloading, item.FileName);
+                    LastItemDownloadPath = Path.Combine(LastItemDownloadPath, item.Name);
+                    Directory.CreateDirectory(LastItemDownloadPath);
+                }
+
+                foreach (var entry in item.Entries)
+                {
+                    DownloadMessage = string.Format(Resources.MessageDownloading, entry.Name);
 
                     _cancellation.Token.ThrowIfCancellationRequested();
 
-                    Logger.Info(Resources.MessageDownloading, item);
+                    Logger.Info(Resources.MessageDownloading, entry);
 
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile, item.FileName, item.Link);
+                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile, entry.Name, entry.Link);
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
 
-                    LastDownloadedFilePath = Path.Combine(DownloadFolderPath, item.FileName);
+                    var currentItemDownloadPath = Path.Combine(LastItemDownloadPath, entry.Name);
 
-                    var success = _downloader.TryDownloadItem(LastDownloadedFilePath,
+                    var success = _downloader.TryDownloadItem(currentItemDownloadPath,
                         YouTubeLink, SelectedDownloadOption.Option,
                         (o, eventArgs) =>
                         {
-                            ThreadPool.QueueUserWorkItem(UpdateDownloadProgressAsync, eventArgs.Data);
-                            DownloadLog = eventArgs.Data;
-                            DownloadLog = Environment.NewLine;
-                            Logger.Info(eventArgs.Data);
+                            ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data);
                         }, (o, eventArgs) =>
                         {
-                            DownloadLog = eventArgs.Data;
-                            DownloadLog = Environment.NewLine;
-                            Logger.Info(eventArgs.Data);
+                            ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
                         }, _cancellation.Token);
 
                     _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
 
                     _downloadProgressSectionMin += DownloadProgressSectionStep;
+
+                    LastItemDownloadPath = _isMultipleFiles ? LastItemDownloadPath : currentItemDownloadPath;
                 }
 
                 DownloadProgressValue = DownloadProgressMax;
@@ -540,12 +551,15 @@ namespace YoutubeDownloader
             }
         }
 
-        private void UpdateDownloadProgressAsync(object state)
+        private void ProcessDownloaderOutputAsync(object state)
         {
             if (!(state is string record))
             {
                 return;
             }
+
+            DownloadLog = record;
+            DownloadLog = Environment.NewLine;
 
             if (Utilities.TryParseDownloadProgress(record, out var progress))
             {
@@ -555,6 +569,18 @@ namespace YoutubeDownloader
 
                 DownloadPercentText =
                     $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
+            }
+
+            Logger.Info(record);
+        }
+
+        private void ProcessDownloaderErrorAsync(object state)
+        {
+            if (state is string record)
+            {
+                DownloadLog = record;
+                DownloadLog = Environment.NewLine;
+                Logger.Info(record);
             }
         }
     }

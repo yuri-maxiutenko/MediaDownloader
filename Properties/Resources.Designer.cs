@@ -106,24 +106,6 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to --ffmpeg-location.
-        /// </summary>
-        public static string DownloaderConverterLocationOption {
-            get {
-                return ResourceManager.GetString("DownloaderConverterLocationOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --encoding utf-8.
-        /// </summary>
-        public static string DownloaderEncodingUtf8Option {
-            get {
-                return ResourceManager.GetString("DownloaderEncodingUtf8Option", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to youtube-dl.exe.
         /// </summary>
         public static string DownloaderFileName {
@@ -142,29 +124,11 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to mp3/ogg/m4a/aac.
-        /// </summary>
-        public static string DownloaderFormatAudioOnlyOption {
-            get {
-                return ResourceManager.GetString("DownloaderFormatAudioOnlyOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Best quality video available by direct link.
         /// </summary>
         public static string DownloaderFormatBestDirectLinkName {
             get {
                 return ResourceManager.GetString("DownloaderFormatBestDirectLinkName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (bestvideo+bestaudio/best)[protocol^=http].
-        /// </summary>
-        public static string DownloaderFormatBestDirectLinkOption {
-            get {
-                return ResourceManager.GetString("DownloaderFormatBestDirectLinkOption", resourceCulture);
             }
         }
         
@@ -178,24 +142,6 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best.
-        /// </summary>
-        public static string DownloaderFormatBestOption {
-            get {
-                return ResourceManager.GetString("DownloaderFormatBestOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to --get-filename.
-        /// </summary>
-        public static string DownloaderGetFilenameOption {
-            get {
-                return ResourceManager.GetString("DownloaderGetFilenameOption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to %(title)s.%(ext)s.
         /// </summary>
         public static string DownloaderItemTitleTemplate {
@@ -205,7 +151,79 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select download folder:.
+        ///   Looks up a localized string similar to --ffmpeg-location.
+        /// </summary>
+        public static string DownloaderOptionConverterLocation {
+            get {
+                return ResourceManager.GetString("DownloaderOptionConverterLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --encoding utf-8.
+        /// </summary>
+        public static string DownloaderOptionEncodingUtf8 {
+            get {
+                return ResourceManager.GetString("DownloaderOptionEncodingUtf8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mp3/ogg/m4a/aac.
+        /// </summary>
+        public static string DownloaderOptionFormatAudioOnly {
+            get {
+                return ResourceManager.GetString("DownloaderOptionFormatAudioOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best.
+        /// </summary>
+        public static string DownloaderOptionFormatBest {
+            get {
+                return ResourceManager.GetString("DownloaderOptionFormatBest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (bestvideo+bestaudio/best)[protocol^=http].
+        /// </summary>
+        public static string DownloaderOptionFormatBestDirectLink {
+            get {
+                return ResourceManager.GetString("DownloaderOptionFormatBestDirectLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --get-filename.
+        /// </summary>
+        public static string DownloaderOptionGetFilename {
+            get {
+                return ResourceManager.GetString("DownloaderOptionGetFilename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --no-mtime.
+        /// </summary>
+        public static string DownloaderOptionNoOriginalDateTime {
+            get {
+                return ResourceManager.GetString("DownloaderOptionNoOriginalDateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --no-playlist.
+        /// </summary>
+        public static string DownloaderOptionNoPlaylist {
+            get {
+                return ResourceManager.GetString("DownloaderOptionNoPlaylist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the download folder:.
         /// </summary>
         public static string DownloadFolderCaption {
             get {
@@ -223,7 +241,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Put YouTube link here:.
+        ///   Looks up a localized string similar to Put link to a video here:.
         /// </summary>
         public static string DownloadLinkCaption {
             get {
@@ -243,14 +261,14 @@ namespace YoutubeDownloader.Properties {
         /// <summary>
         ///   Looks up a localized string similar to /select.
         /// </summary>
-        public static string ExplorerSelectOption {
+        public static string ExplorerOptionSelect {
             get {
-                return ResourceManager.GetString("ExplorerSelectOption", resourceCulture);
+                return ResourceManager.GetString("ExplorerOptionSelect", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You have cancelled the download of your video..
+        ///   Looks up a localized string similar to You have cancelled the download..
         /// </summary>
         public static string LogMessageDownloadCancel {
             get {
@@ -259,7 +277,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to download your video..
+        ///   Looks up a localized string similar to Download failed..
         /// </summary>
         public static string LogMessageDownloadFail {
             get {
@@ -278,7 +296,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Starting to download your video....
+        ///   Looks up a localized string similar to Starting to download your files....
         /// </summary>
         public static string LogMessageDownloadStart {
             get {
@@ -287,9 +305,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Congratulations! Your video was successfully downloaded!
-        ///You may find it here: {0}
-        ///.
+        ///   Looks up a localized string similar to Congratulations! Your download successfully completed!.
         /// </summary>
         public static string LogMessageDownloadSuccess {
             get {
@@ -303,6 +319,24 @@ namespace YoutubeDownloader.Properties {
         public static string LogMessageFileNameRetrieved {
             get {
                 return ResourceManager.GetString("LogMessageFileNameRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You may find your file here: {0}.
+        /// </summary>
+        public static string LogMessageLocationOfFile {
+            get {
+                return ResourceManager.GetString("LogMessageLocationOfFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You may find your files here: {0}.
+        /// </summary>
+        public static string LogMessageLocationOfFiles {
+            get {
+                return ResourceManager.GetString("LogMessageLocationOfFiles", resourceCulture);
             }
         }
         
@@ -325,7 +359,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Preparing to download your files....
+        ///   Looks up a localized string similar to Preparing to download....
         /// </summary>
         public static string MessageDownloadPreparing {
             get {
@@ -343,7 +377,7 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Downloaded Items.
+        ///   Looks up a localized string similar to Show downloaded items.
         /// </summary>
         public static string ShowDownloadedItemsButtonText {
             get {

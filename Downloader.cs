@@ -8,21 +8,11 @@ using System.Threading;
 
 using Newtonsoft.Json;
 
+using YoutubeDownloader.Models;
 using YoutubeDownloader.Properties;
 
 namespace YoutubeDownloader
 {
-    public class DownloaderItemInfo
-    {
-        public string FileName { get; set; }
-        public string Link { get; set; }
-
-        public override string ToString()
-        {
-            return $"FileName={FileName} Link={Link}";
-        }
-    }
-
     public class Downloader
     {
         private const int ProcessWaitTimeoutMs = 500;
@@ -37,14 +27,13 @@ namespace YoutubeDownloader
                 Resources.BinDirectoryName);
         }
 
-        public bool TryGetItems(string downloadFolderPath, string link, string downloadOption,
-            DataReceivedEventHandler onErrorReceived, CancellationToken cancelToken,
-            out List<DownloaderItemInfo> items)
+        public bool TryGetItems(string link, string downloadOption, DataReceivedEventHandler onErrorReceived, 
+            CancellationToken cancelToken, out DownloadItem result)
         {
-            items = new List<DownloaderItemInfo>();
+            result = new DownloadItem();
 
             var arguments = new StringBuilder();
-            arguments.Append(Resources.DownloaderEncodingUtf8Option);
+            arguments.Append(Resources.DownloaderOptionEncodingUtf8);
             arguments.Append(" ");
             arguments.Append($"-f \"{downloadOption}\"");
             arguments.Append(" ");
@@ -93,23 +82,27 @@ namespace YoutubeDownloader
                     }
                 }
 
-                var info = JsonConvert.DeserializeObject<ItemInfo>(outputReader.ToString());
+                var info = JsonConvert.DeserializeObject<DownloadItemJson>(outputReader.ToString());
 
+                result.Name = Utilities.SanitizeFileName(info.title);
                 if (info.entries != null)
                 {
-                    items.AddRange(info.entries.Select(item => new DownloaderItemInfo
+                    result.Entries = info.entries.Select(item => new DownloadItem
                     {
-                        FileName = Path.ChangeExtension(Utilities.SanitizeFileName(item.title), item.ext),
+                        Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.title), item.ext),
                         Link = item.webpage_url
-                    }));
+                    }).ToList();
                 }
                 else
                 {
-                    items.Add(new DownloaderItemInfo
+                    result.Entries = new List<DownloadItem>
                     {
-                        FileName = Path.ChangeExtension(Utilities.SanitizeFileName(info.title), info.ext),
-                        Link = info.webpage_url
-                    });
+                        new DownloadItem
+                        {
+                            Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.title), info.ext),
+                            Link = info.webpage_url
+                        }
+                    };
                 }
 
                 return downloaderProcess.ExitCode == 0;
@@ -125,13 +118,17 @@ namespace YoutubeDownloader
             CancellationToken cancelToken)
         {
             var arguments = new StringBuilder();
-            arguments.Append(Resources.DownloaderEncodingUtf8Option);
+            arguments.Append(Resources.DownloaderOptionEncodingUtf8);
+            arguments.Append(" ");
+            arguments.Append(Resources.DownloaderOptionNoOriginalDateTime);
+            arguments.Append(" ");
+            arguments.Append(Resources.DownloaderOptionNoPlaylist);
             arguments.Append(" ");
             arguments.Append($"-f \"{downloadOption}\"");
             arguments.Append(" ");
             arguments.Append($"-o \"{downloadFilePath}\"");
             arguments.Append(" ");
-            arguments.Append($"{Resources.DownloaderConverterLocationOption} \"{_converterPath}\"");
+            arguments.Append($"{Resources.DownloaderOptionConverterLocation} \"{_converterPath}\"");
             arguments.Append(" ");
             arguments.Append(link);
             var downloaderProcess = new Process
@@ -177,24 +174,6 @@ namespace YoutubeDownloader
                 downloaderProcess.OutputDataReceived -= onOutputReceived;
                 downloaderProcess.ErrorDataReceived -= onErrorReceived;
             }
-        }
-
-        private class ItemInfo
-        {
-            public string id { get; set; }
-            public string ext { get; set; }
-            public string title { get; set; }
-            public string webpage_url { get; set; }
-            public ItemInfo[] entries { get; set; }
-            public ItemFormat[] requested_formats { get; set; }
-        }
-
-        private class ItemFormat
-        {
-            public string format { get; set; }
-            public string ext { get; set; }
-            public string vcodec { get; set; }
-            public string acodec { get; set; }
         }
     }
 }

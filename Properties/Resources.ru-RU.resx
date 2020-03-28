@@ -111,7 +111,7 @@
     <value>Очистить</value>
   </data>
     <data name="ShowDownloadedItemsButtonText" xml:space="preserve">
-    <value>Показать скачанный файл</value>
+    <value>Показать последние скачанные файлы</value>
   </data>
     <data name="ShowLogExpanderText" xml:space="preserve">
     <value>Журнал</value>
@@ -135,15 +135,19 @@
     <value>Сюда вставьте ссылку на видео:</value>
   </data>
     <data name="LogMessageDownloadStart" xml:space="preserve">
-    <value>Начинаем загрузку вашего файла...</value>
+    <value>Начинаем загрузку...</value>
   </data>
     <data name="LogMessageDownloadSuccess" xml:space="preserve">
-    <value>Поздравляем! Файл успешно скачан!
-Найти его можно здесь: {0}
-</value>
+    <value>Поздравляем! Загрузка успешно завершена!</value>
+        </data>
+    <data name="LogMessageLocationOfFile" xml:space="preserve">
+      <value>Найти ваш файл можно здесь: {0}</value>
+  </data>
+    <data name="LogMessageLocationOfFiles" xml:space="preserve">
+      <value>Найти ваши файлы можно здесь: {0}</value>
   </data>
     <data name="LogMessageDownloadFail" xml:space="preserve">
-    <value>Не удалось скачать файл.</value>
+    <value>Загрузка не удалась.</value>
   </data>
     <data name="LogMessageDownloadCancel" xml:space="preserve">
     <value>Вы отменили загрузку.</value>
@@ -152,7 +156,7 @@
     <value>Имя файла успешно получено: {0}</value>
   </data>
     <data name="LogMessageDownloadingFile" xml:space="preserve">
-    <value>Скачиваем файл: {0}
+    <value>Качаем файл: {0}
 Ссылка: {1}</value>
   </data>
     <data name="MessageDownloading" xml:space="preserve">
@@ -162,6 +166,6 @@
     <value>Загрузка завершена!</value>
   </data>
     <data name="MessageDownloadPreparing" xml:space="preserve">
-    <value>Подготовка к загрузке файла...</value>
+    <value>Подготовка к загрузке...</value>
   </data>
 </root>
