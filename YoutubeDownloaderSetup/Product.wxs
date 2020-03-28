@@ -48,6 +48,7 @@
             <Directory Id="LocalAppDataFolder">
                 <Directory Id="MANUFACTURERDIR" Name="$(var.Manufacturer)">
                     <Directory Id="INSTALLFOLDER" Name="$(var.ProductName)">
+                        <Directory Id="LANGUAGERU" Name="ru-RU" />
                         <Directory Id="FFMPEGFOLDER" Name="ffmpeg">
                             <Directory Id="FFMPEGBINFOLDER" Name="bin" />
                         </Directory>
@@ -88,6 +89,16 @@
                 <File Name="NLog.dll" Id="NLog.dll"
                       Source="$(var.YoutubeDownloader.TargetDir)NLog.dll" />
                 <RemoveFolder Id='INSTALLFOLDER' On='uninstall' />
+            </Component>
+            <Component Id="LanguageRuComponent" Directory="LANGUAGERU" Guid="{819F58DB-F1F5-43F8-8576-DF9C1C9BB98E}">
+                <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
+                               Name='LanguageRuComponent'
+                               Value='Installed'
+                               Type='string'
+                               KeyPath='yes' />
+                <File Name="YoutubeDownloader.resources.dll" Id="YoutubeDownloader.resources.dll"
+                      Source="$(var.YoutubeDownloader.TargetDir)ru-RU\YoutubeDownloader.resources.dll" />
+                <RemoveFolder Id='LANGUAGERU' On='uninstall' />
             </Component>
             <Component Id="FfmpegComponent" Directory="FFMPEGFOLDER" Guid="{C9264541-31EB-4A49-A9C1-1313D83645C9}">
                 <RegistryValue Root='HKCU' Key='Software\$(var.Manufacturer)\$(var.ProductName)'
@@ -131,7 +142,8 @@
                 <!--Remove application shortcut from Program Menu on uninstall-->
                 <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
                 <!--Create application registry entry-->
-                <RegistryValue Root="HKCU" Key="Software\Microsoft\$(var.Manufacturer)\$(var.ProductName)" Name="installed"
+                <RegistryValue Root="HKCU" Key="Software\Microsoft\$(var.Manufacturer)\$(var.ProductName)"
+                               Name="installed"
                                Type="integer" Value="1" KeyPath="yes" />
             </Component>
         </ComponentGroup>
