@@ -28,7 +28,7 @@ namespace YoutubeDownloader
             {
                 ShowNewFolderButton = true,
                 SelectedPath = string.IsNullOrEmpty(_model.DownloadFolderPath)
-                    ? _model.UserDownloadsFolder
+                    ? _model.UserVideosFolder
                     : _model.DownloadFolderPath
             };
 

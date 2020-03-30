@@ -80,8 +80,6 @@
                 <File Name="YoutubeDownloader.exe.config" Id="YoutubeDownloader.exe.config"
                       Source="$(var.YoutubeDownloader.TargetDir)YoutubeDownloader.exe.config" />
                 <File Name="youtube-dl.exe" Id="youtube_dl.exe" Source="..\third-party\youtube-dl.exe" />
-                <File Name="Syroot.KnownFolders.dll" Id="Syroot.KnownFolders.dll"
-                      Source="$(var.YoutubeDownloader.TargetDir)Syroot.KnownFolders.dll" />
                 <File Name="System.Security.Principal.Windows.dll" Id="System.Security.Principal.Windows.dll"
                       Source="$(var.YoutubeDownloader.TargetDir)System.Security.Principal.Windows.dll" />
                 <File Name="Newtonsoft.Json.dll" Id="Newtonsoft.Json.dll"

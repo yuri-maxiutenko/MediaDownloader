@@ -10,8 +10,6 @@ using System.Windows.Input;
 
 using NLog;
 
-using Syroot.Windows.IO;
-
 using YoutubeDownloader.Properties;
 
 namespace YoutubeDownloader
@@ -52,8 +50,6 @@ namespace YoutubeDownloader
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
 
-        private bool _isMultipleFiles;
-
         private string _downloadButtonText;
         private Downloader _downloader;
         private string _downloadFolderPath;
@@ -75,6 +71,8 @@ namespace YoutubeDownloader
         private bool _isDownloadProgressIndeterminate;
 
         private bool _isGeneralInterfaceEnabled;
+
+        private bool _isMultipleFiles;
         private bool _isOpenDownloadFolderButtonEnabled;
 
         private DownloadStatus _lastDownloadStatus;
@@ -86,7 +84,7 @@ namespace YoutubeDownloader
         private Visibility _showDownloadedItemsButtonVisibility;
         private ICommand _startDownloadCommand;
         private ICommand _stopDownloadCommand;
-        private string _userDownloadsFolder;
+        private string _userVideosFolder;
         private string _youTubeLink;
 
         public MainWindowViewModel()
@@ -98,9 +96,9 @@ namespace YoutubeDownloader
 
         public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
-        public string UserDownloadsFolder =>
-            _userDownloadsFolder ??
-            (_userDownloadsFolder = new KnownFolder(KnownFolderType.DownloadsLocalized).ExpandedPath);
+        public string UserVideosFolder =>
+            _userVideosFolder ??
+            (_userVideosFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
 
         public List<DownloadOption> DownloadOptions { get; private set; }
 
@@ -356,21 +354,33 @@ namespace YoutubeDownloader
                 return _openDownloadFolderButtonClick ?? (_openDownloadFolderButtonClick = new RelayCommand(
                     param =>
                     {
-                        if (File.Exists(LastItemDownloadPath) || Directory.Exists(LastItemDownloadPath))
-                        {
-                            Process.Start(Resources.ExplorerFileName,
-                                $"{Resources.ExplorerOptionSelect}, \"{LastItemDownloadPath}\"");
-                        }
-                        else if (Directory.Exists(DownloadFolderPath))
-                        {
-                            Process.Start(DownloadFolderPath);
-                        }
+                        OpenDownloadFolder();
                     },
                     param => true));
             }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OpenDownloadFolder()
+        {
+            try
+            {
+                if (File.Exists(LastItemDownloadPath) || Directory.Exists(LastItemDownloadPath))
+                {
+                    Process.Start(Resources.ExplorerFileName,
+                        $"{Resources.ExplorerOptionSelect}, \"{LastItemDownloadPath}\"");
+                }
+                else if (Directory.Exists(DownloadFolderPath))
+                {
+                    Process.Start(DownloadFolderPath);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+        }
 
         private void OnDownloadItemCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -407,9 +417,16 @@ namespace YoutubeDownloader
 
         public void ValidateDownload()
         {
-            var downloadDirectoryExists = Directory.Exists(DownloadFolderPath);
-            IsDownloadButtonEnabled = Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
-            IsOpenDownloadFolderButtonEnabled = downloadDirectoryExists;
+            try
+            {
+                var downloadDirectoryExists = Directory.Exists(DownloadFolderPath);
+                IsDownloadButtonEnabled = Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
+                IsOpenDownloadFolderButtonEnabled = downloadDirectoryExists;
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
         }
 
         protected virtual void OnPropertyChanged(string propertyName)
@@ -429,7 +446,7 @@ namespace YoutubeDownloader
             ShowDownloadedItemsButtonVisibility = Visibility.Visible;
             DownloadProgressVisibility = Visibility.Hidden;
 
-            DownloadFolderPath = UserDownloadsFolder;
+            DownloadFolderPath = UserVideosFolder;
             DownloadOptions = new List<DownloadOption>
             {
                 new DownloadOption
@@ -553,34 +570,48 @@ namespace YoutubeDownloader
 
         private void ProcessDownloaderOutputAsync(object state)
         {
-            if (!(state is string record))
+            try
             {
-                return;
+                if (!(state is string record))
+                {
+                    return;
+                }
+
+                DownloadLog = record;
+                DownloadLog = Environment.NewLine;
+
+                if (Utilities.TryParseDownloadProgress(record, out var progress))
+                {
+                    IsDownloadProgressIndeterminate = false;
+                    var newValue = _downloadProgressSectionMin + (int) Math.Round(progress);
+                    DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
+
+                    DownloadPercentText =
+                        $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
+                }
+
+                Logger.Info(record);
             }
-
-            DownloadLog = record;
-            DownloadLog = Environment.NewLine;
-
-            if (Utilities.TryParseDownloadProgress(record, out var progress))
+            catch (Exception e)
             {
-                IsDownloadProgressIndeterminate = false;
-                var newValue = _downloadProgressSectionMin + (int) Math.Round(progress);
-                DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
-
-                DownloadPercentText =
-                    $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
+                Logger.Error(e);
             }
-
-            Logger.Info(record);
         }
 
         private void ProcessDownloaderErrorAsync(object state)
         {
-            if (state is string record)
+            try
             {
-                DownloadLog = record;
-                DownloadLog = Environment.NewLine;
-                Logger.Info(record);
+                if (state is string record)
+                {
+                    DownloadLog = record;
+                    DownloadLog = Environment.NewLine;
+                    Logger.Info(record);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
             }
         }
     }
