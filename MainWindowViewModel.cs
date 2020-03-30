@@ -10,6 +10,7 @@ using System.Windows.Input;
 
 using NLog;
 
+using YoutubeDownloader.Models;
 using YoutubeDownloader.Properties;
 
 namespace YoutubeDownloader
@@ -45,6 +46,8 @@ namespace YoutubeDownloader
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
         private const int DownloadProgressSectionStep = 100;
+        private const int DownloadRetryNumber = 1;
+
         private CancellationTokenSource _cancellation;
 
         private ICommand _clearButtonClick;
@@ -520,27 +523,16 @@ namespace YoutubeDownloader
 
                 foreach (var entry in item.Entries)
                 {
-                    DownloadMessage = string.Format(Resources.MessageDownloading, entry.Name);
-
-                    _cancellation.Token.ThrowIfCancellationRequested();
-
-                    Logger.Info(Resources.MessageDownloading, entry);
-
-                    DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile, entry.Name, entry.Link);
-                    DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
+                    var success = false;
+                    var retryCounter = 0;
 
                     var currentItemDownloadPath = Path.Combine(LastItemDownloadPath, entry.Name);
 
-                    var success = _downloader.TryDownloadItem(currentItemDownloadPath,
-                        YouTubeLink, SelectedDownloadOption.Option,
-                        (o, eventArgs) =>
-                        {
-                            ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data);
-                        }, (o, eventArgs) =>
-                        {
-                            ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
-                        }, _cancellation.Token);
+                    while (!success && retryCounter < DownloadRetryNumber)
+                    {
+                        success = DownloadEntry(entry, currentItemDownloadPath);
+                        retryCounter++;
+                    }
 
                     _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
 
@@ -566,6 +558,31 @@ namespace YoutubeDownloader
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
             }
+        }
+
+        private bool DownloadEntry(DownloadItem entry, string downloadPath)
+        {
+            DownloadMessage = string.Format(Resources.MessageDownloading, entry.Name);
+
+            _cancellation.Token.ThrowIfCancellationRequested();
+
+            Logger.Info(Resources.MessageDownloading, entry);
+
+            DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
+            DownloadLog = string.Format(Resources.LogMessageDownloadingFile, entry.Name, entry.Link);
+            DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
+
+            var success = _downloader.TryDownloadItem(downloadPath,
+                YouTubeLink, SelectedDownloadOption.Option,
+                (o, eventArgs) =>
+                {
+                    ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data);
+                }, (o, eventArgs) =>
+                {
+                    ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
+                }, _cancellation.Token);
+
+            return success;
         }
 
         private void ProcessDownloaderOutputAsync(object state)
