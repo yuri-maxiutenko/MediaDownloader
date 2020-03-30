@@ -46,7 +46,7 @@ namespace YoutubeDownloader
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
         private const int DownloadProgressSectionStep = 100;
-        private const int DownloadRetryNumber = 1;
+        private const int DownloadRetriesNumber = 2;
 
         private CancellationTokenSource _cancellation;
 
@@ -494,12 +494,17 @@ namespace YoutubeDownloader
 
                 DownloadMessage = Resources.MessageDownloadPreparing;
 
-                if (!_downloader.TryGetItems(YouTubeLink, SelectedDownloadOption.Option,
-                    (o, eventArgs) =>
-                    {
-                        ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
-                    },
-                    _cancellation.Token, out var item))
+                var success = false;
+                var retryCounter = 0;
+
+                DownloadItem item = null;
+                while (!success && retryCounter < DownloadRetriesNumber)
+                {
+                    success = GetItem(out item);
+                    retryCounter++;
+                }
+
+                if (!success || item == null)
                 {
                     _lastDownloadStatus = DownloadStatus.Fail;
                     return;
@@ -523,14 +528,24 @@ namespace YoutubeDownloader
 
                 foreach (var entry in item.Entries)
                 {
-                    var success = false;
-                    var retryCounter = 0;
+                    DownloadMessage = string.Format(Resources.MessageDownloading, entry.Name);
+
+                    _cancellation.Token.ThrowIfCancellationRequested();
+
+                    Logger.Info(Resources.MessageDownloading, entry);
 
                     var currentItemDownloadPath = Path.Combine(LastItemDownloadPath, entry.Name);
 
-                    while (!success && retryCounter < DownloadRetryNumber)
+                    DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
+                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile,
+                        currentItemDownloadPath, entry.Link);
+                    DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
+
+                    success = false;
+                    retryCounter = 0;
+                    while (!success && retryCounter < DownloadRetriesNumber)
                     {
-                        success = DownloadEntry(entry, currentItemDownloadPath);
+                        success = DownloadItem(entry.Link, currentItemDownloadPath);
                         retryCounter++;
                     }
 
@@ -560,20 +575,22 @@ namespace YoutubeDownloader
             }
         }
 
-        private bool DownloadEntry(DownloadItem entry, string downloadPath)
+        private bool GetItem(out DownloadItem item)
         {
-            DownloadMessage = string.Format(Resources.MessageDownloading, entry.Name);
-
             _cancellation.Token.ThrowIfCancellationRequested();
+            return _downloader.TryGetItems(YouTubeLink, SelectedDownloadOption.Option,
+                (o, eventArgs) =>
+                {
+                    ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
+                },
+                _cancellation.Token, out item);
+        }
 
-            Logger.Info(Resources.MessageDownloading, entry);
-
-            DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-            DownloadLog = string.Format(Resources.LogMessageDownloadingFile, entry.Name, entry.Link);
-            DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-
-            var success = _downloader.TryDownloadItem(downloadPath,
-                YouTubeLink, SelectedDownloadOption.Option,
+        private bool DownloadItem(string downloadLink, string downloadPath)
+        {
+            _cancellation.Token.ThrowIfCancellationRequested();
+            var success = _downloader.TryDownloadItem(downloadPath, downloadLink,
+                SelectedDownloadOption.Option,
                 (o, eventArgs) =>
                 {
                     ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data);

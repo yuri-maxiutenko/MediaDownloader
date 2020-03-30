@@ -15,7 +15,9 @@ namespace YoutubeDownloader
 {
     public class Downloader
     {
+        private const int DownloadTimeoutSec = 60;
         private const int ProcessWaitTimeoutMs = 500;
+
         private readonly string _converterPath;
 
         private readonly string _downloaderPath;
@@ -34,6 +36,8 @@ namespace YoutubeDownloader
 
             var arguments = new StringBuilder();
             arguments.Append(Resources.DownloaderOptionEncodingUtf8);
+            arguments.Append(" ");
+            arguments.Append($"{Resources.DownloaderOptionSocketTimeout} {DownloadTimeoutSec}");
             arguments.Append(" ");
             arguments.Append($"-f \"{downloadOption}\"");
             arguments.Append(" ");
@@ -119,6 +123,8 @@ namespace YoutubeDownloader
         {
             var arguments = new StringBuilder();
             arguments.Append(Resources.DownloaderOptionEncodingUtf8);
+            arguments.Append(" ");
+            arguments.Append($"{Resources.DownloaderOptionSocketTimeout} {DownloadTimeoutSec}");
             arguments.Append(" ");
             arguments.Append(Resources.DownloaderOptionNoOriginalDateTime);
             arguments.Append(" ");

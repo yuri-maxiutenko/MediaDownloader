@@ -223,6 +223,24 @@ namespace YoutubeDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to --retries.
+        /// </summary>
+        public static string DownloaderOptionRetries {
+            get {
+                return ResourceManager.GetString("DownloaderOptionRetries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --socket-timeout.
+        /// </summary>
+        public static string DownloaderOptionSocketTimeout {
+            get {
+                return ResourceManager.GetString("DownloaderOptionSocketTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select the download folder:.
         /// </summary>
         public static string DownloadFolderCaption {

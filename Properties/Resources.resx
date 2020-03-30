@@ -180,6 +180,12 @@
     <data name="DownloaderOptionNoPlaylist" xml:space="preserve">
     <value>--no-playlist</value>
   </data>
+    <data name="DownloaderOptionSocketTimeout" xml:space="preserve">
+    <value>--socket-timeout</value>
+  </data>
+    <data name="DownloaderOptionRetries" xml:space="preserve">
+    <value>--retries</value>
+  </data>
     <data name="ExplorerFileName" xml:space="preserve">
     <value>explorer.exe</value>
   </data>
