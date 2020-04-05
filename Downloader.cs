@@ -88,13 +88,13 @@ namespace YoutubeDownloader
 
                 var info = JsonConvert.DeserializeObject<DownloadItemJson>(outputReader.ToString());
 
-                result.Name = Utilities.SanitizeFileName(info.title);
-                if (info.entries != null)
+                result.Name = Utilities.SanitizeFileName(info.Title);
+                if (info.Entries != null)
                 {
-                    result.Entries = info.entries.Select(item => new DownloadItem
+                    result.Entries = info.Entries.Select(item => new DownloadItem
                     {
-                        Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.title), item.ext),
-                        Link = item.webpage_url
+                        Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.Title), item.Ext),
+                        Link = item.WebpageUrl
                     }).ToList();
                 }
                 else
@@ -103,8 +103,8 @@ namespace YoutubeDownloader
                     {
                         new DownloadItem
                         {
-                            Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.title), info.ext),
-                            Link = info.webpage_url
+                            Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.Title), info.Ext),
+                            Link = info.WebpageUrl
                         }
                     };
                 }

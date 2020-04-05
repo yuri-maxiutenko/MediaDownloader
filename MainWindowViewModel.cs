@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
+using Microsoft.EntityFrameworkCore;
+
 using NLog;
 
+using YoutubeDownloader.Database;
+using YoutubeDownloader.Database.Models;
 using YoutubeDownloader.Models;
 using YoutubeDownloader.Properties;
 
@@ -47,15 +53,18 @@ namespace YoutubeDownloader
     {
         private const int DownloadProgressSectionStep = 100;
         private const int DownloadRetriesNumber = 2;
+        private const int DownloadFoldersNumber = 10;
 
         private CancellationTokenSource _cancellation;
 
         private ICommand _clearButtonClick;
+
+        private DataContext _database;
+
         private ICommand _downloadButtonClick;
 
         private string _downloadButtonText;
         private Downloader _downloader;
-        private string _downloadFolderPath;
 
         private readonly StringBuilder _downloadLog = new StringBuilder();
         private string _downloadMessage;
@@ -81,6 +90,7 @@ namespace YoutubeDownloader
         private DownloadStatus _lastDownloadStatus;
         private readonly object _logWritingLock = new object();
         private ICommand _openDownloadFolderButtonClick;
+        private DownloadFolder _selectedDownloadFolder;
 
         private DownloadOption _selectedDownloadOption;
 
@@ -105,6 +115,8 @@ namespace YoutubeDownloader
 
         public List<DownloadOption> DownloadOptions { get; private set; }
 
+        public ObservableCollection<DownloadFolder> DownloadFolders { get; private set; }
+
         public DownloadOption SelectedDownloadOption
         {
             get => _selectedDownloadOption;
@@ -128,13 +140,16 @@ namespace YoutubeDownloader
             }
         }
 
-        public string DownloadFolderPath
+        public DownloadFolder SelectedDownloadFolder
         {
-            get => _downloadFolderPath;
+            get => _selectedDownloadFolder;
             set
             {
-                _downloadFolderPath = value;
-                OnPropertyChanged("DownloadFolderPath");
+                _selectedDownloadFolder = value;
+                _selectedDownloadFolder.LastSelectionDate = DateTime.Now;
+                _database.DownloadFolders.Update(_selectedDownloadFolder);
+                _database.SaveChanges();
+                OnPropertyChanged("SelectedDownloadFolder");
             }
         }
 
@@ -365,6 +380,38 @@ namespace YoutubeDownloader
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public void AddOrUpdateDownloadFolder(string path)
+        {
+            try
+            {
+                var entry = _database.DownloadFolders.FirstOrDefault(item =>
+                    item.Path == path);
+                if (entry != null)
+                {
+                    entry.LastSelectionDate = DateTime.Now;
+                    _database.DownloadFolders.Update(entry);
+                }
+                else
+                {
+                    entry = _database.DownloadFolders.Add(new DownloadFolder
+                    {
+                        Path = path,
+                        LastSelectionDate = DateTime.Now
+                    }).Entity;
+                }
+
+                _database.SaveChanges();
+                DownloadFolders = new ObservableCollection<DownloadFolder>(
+                    _database.DownloadFolders.OrderByDescending(item => item.LastSelectionDate)
+                        .Take(DownloadFoldersNumber));
+                SelectedDownloadFolder = DownloadFolders.FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+        }
+
         private void OpenDownloadFolder()
         {
             try
@@ -374,9 +421,9 @@ namespace YoutubeDownloader
                     Process.Start(Resources.ExplorerFileName,
                         $"{Resources.ExplorerOptionSelect}, \"{LastItemDownloadPath}\"");
                 }
-                else if (Directory.Exists(DownloadFolderPath))
+                else if (Directory.Exists(SelectedDownloadFolder.Path))
                 {
-                    Process.Start(DownloadFolderPath);
+                    Process.Start(SelectedDownloadFolder.Path);
                 }
             }
             catch (Exception e)
@@ -422,7 +469,7 @@ namespace YoutubeDownloader
         {
             try
             {
-                var downloadDirectoryExists = Directory.Exists(DownloadFolderPath);
+                var downloadDirectoryExists = Directory.Exists(SelectedDownloadFolder?.Path);
                 IsDownloadButtonEnabled = Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
                 IsOpenDownloadFolderButtonEnabled = downloadDirectoryExists;
             }
@@ -441,6 +488,10 @@ namespace YoutubeDownloader
         {
             _downloader = new Downloader();
 
+            _database = new DataContext();
+
+            _database.Database.Migrate();
+
             IsGeneralInterfaceEnabled = true;
 
             DownloadButtonText = Resources.StartDownloadButtonText;
@@ -449,7 +500,21 @@ namespace YoutubeDownloader
             ShowDownloadedItemsButtonVisibility = Visibility.Visible;
             DownloadProgressVisibility = Visibility.Hidden;
 
-            DownloadFolderPath = UserVideosFolder;
+            if (!_database.DownloadFolders.Any())
+            {
+                _database.Add(new DownloadFolder
+                {
+                    Path = UserVideosFolder,
+                    LastSelectionDate = DateTime.Now
+                });
+                _database.SaveChanges();
+            }
+
+            DownloadFolders = new ObservableCollection<DownloadFolder>(
+                _database.DownloadFolders.OrderByDescending(item => item.LastSelectionDate)
+                    .Take(DownloadFoldersNumber));
+            SelectedDownloadFolder = DownloadFolders.FirstOrDefault();
+
             DownloadOptions = new List<DownloadOption>
             {
                 new DownloadOption
@@ -516,7 +581,7 @@ namespace YoutubeDownloader
 
                 _downloadProgressSectionMin = 0;
 
-                LastItemDownloadPath = DownloadFolderPath;
+                LastItemDownloadPath = SelectedDownloadFolder.Path;
 
                 _isMultipleFiles = item.Entries.Count > 1;
 
@@ -572,6 +637,18 @@ namespace YoutubeDownloader
                 _lastDownloadStatus = DownloadStatus.Fail;
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
+            }
+            finally
+            {
+                _database.Add(new HistoryRecord
+                {
+                    FileName = LastItemDownloadPath,
+                    Url = YouTubeLink,
+                    DownloadStatus = (int) _lastDownloadStatus,
+                    DownloadFormat = (int) SelectedDownloadOption.Format,
+                    DownloadDate = DateTime.Now
+                });
+                _database.SaveChanges();
             }
         }
 
