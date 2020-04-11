@@ -27,15 +27,15 @@ namespace YoutubeDownloader
             var selectFolderDialog = new FolderBrowserDialog
             {
                 ShowNewFolderButton = true,
-                SelectedPath = string.IsNullOrEmpty(_model.SelectedDownloadFolder?.Path)
+                SelectedPath = string.IsNullOrEmpty(_model.DownloadFolderPath)
                     ? _model.UserVideosFolder
-                    : _model.SelectedDownloadFolder.Path
+                    : _model.DownloadFolderPath
             };
 
             var result = selectFolderDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                _model.AddOrUpdateDownloadFolder(selectFolderDialog.SelectedPath);
+                _model.DownloadFolderPath = selectFolderDialog.SelectedPath;
             }
         }
 

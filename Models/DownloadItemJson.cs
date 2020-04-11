@@ -1,40 +1,20 @@
-﻿using Newtonsoft.Json;
-
-namespace YoutubeDownloader.Models
+﻿namespace YoutubeDownloader.Models
 {
     public class DownloadItemJson
     {
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "ext")]
-        public string Ext { get; set; }
-
-        [JsonProperty(PropertyName = "title")]
-        public string Title { get; set; }
-
-        [JsonProperty(PropertyName = "webpage_url")]
-        public string WebpageUrl { get; set; }
-
-        [JsonProperty(PropertyName = "entries")]
-        public DownloadItemJson[] Entries { get; set; }
-
-        [JsonProperty(PropertyName = "requested_formats")]
-        public DownloadItemFormatJson[] RequestedFormats { get; set; }
+        public string id { get; set; }
+        public string ext { get; set; }
+        public string title { get; set; }
+        public string webpage_url { get; set; }
+        public DownloadItemJson[] entries { get; set; }
+        public DownloadItemFormatJson[] requested_formats { get; set; }
     }
 
     public class DownloadItemFormatJson
     {
-        [JsonProperty(PropertyName = "format")]
-        public string Format { get; set; }
-
-        [JsonProperty(PropertyName = "ext")]
-        public string Ext { get; set; }
-
-        [JsonProperty(PropertyName = "vcodec")]
-        public string VideoCodec { get; set; }
-
-        [JsonProperty(PropertyName = "acodec")]
-        public string AudioCodec { get; set; }
+        public string format { get; set; }
+        public string ext { get; set; }
+        public string vcodec { get; set; }
+        public string acodec { get; set; }
     }
 }
