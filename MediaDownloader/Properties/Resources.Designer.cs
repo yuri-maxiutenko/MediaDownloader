@@ -61,7 +61,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Youtube Downloader.
+        ///   Looks up a localized string similar to Media Downloader.
         /// </summary>
         public static string AppName {
             get {

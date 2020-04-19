@@ -239,6 +239,6 @@ Link: {1}</value>
     <value>Preparing to download...</value>
   </data>
     <data name="AppName" xml:space="preserve">
-    <value>Youtube Downloader</value>
+    <value>Media Downloader</value>
   </data>
 </root>
