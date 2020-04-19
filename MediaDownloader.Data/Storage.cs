@@ -10,13 +10,7 @@ namespace MediaDownloader.Data
 {
     public class Storage
     {
-        private DataContext _context;
-
-        public ObservableCollection<DownloadFolder> DownloadFolders =>
-            _context.DownloadFolders.Local.ToObservableCollection();
-
-        public ObservableCollection<HistoryRecord> History =>
-            _context.History.Local.ToObservableCollection();
+        private readonly DataContext _context;
 
         public Storage()
         {
@@ -26,10 +20,15 @@ namespace MediaDownloader.Data
             _context.History.Load();
         }
 
+        public ObservableCollection<DownloadFolder> DownloadFolders =>
+            _context.DownloadFolders.Local.ToObservableCollection();
+
+        public ObservableCollection<HistoryRecord> History => _context.History.Local.ToObservableCollection();
+
         public void AddOrUpdateDownloadFolder(string path, DateTime lastSelectionDate)
         {
             var entry = _context.DownloadFolders.FirstOrDefault(item =>
-                    item.Path == path);
+                item.Path == path);
             if (entry != null)
             {
                 UpdateDownloadFolder(entry.DownloadFolderId, path, lastSelectionDate);

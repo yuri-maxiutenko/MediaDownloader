@@ -53,120 +53,50 @@ namespace MediaDownloader
         private const int DownloadRetriesNumber = 2;
         private const int DownloadFoldersNumber = 10;
 
-        private CancellationTokenSource _cancellation;
-
-        private ICommand _clearButtonClick;
-
-        private ICommand _downloadButtonClick;
-
-        private string _downloadButtonText;
-        private Downloader _downloader;
-
-        private readonly StringBuilder _downloadLog = new StringBuilder();
-        private string _downloadMessage;
-        private string _downloadPercentText;
-        private int _downloadProgressMax;
-        private int _downloadProgressMin;
-
-        private int _downloadProgressSectionMin;
-
-        private int _downloadProgressValue;
-        private Visibility _downloadProgressVisibility;
-
-        private int _downloadProgressWidth;
-
         private bool _isDownloadButtonEnabled;
         private bool _isDownloadProgressIndeterminate;
-
         private bool _isGeneralInterfaceEnabled;
-
         private bool _isMultipleFiles;
         private bool _isOpenDownloadFolderButtonEnabled;
 
-        private DownloadStatus _lastDownloadStatus;
-        private readonly object _logWritingLock = new object();
-        private ICommand _openDownloadFolderButtonClick;
+        private CancellationTokenSource _cancellation;
+
+        private Downloader _downloader;
 
         private DownloadOption _selectedDownloadOption;
 
-        private Visibility _showDownloadedItemsButtonVisibility;
+        private DownloadStatus _lastDownloadStatus;
+
+        private ICommand _clearButtonClick;
+        private ICommand _downloadButtonClick;
+        private ICommand _openDownloadFolderButtonClick;
         private ICommand _startDownloadCommand;
         private ICommand _stopDownloadCommand;
 
+        private int _downloadProgressMax;
+        private int _downloadProgressMin;
+        private int _downloadProgressSectionMin;
+        private int _downloadProgressValue;
+        private int _downloadProgressWidth;
+
+        private readonly object _logWritingLock = new object();
+
         private Storage _storage;
+
+        private string _downloadButtonText;
+        private string _downloadMessage;
+        private string _downloadPercentText;
         private string _userVideosFolder;
         private string _youTubeLink;
+
+        private readonly StringBuilder _downloadLog = new StringBuilder();
+
+        private Visibility _downloadProgressVisibility;
+        private Visibility _showDownloadedItemsButtonVisibility;
 
         public MainWindowViewModel()
         {
             Initialize();
-        }
-
-        public string LastItemDownloadPath { get; set; }
-
-        public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
-        public string UserVideosFolder =>
-            _userVideosFolder ??
-            (_userVideosFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
-
-        public List<DownloadOption> DownloadOptions { get; private set; }
-
-        public CollectionViewSource DownloadFolders { get; private set; }
-
-        public DownloadOption SelectedDownloadOption
-        {
-            get => _selectedDownloadOption;
-            set
-            {
-                _selectedDownloadOption = value;
-                OnPropertyChanged("SelectedDownloadOption");
-            }
-        }
-
-        public ICommand ClearButtonClick
-        {
-            get
-            {
-                return _clearButtonClick ?? (_clearButtonClick = new RelayCommand(
-                    param =>
-                    {
-                        YouTubeLink = string.Empty;
-                    },
-                    param => true));
-            }
-        }
-
-        public DownloadFolder SelectedDownloadFolder { get; set; }
-
-        public string YouTubeLink
-        {
-            get => _youTubeLink;
-            set
-            {
-                _youTubeLink = value;
-                OnPropertyChanged("YouTubeLink");
-            }
-        }
-
-        public string DownloadLog
-        {
-            get
-            {
-                lock (_logWritingLock)
-                {
-                    return _downloadLog.ToString();
-                }
-            }
-            set
-            {
-                lock (_logWritingLock)
-                {
-                    _downloadLog.Append(value);
-                }
-
-                OnPropertyChanged("DownloadLog");
-            }
         }
 
         public bool IsDownloadButtonEnabled
@@ -199,16 +129,6 @@ namespace MediaDownloader
             }
         }
 
-        public string DownloadButtonText
-        {
-            get => _downloadButtonText;
-            set
-            {
-                _downloadButtonText = value;
-                OnPropertyChanged("DownloadButtonText");
-            }
-        }
-
         public bool IsDownloadProgressIndeterminate
         {
             get => _isDownloadProgressIndeterminate;
@@ -219,83 +139,30 @@ namespace MediaDownloader
             }
         }
 
-        public int DownloadProgressValue
+        public CollectionViewSource DownloadFolders { get; private set; }
+
+        public DownloadFolder SelectedDownloadFolder { get; set; }
+
+        public DownloadOption SelectedDownloadOption
         {
-            get => _downloadProgressValue;
+            get => _selectedDownloadOption;
             set
             {
-                _downloadProgressValue = value;
-                OnPropertyChanged("DownloadProgressValue");
+                _selectedDownloadOption = value;
+                OnPropertyChanged("SelectedDownloadOption");
             }
         }
 
-        public int DownloadProgressMin
+        public ICommand ClearButtonClick
         {
-            get => _downloadProgressMin;
-            set
+            get
             {
-                _downloadProgressMin = value;
-                OnPropertyChanged("DownloadProgressMin");
-            }
-        }
-
-        public int DownloadProgressMax
-        {
-            get => _downloadProgressMax;
-            set
-            {
-                _downloadProgressMax = value;
-                OnPropertyChanged("DownloadProgressMax");
-            }
-        }
-
-        public int DownloadProgressWidth
-        {
-            get => _downloadProgressWidth;
-            set
-            {
-                _downloadProgressWidth = value;
-                OnPropertyChanged("DownloadProgressWidth");
-            }
-        }
-
-        public string DownloadMessage
-        {
-            get => _downloadMessage;
-            set
-            {
-                _downloadMessage = value;
-                OnPropertyChanged("DownloadMessage");
-            }
-        }
-
-        public string DownloadPercentText
-        {
-            get => _downloadPercentText;
-            set
-            {
-                _downloadPercentText = value;
-                OnPropertyChanged("DownloadPercentText");
-            }
-        }
-
-        public Visibility ShowDownloadedItemsButtonVisibility
-        {
-            get => _showDownloadedItemsButtonVisibility;
-            set
-            {
-                _showDownloadedItemsButtonVisibility = value;
-                OnPropertyChanged("ShowDownloadedItemsButtonVisibility");
-            }
-        }
-
-        public Visibility DownloadProgressVisibility
-        {
-            get => _downloadProgressVisibility;
-            set
-            {
-                _downloadProgressVisibility = value;
-                OnPropertyChanged("DownloadProgressVisibility");
+                return _clearButtonClick ?? (_clearButtonClick = new RelayCommand(
+                    param =>
+                    {
+                        YouTubeLink = string.Empty;
+                    },
+                    param => true));
             }
         }
 
@@ -363,6 +230,136 @@ namespace MediaDownloader
                         OpenDownloadFolder();
                     },
                     param => true));
+            }
+        }
+
+        public int DownloadProgressValue
+        {
+            get => _downloadProgressValue;
+            set
+            {
+                _downloadProgressValue = value;
+                OnPropertyChanged("DownloadProgressValue");
+            }
+        }
+
+        public int DownloadProgressMin
+        {
+            get => _downloadProgressMin;
+            set
+            {
+                _downloadProgressMin = value;
+                OnPropertyChanged("DownloadProgressMin");
+            }
+        }
+
+        public int DownloadProgressMax
+        {
+            get => _downloadProgressMax;
+            set
+            {
+                _downloadProgressMax = value;
+                OnPropertyChanged("DownloadProgressMax");
+            }
+        }
+
+        public int DownloadProgressWidth
+        {
+            get => _downloadProgressWidth;
+            set
+            {
+                _downloadProgressWidth = value;
+                OnPropertyChanged("DownloadProgressWidth");
+            }
+        }
+
+        public List<DownloadOption> DownloadOptions { get; private set; }
+
+        public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
+        public string LastItemDownloadPath { get; set; }
+
+        public string UserVideosFolder =>
+            _userVideosFolder ??
+            (_userVideosFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
+
+        public string YouTubeLink
+        {
+            get => _youTubeLink;
+            set
+            {
+                _youTubeLink = value;
+                OnPropertyChanged("YouTubeLink");
+            }
+        }
+
+        public string DownloadLog
+        {
+            get
+            {
+                lock (_logWritingLock)
+                {
+                    return _downloadLog.ToString();
+                }
+            }
+            set
+            {
+                lock (_logWritingLock)
+                {
+                    _downloadLog.Append(value);
+                }
+
+                OnPropertyChanged("DownloadLog");
+            }
+        }
+
+        public string DownloadButtonText
+        {
+            get => _downloadButtonText;
+            set
+            {
+                _downloadButtonText = value;
+                OnPropertyChanged("DownloadButtonText");
+            }
+        }
+
+        public string DownloadMessage
+        {
+            get => _downloadMessage;
+            set
+            {
+                _downloadMessage = value;
+                OnPropertyChanged("DownloadMessage");
+            }
+        }
+
+        public string DownloadPercentText
+        {
+            get => _downloadPercentText;
+            set
+            {
+                _downloadPercentText = value;
+                OnPropertyChanged("DownloadPercentText");
+            }
+        }
+
+        public Visibility ShowDownloadedItemsButtonVisibility
+        {
+            get => _showDownloadedItemsButtonVisibility;
+            set
+            {
+                _showDownloadedItemsButtonVisibility = value;
+                OnPropertyChanged("ShowDownloadedItemsButtonVisibility");
+            }
+        }
+
+        public Visibility DownloadProgressVisibility
+        {
+            get => _downloadProgressVisibility;
+            set
+            {
+                _downloadProgressVisibility = value;
+                OnPropertyChanged("DownloadProgressVisibility");
             }
         }
 
