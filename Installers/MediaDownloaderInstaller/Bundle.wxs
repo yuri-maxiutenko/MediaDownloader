@@ -22,13 +22,13 @@
             Version="$(var.ProductVersion)"
             Manufacturer="$(var.Manufacturer)"
             UpgradeCode="$(var.UpgradeCode)"
-            IconSourceFile="..\Images\icon.ico">
+            IconSourceFile="..\Common\Images\icon.ico">
 
         <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkLicense">
             <bal:WixStandardBootstrapperApplication
                 LicenseUrl=""
                 SuppressOptionsUI="yes"
-                LogoFile="..\Images\icon64.png" />
+                LogoFile="..\Common\Images\icon64.png" />
         </BootstrapperApplicationRef>
 
         <Chain>

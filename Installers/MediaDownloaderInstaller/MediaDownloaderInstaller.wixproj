@@ -6,7 +6,7 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>1efe5ccb-f49f-41eb-9a2e-3700b8b27404</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>YoutubeDownloaderInstaller</OutputName>
+    <OutputName>MediaDownloaderInstaller</OutputName>
     <OutputType>Bundle</OutputType>
     <Name>MediaDownloaderInstaller</Name>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\YoutubeDownloader\MediaDownloader.csproj">
+    <ProjectReference Include="..\..\MediaDownloader\MediaDownloader.csproj">
       <Name>MediaDownloader</Name>
       <Project>{cdd62ec5-9f19-4b89-bc30-23fc6ea81707}</Project>
       <Private>True</Private>
@@ -37,7 +37,7 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
-    <ProjectReference Include="..\YoutubeDownloaderSetup\MediaDownloaderSetup.wixproj">
+    <ProjectReference Include="..\MediaDownloaderSetup\MediaDownloaderSetup.wixproj">
       <Name>MediaDownloaderSetup</Name>
       <Project>{5ad17196-207b-4403-81cd-8f95aa74a1e1}</Project>
       <Private>True</Private>
