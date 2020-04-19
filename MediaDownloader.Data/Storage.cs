@@ -22,6 +22,8 @@ namespace MediaDownloader.Data
         {
             _context = new DataContext();
             _context.Database.Migrate();
+            _context.DownloadFolders.Load();
+            _context.History.Load();
         }
 
         public void AddOrUpdateDownloadFolder(string path, DateTime lastSelectionDate)

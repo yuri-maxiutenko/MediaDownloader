@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -8,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 using MediaDownloader.Data;
@@ -16,7 +16,6 @@ using MediaDownloader.Models;
 using MediaDownloader.Properties;
 
 using NLog;
-
 
 namespace MediaDownloader
 {
@@ -58,8 +57,6 @@ namespace MediaDownloader
 
         private ICommand _clearButtonClick;
 
-        private Storage _storage;
-
         private ICommand _downloadButtonClick;
 
         private string _downloadButtonText;
@@ -89,13 +86,14 @@ namespace MediaDownloader
         private DownloadStatus _lastDownloadStatus;
         private readonly object _logWritingLock = new object();
         private ICommand _openDownloadFolderButtonClick;
-        private DownloadFolder _selectedDownloadFolder;
 
         private DownloadOption _selectedDownloadOption;
 
         private Visibility _showDownloadedItemsButtonVisibility;
         private ICommand _startDownloadCommand;
         private ICommand _stopDownloadCommand;
+
+        private Storage _storage;
         private string _userVideosFolder;
         private string _youTubeLink;
 
@@ -114,7 +112,7 @@ namespace MediaDownloader
 
         public List<DownloadOption> DownloadOptions { get; private set; }
 
-        public ObservableCollection<DownloadFolder> DownloadFolders { get; private set; }
+        public CollectionViewSource DownloadFolders { get; private set; }
 
         public DownloadOption SelectedDownloadOption
         {
@@ -139,17 +137,7 @@ namespace MediaDownloader
             }
         }
 
-        public DownloadFolder SelectedDownloadFolder
-        {
-            get => _selectedDownloadFolder;
-            set
-            {
-                _selectedDownloadFolder = value;
-                _selectedDownloadFolder.LastSelectionDate = DateTime.Now;
-                _storage.UpdateDownloadFolder(_selectedDownloadFolder.DownloadFolderId, _selectedDownloadFolder.Path, _selectedDownloadFolder.LastSelectionDate);
-                OnPropertyChanged("SelectedDownloadFolder");
-            }
-        }
+        public DownloadFolder SelectedDownloadFolder { get; set; }
 
         public string YouTubeLink
         {
@@ -332,6 +320,8 @@ namespace MediaDownloader
                         IsDownloadButtonEnabled = false;
                         _cancellation = new CancellationTokenSource();
 
+                        UpdateDownloadFolder(DownloadFolders.View.CurrentItem as DownloadFolder, DateTime.Now);
+
                         var worker = new BackgroundWorker();
                         worker.DoWork += DownloadItemAsync;
                         worker.RunWorkerCompleted += OnDownloadItemCompleted;
@@ -378,7 +368,6 @@ namespace MediaDownloader
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        
 
         private void OpenDownloadFolder()
         {
@@ -455,6 +444,17 @@ namespace MediaDownloader
         public void AddOrUpdateDownloadFolder(string path, DateTime lastSelectionDate)
         {
             _storage.AddOrUpdateDownloadFolder(path, lastSelectionDate);
+            DownloadFolders.View.Refresh();
+            var firstItem = (DownloadFolders.View as CollectionView)?.GetItemAt(0);
+            DownloadFolders.View.MoveCurrentTo(firstItem);
+        }
+
+        public void UpdateDownloadFolder(DownloadFolder folder, DateTime lastSelectionDate)
+        {
+            _storage.UpdateDownloadFolder(folder.DownloadFolderId, folder.Path, lastSelectionDate);
+            DownloadFolders.View.Refresh();
+            var firstItem = (DownloadFolders.View as CollectionView)?.GetItemAt(0);
+            DownloadFolders.View.MoveCurrentTo(firstItem);
         }
 
         private void Initialize()
@@ -476,10 +476,15 @@ namespace MediaDownloader
                 _storage.AddDownloadFolder(UserVideosFolder, DateTime.Now);
             }
 
-            DownloadFolders = new ObservableCollection<DownloadFolder>(
-                _storage.DownloadFolders.OrderByDescending(item => item.LastSelectionDate)
-                    .Take(DownloadFoldersNumber));
-            SelectedDownloadFolder = DownloadFolders.FirstOrDefault();
+            DownloadFolders = new CollectionViewSource
+            {
+                Source = _storage.DownloadFolders
+            };
+
+            DownloadFolders.SortDescriptions.Add(new SortDescription("LastSelectionDate",
+                ListSortDirection.Descending));
+            var firstItem = (DownloadFolders.View as CollectionView)?.GetItemAt(0);
+            DownloadFolders.View.MoveCurrentTo(firstItem);
 
             DownloadOptions = new List<DownloadOption>
             {
@@ -606,7 +611,8 @@ namespace MediaDownloader
             }
             finally
             {
-                _storage.AddHistoryRecord(LastItemDownloadPath, YouTubeLink, (int)_lastDownloadStatus, (int)SelectedDownloadOption.Format);
+                _storage.AddHistoryRecord(LastItemDownloadPath, YouTubeLink, (int) _lastDownloadStatus,
+                    (int) SelectedDownloadOption.Format);
             }
         }
 
