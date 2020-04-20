@@ -163,7 +163,13 @@
     <value>Загрузка: {0}</value>
   </data>
     <data name="MessageDownloadComplete" xml:space="preserve">
-    <value>Загрузка завершена!</value>
+    <value>Загрузка завершена! {0}</value>
+  </data>
+    <data name="MessageDownloadFailed" xml:space="preserve">
+    <value>Загрузка не удалась! {0}</value>
+  </data>
+    <data name="MessageDownloadCancelled" xml:space="preserve">
+    <value>Вы отменили загрузку! {0}</value>
   </data>
     <data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Подготовка к загрузке...</value>
