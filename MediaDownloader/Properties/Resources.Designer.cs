@@ -305,7 +305,7 @@ namespace MediaDownloader.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to Downloading the file: {0}
-        ///Link: {1}.
+        ///Url: {1}.
         /// </summary>
         public static string LogMessageDownloadingFile {
             get {
@@ -359,11 +359,29 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download complete!.
+        ///   Looks up a localized string similar to Download cancelled! {0}.
+        /// </summary>
+        public static string MessageDownloadCancelled {
+            get {
+                return ResourceManager.GetString("MessageDownloadCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download complete! {0}.
         /// </summary>
         public static string MessageDownloadComplete {
             get {
                 return ResourceManager.GetString("MessageDownloadComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download Failed! {0}.
+        /// </summary>
+        public static string MessageDownloadFailed {
+            get {
+                return ResourceManager.GetString("MessageDownloadFailed", resourceCulture);
             }
         }
         

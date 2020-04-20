@@ -59,11 +59,6 @@ namespace MediaDownloader
             _model.ValidateDownload();
         }
 
-        private void DownloadFolderPath_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            _model.ValidateDownload();
-        }
-
         private void DownloadLog_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is TextBox downloadLog)

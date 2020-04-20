@@ -9,6 +9,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
@@ -47,21 +49,39 @@ namespace MediaDownloader
         }
     }
 
+    internal class DownloadedItemInfo
+    {
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public string Path { get; set; }
+    }
+
     internal class MainWindowViewModel : INotifyPropertyChanged
     {
         private const int DownloadProgressSectionStep = 100;
         private const int DownloadRetriesNumber = 2;
         private const int DownloadFoldersNumber = 10;
 
+        private BitmapImage _downloadButtonIcon;
+
+        private readonly BitmapImage _startDownloadIcon =
+            new BitmapImage(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_download.png"));
+
+        private readonly BitmapImage _stopDownloadIcon =
+            new BitmapImage(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_stop.png"));
+
+        private bool _downloadProgressIsIndeterminate;
+
         private bool _isDownloadButtonEnabled;
-        private bool _isDownloadProgressIndeterminate;
         private bool _isGeneralInterfaceEnabled;
         private bool _isMultipleFiles;
-        private bool _isOpenDownloadFolderButtonEnabled;
+        private bool _showDownloadedItemsButtonIsEnabled;
+        private Brush _downloadProgressColor;
 
         private CancellationTokenSource _cancellation;
 
         private Downloader _downloader;
+        private DownloadFolder _selectedDownloadFolder;
 
         private DownloadOption _selectedDownloadOption;
 
@@ -69,7 +89,7 @@ namespace MediaDownloader
 
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
-        private ICommand _openDownloadFolderButtonClick;
+        private ICommand _showDownloadedItemsButtonClick;
         private ICommand _startDownloadCommand;
         private ICommand _stopDownloadCommand;
 
@@ -92,11 +112,20 @@ namespace MediaDownloader
         private readonly StringBuilder _downloadLog = new StringBuilder();
 
         private Visibility _downloadProgressVisibility;
-        private Visibility _showDownloadedItemsButtonVisibility;
 
         public MainWindowViewModel()
         {
             Initialize();
+        }
+
+        public BitmapImage DownloadButtonIcon
+        {
+            get => _downloadButtonIcon;
+            set
+            {
+                _downloadButtonIcon = value;
+                OnPropertyChanged("DownloadButtonIcon");
+            }
         }
 
         public bool IsDownloadButtonEnabled
@@ -109,13 +138,13 @@ namespace MediaDownloader
             }
         }
 
-        public bool IsOpenDownloadFolderButtonEnabled
+        public bool ShowDownloadedItemsButtonIsEnabled
         {
-            get => _isOpenDownloadFolderButtonEnabled;
+            get => _showDownloadedItemsButtonIsEnabled;
             set
             {
-                _isOpenDownloadFolderButtonEnabled = value;
-                OnPropertyChanged("IsOpenDownloadFolderButtonEnabled");
+                _showDownloadedItemsButtonIsEnabled = value;
+                OnPropertyChanged("ShowDownloadedItemsButtonIsEnabled");
             }
         }
 
@@ -129,19 +158,39 @@ namespace MediaDownloader
             }
         }
 
-        public bool IsDownloadProgressIndeterminate
+        public bool DownloadProgressIsIndeterminate
         {
-            get => _isDownloadProgressIndeterminate;
+            get => _downloadProgressIsIndeterminate;
             set
             {
-                _isDownloadProgressIndeterminate = value;
-                OnPropertyChanged("IsDownloadProgressIndeterminate");
+                _downloadProgressIsIndeterminate = value;
+                OnPropertyChanged("DownloadProgressIsIndeterminate");
+            }
+        }
+
+        public Brush DownloadProgressColor
+        {
+            get => _downloadProgressColor;
+            set
+            {
+                _downloadProgressColor = value;
+                OnPropertyChanged("DownloadProgressColor");
             }
         }
 
         public CollectionViewSource DownloadFolders { get; private set; }
 
-        public DownloadFolder SelectedDownloadFolder { get; set; }
+        public DownloadedItemInfo LastDownloadedItem { get; set; }
+
+        public DownloadFolder SelectedDownloadFolder
+        {
+            get => _selectedDownloadFolder;
+            set
+            {
+                _selectedDownloadFolder = value;
+                ValidateDownload();
+            }
+        }
 
         public DownloadOption SelectedDownloadOption
         {
@@ -194,13 +243,15 @@ namespace MediaDownloader
                         worker.RunWorkerCompleted += OnDownloadItemCompleted;
                         worker.RunWorkerAsync();
 
+                        DownloadButtonIcon = _stopDownloadIcon;
                         DownloadButtonText = Resources.StopDownloadButtonText;
                         DownloadButtonClick = StopDownloadCommand;
                         IsDownloadButtonEnabled = true;
 
-                        IsDownloadProgressIndeterminate = true;
-                        ShowDownloadedItemsButtonVisibility = Visibility.Hidden;
+                        DownloadProgressIsIndeterminate = true;
+                        ShowDownloadedItemsButtonIsEnabled = false;
                         DownloadProgressVisibility = Visibility.Visible;
+                        DownloadProgressColor = Brushes.LimeGreen;
                     },
                     param => true));
             }
@@ -220,11 +271,11 @@ namespace MediaDownloader
             }
         }
 
-        public ICommand OpenDownloadFolderButtonClick
+        public ICommand ShowDownloadedItemsButtonClick
         {
             get
             {
-                return _openDownloadFolderButtonClick ?? (_openDownloadFolderButtonClick = new RelayCommand(
+                return _showDownloadedItemsButtonClick ?? (_showDownloadedItemsButtonClick = new RelayCommand(
                     param =>
                     {
                         OpenDownloadFolder();
@@ -276,8 +327,6 @@ namespace MediaDownloader
         public List<DownloadOption> DownloadOptions { get; private set; }
 
         public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
-        public string LastItemDownloadPath { get; set; }
 
         public string UserVideosFolder =>
             _userVideosFolder ??
@@ -343,16 +392,6 @@ namespace MediaDownloader
             }
         }
 
-        public Visibility ShowDownloadedItemsButtonVisibility
-        {
-            get => _showDownloadedItemsButtonVisibility;
-            set
-            {
-                _showDownloadedItemsButtonVisibility = value;
-                OnPropertyChanged("ShowDownloadedItemsButtonVisibility");
-            }
-        }
-
         public Visibility DownloadProgressVisibility
         {
             get => _downloadProgressVisibility;
@@ -370,10 +409,10 @@ namespace MediaDownloader
         {
             try
             {
-                if (File.Exists(LastItemDownloadPath) || Directory.Exists(LastItemDownloadPath))
+                if (File.Exists(LastDownloadedItem.Path) || Directory.Exists(LastDownloadedItem.Path))
                 {
                     Process.Start(Resources.ExplorerFileName,
-                        $"{Resources.ExplorerOptionSelect}, \"{LastItemDownloadPath}\"");
+                        $"{Resources.ExplorerOptionSelect}, \"{LastDownloadedItem.Path}\"");
                 }
                 else if (Directory.Exists(SelectedDownloadFolder.Path))
                 {
@@ -391,30 +430,42 @@ namespace MediaDownloader
             DownloadLog = Environment.NewLine;
             DownloadLog = Environment.NewLine;
 
+            DownloadProgressIsIndeterminate = false;
+            DownloadProgressValue = DownloadProgressMax;
+
             switch (_lastDownloadStatus)
             {
                 case DownloadStatus.Success:
+                    DownloadProgressColor = Brushes.DeepSkyBlue;
+                    DownloadMessage = string.Format(Resources.MessageDownloadComplete, LastDownloadedItem.Name);
+
                     DownloadLog = Resources.LogMessageDownloadSuccess;
                     DownloadLog = Environment.NewLine;
                     DownloadLog = _isMultipleFiles
-                        ? string.Format(Resources.LogMessageLocationOfFiles, LastItemDownloadPath)
-                        : string.Format(Resources.LogMessageLocationOfFile, LastItemDownloadPath);
+                        ? string.Format(Resources.LogMessageLocationOfFiles, LastDownloadedItem.Path)
+                        : string.Format(Resources.LogMessageLocationOfFile, LastDownloadedItem.Path);
                     break;
                 case DownloadStatus.Fail:
+                    DownloadProgressColor = Brushes.OrangeRed;
+                    DownloadMessage = string.Format(Resources.MessageDownloadFailed, LastDownloadedItem.Name);
+
                     DownloadLog = Resources.LogMessageDownloadFail;
                     break;
                 case DownloadStatus.Cancel:
+                    DownloadProgressColor = Brushes.Gainsboro;
+                    DownloadMessage = string.Format(Resources.MessageDownloadCancelled, LastDownloadedItem.Name);
+
                     DownloadLog = Resources.LogMessageDownloadCancel;
                     break;
             }
 
             IsDownloadButtonEnabled = false;
+            DownloadButtonIcon = _startDownloadIcon;
             DownloadButtonText = Resources.StartDownloadButtonText;
             DownloadButtonClick = StartDownloadCommand;
             IsDownloadButtonEnabled = true;
 
-            DownloadProgressVisibility = Visibility.Hidden;
-            ShowDownloadedItemsButtonVisibility = Visibility.Visible;
+            ShowDownloadedItemsButtonIsEnabled = true;
 
             IsGeneralInterfaceEnabled = true;
         }
@@ -425,7 +476,7 @@ namespace MediaDownloader
             {
                 var downloadDirectoryExists = Directory.Exists(SelectedDownloadFolder?.Path);
                 IsDownloadButtonEnabled = Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
-                IsOpenDownloadFolderButtonEnabled = downloadDirectoryExists;
+                ShowDownloadedItemsButtonIsEnabled = downloadDirectoryExists;
             }
             catch (Exception e)
             {
@@ -460,13 +511,17 @@ namespace MediaDownloader
 
             _storage = new Storage();
 
+            LastDownloadedItem = new DownloadedItemInfo();
+
             IsGeneralInterfaceEnabled = true;
 
+            DownloadButtonIcon = _startDownloadIcon;
             DownloadButtonText = Resources.StartDownloadButtonText;
             DownloadButtonClick = StartDownloadCommand;
 
-            ShowDownloadedItemsButtonVisibility = Visibility.Visible;
-            DownloadProgressVisibility = Visibility.Hidden;
+            DownloadProgressColor = Brushes.Gainsboro;
+
+            ShowDownloadedItemsButtonIsEnabled = true;
 
             if (!_storage.DownloadFolders.Any())
             {
@@ -549,36 +604,39 @@ namespace MediaDownloader
 
                 _downloadProgressSectionMin = 0;
 
-                LastItemDownloadPath = SelectedDownloadFolder.Path;
+                LastDownloadedItem.Path = SelectedDownloadFolder.Path;
 
                 _isMultipleFiles = item.Entries.Count > 1;
 
                 if (_isMultipleFiles)
                 {
-                    LastItemDownloadPath = Path.Combine(LastItemDownloadPath, item.Name);
-                    Directory.CreateDirectory(LastItemDownloadPath);
+                    LastDownloadedItem.Path = Path.Combine(LastDownloadedItem.Path, item.Name);
+                    Directory.CreateDirectory(LastDownloadedItem.Path);
                 }
 
                 foreach (var entry in item.Entries)
                 {
-                    DownloadMessage = string.Format(Resources.MessageDownloading, entry.Name);
+                    LastDownloadedItem.Name = entry.Name;
+                    LastDownloadedItem.Url = entry.Url;
+
+                    DownloadMessage = string.Format(Resources.MessageDownloading, LastDownloadedItem.Name);
 
                     _cancellation.Token.ThrowIfCancellationRequested();
 
                     Logger.Info(Resources.MessageDownloading, entry);
 
-                    var currentItemDownloadPath = Path.Combine(LastItemDownloadPath, entry.Name);
+                    var currentItemDownloadPath = Path.Combine(LastDownloadedItem.Path, LastDownloadedItem.Name);
 
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
                     DownloadLog = string.Format(Resources.LogMessageDownloadingFile,
-                        currentItemDownloadPath, entry.Link);
+                        currentItemDownloadPath, LastDownloadedItem.Url);
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
 
                     success = false;
                     retryCounter = 0;
                     while (!success && retryCounter < DownloadRetriesNumber)
                     {
-                        success = DownloadItem(entry.Link, currentItemDownloadPath);
+                        success = DownloadItem(LastDownloadedItem.Url, currentItemDownloadPath);
                         retryCounter++;
                     }
 
@@ -586,11 +644,8 @@ namespace MediaDownloader
 
                     _downloadProgressSectionMin += DownloadProgressSectionStep;
 
-                    LastItemDownloadPath = _isMultipleFiles ? LastItemDownloadPath : currentItemDownloadPath;
+                    LastDownloadedItem.Path = _isMultipleFiles ? LastDownloadedItem.Path : currentItemDownloadPath;
                 }
-
-                DownloadProgressValue = DownloadProgressMax;
-                DownloadMessage = Resources.MessageDownloadComplete;
             }
             catch (OperationCanceledException e)
             {
@@ -608,7 +663,7 @@ namespace MediaDownloader
             }
             finally
             {
-                _storage.AddHistoryRecord(LastItemDownloadPath, YouTubeLink, (int) _lastDownloadStatus,
+                _storage.AddHistoryRecord(LastDownloadedItem.Path, YouTubeLink, (int) _lastDownloadStatus,
                     (int) SelectedDownloadOption.Format);
             }
         }
@@ -654,7 +709,7 @@ namespace MediaDownloader
 
                 if (Utilities.TryParseDownloadProgress(record, out var progress))
                 {
-                    IsDownloadProgressIndeterminate = false;
+                    DownloadProgressIsIndeterminate = false;
                     var newValue = _downloadProgressSectionMin + (int) Math.Round(progress);
                     DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
 

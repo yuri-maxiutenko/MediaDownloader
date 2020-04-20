@@ -94,7 +94,7 @@ namespace MediaDownloader
                     result.Entries = info.Entries.Select(item => new DownloadItem
                     {
                         Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.Title), item.Ext),
-                        Link = item.WebpageUrl
+                        Url = item.WebpageUrl
                     }).ToList();
                 }
                 else
@@ -104,7 +104,7 @@ namespace MediaDownloader
                         new DownloadItem
                         {
                             Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.Title), info.Ext),
-                            Link = info.WebpageUrl
+                            Url = info.WebpageUrl
                         }
                     };
                 }

@@ -227,13 +227,19 @@
   </data>
     <data name="LogMessageDownloadingFile" xml:space="preserve">
     <value>Downloading the file: {0}
-Link: {1}</value>
+Url: {1}</value>
   </data>
     <data name="MessageDownloading" xml:space="preserve">
     <value>Downloading: {0}</value>
   </data>
     <data name="MessageDownloadComplete" xml:space="preserve">
-    <value>Download complete!</value>
+    <value>Download complete! {0}</value>
+  </data>
+    <data name="MessageDownloadFailed" xml:space="preserve">
+    <value>Download Failed! {0}</value>
+  </data>
+    <data name="MessageDownloadCancelled" xml:space="preserve">
+    <value>Download cancelled! {0}</value>
   </data>
     <data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Preparing to download...</value>

@@ -135,6 +135,13 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_show.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\icon_download.png" />
+    <Resource Include="Images\icon_stop.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy $(SolutionDir)third-party $(TargetDir) /E /Y
