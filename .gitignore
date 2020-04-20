@@ -339,3 +339,6 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /Installers/MediaDownloaderSetup/Components.wxs
+/MediaDownloader/Data.db-wal
+/MediaDownloader/Data.db-shm
+/MediaDownloader/Data.db

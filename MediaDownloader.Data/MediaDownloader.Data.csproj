@@ -154,6 +154,10 @@
     <Compile Include="Migrations\20200412123743_InitialCreate.designer.cs">
       <DependentUpon>20200412123743_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20200420170535_AddHistoryPath.cs" />
+    <Compile Include="Migrations\20200420170535_AddHistoryPath.designer.cs">
+      <DependentUpon>20200420170535_AddHistoryPath.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Models\DownloadFolder.cs" />
     <Compile Include="Models\HistoryRecord.cs" />

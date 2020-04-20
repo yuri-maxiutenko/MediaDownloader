@@ -180,6 +180,8 @@ namespace MediaDownloader
 
         public CollectionViewSource DownloadFolders { get; private set; }
 
+        public CollectionViewSource DownloadHistory { get; private set; }
+
         public DownloadedItemInfo LastDownloadedItem { get; set; }
 
         public DownloadFolder SelectedDownloadFolder
@@ -538,6 +540,22 @@ namespace MediaDownloader
             var firstItem = (DownloadFolders.View as CollectionView)?.GetItemAt(0);
             DownloadFolders.View.MoveCurrentTo(firstItem);
 
+            DownloadHistory = new CollectionViewSource
+            {
+                Source = _storage.History
+            };
+
+            DownloadHistory.SortDescriptions.Clear();
+            DownloadHistory.SortDescriptions.Add(new SortDescription("DownloadDate",
+                ListSortDirection.Descending));
+            DownloadHistory.SortDescriptions.Add(new SortDescription("FileName",
+                ListSortDirection.Ascending));
+
+            DownloadHistory.GroupDescriptions.Clear();
+            DownloadHistory.GroupDescriptions.Add(new PropertyGroupDescription("FileName"));
+            DownloadHistory.GroupDescriptions.Add(new PropertyGroupDescription("Url"));
+            DownloadHistory.GroupDescriptions.Add(new PropertyGroupDescription("DownloadDate"));
+
             DownloadOptions = new List<DownloadOption>
             {
                 new DownloadOption
@@ -636,7 +654,8 @@ namespace MediaDownloader
                     retryCounter = 0;
                     while (!success && retryCounter < DownloadRetriesNumber)
                     {
-                        success = DownloadItem(LastDownloadedItem.Url, currentItemDownloadPath);
+                        success = DownloadItem(LastDownloadedItem.Name, LastDownloadedItem.Url, 
+                            currentItemDownloadPath);
                         retryCounter++;
                     }
 
@@ -661,11 +680,6 @@ namespace MediaDownloader
                 DownloadLog = Environment.NewLine;
                 DownloadLog = e.Message;
             }
-            finally
-            {
-                _storage.AddHistoryRecord(LastDownloadedItem.Path, YouTubeLink, (int) _lastDownloadStatus,
-                    (int) SelectedDownloadOption.Format);
-            }
         }
 
         private bool GetItem(out DownloadItem item)
@@ -679,20 +693,40 @@ namespace MediaDownloader
                 _cancellation.Token, out item);
         }
 
-        private bool DownloadItem(string downloadLink, string downloadPath)
+        private bool DownloadItem(string fileName, string downloadUrl, string downloadPath)
         {
-            _cancellation.Token.ThrowIfCancellationRequested();
-            var success = _downloader.TryDownloadItem(downloadPath, downloadLink,
-                SelectedDownloadOption.Option,
-                (o, eventArgs) =>
-                {
-                    ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data);
-                }, (o, eventArgs) =>
-                {
-                    ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
-                }, _cancellation.Token);
+            var status = DownloadStatus.Fail;
 
-            return success;
+            try
+            {
+                _cancellation.Token.ThrowIfCancellationRequested();
+                var success = _downloader.TryDownloadItem(downloadPath, downloadUrl,
+                    SelectedDownloadOption.Option,
+                    (o, eventArgs) =>
+                    {
+                        ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data);
+                    }, (o, eventArgs) =>
+                    {
+                        ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data);
+                    }, _cancellation.Token);
+
+                status = success ? DownloadStatus.Success : DownloadStatus.Fail;
+
+                return success;
+            }
+            catch (OperationCanceledException e)
+            {
+                status = DownloadStatus.Cancel;
+                throw;
+            }
+            finally
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _storage.AddHistoryRecord(fileName, downloadPath, downloadUrl, (int) status,
+                        (int) SelectedDownloadOption.Format);
+                });
+            }
         }
 
         private void ProcessDownloaderOutputAsync(object state)

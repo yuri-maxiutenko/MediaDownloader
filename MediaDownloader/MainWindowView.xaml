@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" IsEnabled="{Binding IsGeneralInterfaceEnabled}">
@@ -121,6 +122,12 @@
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      IsReadOnly="True" TextWrapping="Wrap"
                      TextChanged="DownloadLog_OnTextChanged" />
+        </Expander>
+
+        <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Background="Tan"
+                  Header="{x:Static properties:Resources.ShowLogExpanderText}" ExpandDirection="Down" IsExpanded="False"
+                  Margin="5">
+            <DataGrid ItemsSource="{Binding Path=DownloadHistory.View}" CanUserAddRows="False" />
         </Expander>
     </Grid>
 </Window>

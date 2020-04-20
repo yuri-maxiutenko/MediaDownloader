@@ -62,11 +62,12 @@ namespace MediaDownloader.Data
             _context.SaveChanges();
         }
 
-        public void AddHistoryRecord(string fileName, string url, int downloadStatus, int downloadFormat)
+        public void AddHistoryRecord(string fileName, string path, string url, int downloadStatus, int downloadFormat)
         {
             _context.History.Add(new HistoryRecord
             {
                 FileName = fileName,
+                Path = path,
                 Url = url,
                 DownloadStatus = downloadStatus,
                 DownloadFormat = downloadFormat,
