@@ -125,9 +125,26 @@
         </Expander>
 
         <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Background="Tan"
-                  Header="{x:Static properties:Resources.ShowLogExpanderText}" ExpandDirection="Down" IsExpanded="False"
+                  Header="{x:Static properties:Resources.ShowHistoryExpanderText}" ExpandDirection="Down"
+                  IsExpanded="False"
                   Margin="5">
-            <DataGrid ItemsSource="{Binding Path=DownloadHistory.View}" CanUserAddRows="False" />
+            <DataGrid ItemsSource="{Binding Path=DownloadHistory.View}" CanUserAddRows="False"
+                      IsReadOnly="True" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding FileName}" Width="*" />
+                    <DataGridTextColumn Header="Location" Binding="{Binding Url}" Width="*" />
+                </DataGrid.Columns>
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Open Containing Folder" />
+                        <Separator />
+                        <MenuItem Header="Redownload" />
+                        <MenuItem Header="Copy Download Link" />
+                        <Separator />
+                        <MenuItem Header="Remove From History" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+            </DataGrid>
         </Expander>
     </Grid>
 </Window>

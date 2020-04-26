@@ -135,6 +135,9 @@
     <data name="ShowLogExpanderText" xml:space="preserve">
     <value>Show Log</value>
   </data>
+    <data name="ShowHistoryExpanderText" xml:space="preserve">
+    <value>Show History</value>
+  </data>
     <data name="DownloaderFileName" xml:space="preserve">
     <value>youtube-dl.exe</value>
   </data>

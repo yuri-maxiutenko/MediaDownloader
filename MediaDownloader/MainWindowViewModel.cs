@@ -32,7 +32,8 @@ namespace MediaDownloader
     {
         Success,
         Fail,
-        Cancel
+        Cancel,
+        Unknown
     }
 
     internal class DownloadOption
@@ -551,11 +552,6 @@ namespace MediaDownloader
             DownloadHistory.SortDescriptions.Add(new SortDescription("FileName",
                 ListSortDirection.Ascending));
 
-            DownloadHistory.GroupDescriptions.Clear();
-            DownloadHistory.GroupDescriptions.Add(new PropertyGroupDescription("FileName"));
-            DownloadHistory.GroupDescriptions.Add(new PropertyGroupDescription("Url"));
-            DownloadHistory.GroupDescriptions.Add(new PropertyGroupDescription("DownloadDate"));
-
             DownloadOptions = new List<DownloadOption>
             {
                 new DownloadOption
@@ -654,7 +650,7 @@ namespace MediaDownloader
                     retryCounter = 0;
                     while (!success && retryCounter < DownloadRetriesNumber)
                     {
-                        success = DownloadItem(LastDownloadedItem.Name, LastDownloadedItem.Url, 
+                        success = DownloadItem(LastDownloadedItem.Name, LastDownloadedItem.Url,
                             currentItemDownloadPath);
                         retryCounter++;
                     }

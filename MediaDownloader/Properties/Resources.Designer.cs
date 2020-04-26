@@ -422,6 +422,15 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show History.
+        /// </summary>
+        public static string ShowHistoryExpanderText {
+            get {
+                return ResourceManager.GetString("ShowHistoryExpanderText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Log.
         /// </summary>
         public static string ShowLogExpanderText {
