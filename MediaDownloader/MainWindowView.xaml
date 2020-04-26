@@ -8,6 +8,30 @@
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize">
     <Grid>
+        <Grid.Resources>
+            <DataTemplate x:Key="HistoryItemTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding FileName}"
+                               TextAlignment="Left" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Success" FontSize="10" Foreground="Gray"
+                               TextAlignment="Left" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text=" — " FontSize="10" Foreground="Gray"
+                               TextAlignment="Left" />
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DownloadDate, StringFormat=D}"
+                               FontSize="10" Foreground="Gray" TextAlignment="Left" />
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
@@ -129,10 +153,10 @@
                   IsExpanded="False"
                   Margin="5">
             <DataGrid ItemsSource="{Binding Path=DownloadHistory.View}" CanUserAddRows="False"
-                      IsReadOnly="True" AutoGenerateColumns="False">
+                      IsReadOnly="True" AutoGenerateColumns="False" Hyperlink.Click="HistoryGridHyperlink_OnClick">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding FileName}" Width="*" />
-                    <DataGridTextColumn Header="Location" Binding="{Binding Url}" Width="*" />
+                    <DataGridTemplateColumn Header="Name" CellTemplate="{StaticResource HistoryItemTemplate}" Width="*" />
+                    <DataGridHyperlinkColumn Header="Location" Binding="{Binding Url}" Width="*" />
                 </DataGrid.Columns>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
