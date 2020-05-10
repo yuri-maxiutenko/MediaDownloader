@@ -116,6 +116,9 @@
     <data name="ShowLogExpanderText" xml:space="preserve">
     <value>Журнал</value>
   </data>
+    <data name="ShowHistoryExpanderText" xml:space="preserve">
+    <value>История</value>
+  </data>
     <data name="DownloaderFormatBestName" xml:space="preserve">
     <value>Видео максимального качества</value>
   </data>
@@ -173,5 +176,32 @@
   </data>
     <data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Подготовка к загрузке...</value>
+  </data>
+    <data name="HistoryMenuItemOpenFolder" xml:space="preserve">
+    <value>Открыть папку с файлом</value>
+  </data>
+    <data name="HistoryMenuItemRedownload" xml:space="preserve">
+    <value>Скачать еще раз</value>
+  </data>
+    <data name="HistoryMenuItemCopyLink" xml:space="preserve">
+    <value>Копировать ссылку</value>
+  </data>
+    <data name="HistoryMenuItemRemoveFromHistory" xml:space="preserve">
+    <value>Удалить из истории</value>
+  </data>
+    <data name="HistoryMenuItemClearHistory" xml:space="preserve">
+    <value>Очистить историю</value>
+  </data>
+    <data name="DownloadStatusSuccess" xml:space="preserve">
+    <value>Успех</value>
+  </data>
+    <data name="DownloadStatusFail" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+    <data name="DownloadStatusCancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+    <data name="DownloadStatusUnknown" xml:space="preserve">
+    <value>Неизвестно</value>
   </data>
 </root>

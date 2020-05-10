@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 
@@ -94,6 +96,12 @@ namespace MediaDownloader
         {
             var textBox = sender as TextBox;
             textBox?.SelectAll();
+        }
+
+        private void HistoryGridHyperlink_OnClick(object sender, RoutedEventArgs e)
+        {
+            var destination = ((Hyperlink) e.OriginalSource).NavigateUri;
+            Process.Start(destination.ToString());
         }
     }
 }

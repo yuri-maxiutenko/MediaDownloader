@@ -135,6 +135,9 @@
     <data name="ShowLogExpanderText" xml:space="preserve">
     <value>Show Log</value>
   </data>
+    <data name="ShowHistoryExpanderText" xml:space="preserve">
+    <value>Show History</value>
+  </data>
     <data name="DownloaderFileName" xml:space="preserve">
     <value>youtube-dl.exe</value>
   </data>
@@ -246,5 +249,32 @@ Url: {1}</value>
   </data>
     <data name="AppName" xml:space="preserve">
     <value>Media Downloader</value>
+  </data>
+    <data name="HistoryMenuItemOpenFolder" xml:space="preserve">
+    <value>Open Download Folder</value>
+  </data>
+    <data name="HistoryMenuItemRedownload" xml:space="preserve">
+    <value>Redownload</value>
+  </data>
+    <data name="HistoryMenuItemCopyLink" xml:space="preserve">
+    <value>Copy Download Link</value>
+  </data>
+    <data name="HistoryMenuItemRemoveFromHistory" xml:space="preserve">
+    <value>Remove From History</value>
+  </data>
+    <data name="HistoryMenuItemClearHistory" xml:space="preserve">
+    <value>Clear History</value>
+  </data>
+    <data name="DownloadStatusSuccess" xml:space="preserve">
+    <value>Success</value>
+  </data>
+    <data name="DownloadStatusFail" xml:space="preserve">
+    <value>Fail</value>
+  </data>
+    <data name="DownloadStatusCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+    <data name="DownloadStatusUnknown" xml:space="preserve">
+    <value>Unknown</value>
   </data>
 </root>
