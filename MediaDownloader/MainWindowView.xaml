@@ -49,7 +49,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" IsEnabled="{Binding IsGeneralInterfaceEnabled}">
+        <Grid Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" IsEnabled="{Binding GeneralInterfaceIsEnabled}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -99,7 +99,7 @@
                 <RowDefinition Height="50" />
             </Grid.RowDefinitions>
             <Button Grid.Column="0" Grid.Row="0" Margin="5"
-                    Command="{Binding DownloadButtonClick}" IsEnabled="{Binding IsDownloadButtonEnabled}">
+                    Command="{Binding DownloadButtonClick}" IsEnabled="{Binding DownloadButtonIsEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="{Binding DownloadButtonIcon}" Height="24" Width="24" Margin="0,0,5,0" />
                     <TextBlock Text="{Binding DownloadButtonText}" VerticalAlignment="Center" />
@@ -159,7 +159,8 @@
                   Margin="5">
             <DataGrid ItemsSource="{Binding Path=DownloadHistory.View}" CanUserAddRows="False"
                       IsReadOnly="True" AutoGenerateColumns="False" Hyperlink.Click="HistoryGridHyperlink_OnClick"
-                      Height="150" GridLinesVisibility="None" SelectedItem="{Binding DownloadHistorySelectedItem}">
+                      Height="150" GridLinesVisibility="None" SelectedItem="{Binding DownloadHistorySelectedItem}"
+                      IsEnabled="{Binding DownloadHistoryIsEnabled}">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Name" CellTemplate="{StaticResource HistoryItemTemplate}" Width="*" />
                     <DataGridHyperlinkColumn Header="Location" Binding="{Binding Url}" Width="*" />
