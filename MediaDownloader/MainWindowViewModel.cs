@@ -90,6 +90,11 @@ namespace MediaDownloader
 
         private ICommand _clearButtonClick;
         private ICommand _downloadButtonClick;
+        private ICommand _historyMenuItemClearHistory;
+        private ICommand _historyMenuItemCopyLink;
+        private ICommand _historyMenuItemOpenFolder;
+        private ICommand _historyMenuItemRedownload;
+        private ICommand _historyMenuItemRemoveFromHistory;
         private ICommand _showDownloadedItemsButtonClick;
         private ICommand _startDownloadCommand;
         private ICommand _stopDownloadCommand;
@@ -205,6 +210,8 @@ namespace MediaDownloader
             }
         }
 
+        public HistoryRecord DownloadHistorySelectedItem { get; set; }
+
         public ICommand ClearButtonClick
         {
             get
@@ -235,26 +242,7 @@ namespace MediaDownloader
                 return _startDownloadCommand ?? (_startDownloadCommand = new RelayCommand(
                     param =>
                     {
-                        IsGeneralInterfaceEnabled = false;
-                        IsDownloadButtonEnabled = false;
-                        _cancellation = new CancellationTokenSource();
-
-                        UpdateDownloadFolder(DownloadFolders.View.CurrentItem as DownloadFolder, DateTime.Now);
-
-                        var worker = new BackgroundWorker();
-                        worker.DoWork += DownloadItemAsync;
-                        worker.RunWorkerCompleted += OnDownloadItemCompleted;
-                        worker.RunWorkerAsync();
-
-                        DownloadButtonIcon = _stopDownloadIcon;
-                        DownloadButtonText = Resources.StopDownloadButtonText;
-                        DownloadButtonClick = StopDownloadCommand;
-                        IsDownloadButtonEnabled = true;
-
-                        DownloadProgressIsIndeterminate = true;
-                        ShowDownloadedItemsButtonIsEnabled = false;
-                        DownloadProgressVisibility = Visibility.Visible;
-                        DownloadProgressColor = Brushes.LimeGreen;
+                        StartDownload();
                     },
                     param => true));
             }
@@ -282,6 +270,99 @@ namespace MediaDownloader
                     param =>
                     {
                         OpenDownloadFolder();
+                    },
+                    param => true));
+            }
+        }
+
+        public ICommand HistoryMenuItemOpenFolder
+        {
+            get
+            {
+                return _historyMenuItemOpenFolder ?? (_historyMenuItemOpenFolder = new RelayCommand(
+                    param =>
+                    {
+                        var path = DownloadHistorySelectedItem?.Path;
+                        if (string.IsNullOrEmpty(path))
+                        {
+                            return;
+                        }
+
+                        if (File.Exists(path) || Directory.Exists(path))
+                        {
+                            Process.Start(Resources.ExplorerFileName,
+                                $"{Resources.ExplorerOptionSelect}, \"{path}\"");
+                        }
+                        else if (Directory.Exists(SelectedDownloadFolder.Path))
+                        {
+                            Process.Start(SelectedDownloadFolder.Path);
+                        }
+                    },
+                    param => true));
+            }
+        }
+
+        public ICommand HistoryMenuItemRedownload
+        {
+            get
+            {
+                return _historyMenuItemRedownload ?? (_historyMenuItemRedownload = new RelayCommand(
+                    param =>
+                    {
+                        if (string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
+                        {
+                            return;
+                        }
+
+                        YouTubeLink = DownloadHistorySelectedItem?.Url;
+                        StartDownload();
+                    },
+                    param => true));
+            }
+        }
+
+        public ICommand HistoryMenuItemCopyLink
+        {
+            get
+            {
+                return _historyMenuItemCopyLink ?? (_historyMenuItemCopyLink = new RelayCommand(
+                    param =>
+                    {
+                        if (!string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
+                        {
+                            Clipboard.SetText(DownloadHistorySelectedItem.Url);
+                        }
+                    },
+                    param => true));
+            }
+        }
+
+        public ICommand HistoryMenuItemRemoveFromHistory
+        {
+            get
+            {
+                return _historyMenuItemRemoveFromHistory ?? (_historyMenuItemRemoveFromHistory = new RelayCommand(
+                    param =>
+                    {
+                        if (DownloadHistorySelectedItem != null)
+                        {
+                            _storage.RemoveHistoryRecord(DownloadHistorySelectedItem);
+                            DownloadHistory.View.Refresh();
+                        }
+                    },
+                    param => true));
+            }
+        }
+
+        public ICommand HistoryMenuItemClearHistory
+        {
+            get
+            {
+                return _historyMenuItemClearHistory ?? (_historyMenuItemClearHistory = new RelayCommand(
+                    param =>
+                    {
+                        _storage.ClearHistory();
+                        DownloadHistory.View.Refresh();
                     },
                     param => true));
             }
@@ -406,6 +487,30 @@ namespace MediaDownloader
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void StartDownload()
+        {
+            IsGeneralInterfaceEnabled = false;
+            IsDownloadButtonEnabled = false;
+            _cancellation = new CancellationTokenSource();
+
+            UpdateDownloadFolder(DownloadFolders.View.CurrentItem as DownloadFolder, DateTime.Now);
+
+            var worker = new BackgroundWorker();
+            worker.DoWork += DownloadItemAsync;
+            worker.RunWorkerCompleted += OnDownloadItemCompleted;
+            worker.RunWorkerAsync();
+
+            DownloadButtonIcon = _stopDownloadIcon;
+            DownloadButtonText = Resources.StopDownloadButtonText;
+            DownloadButtonClick = StopDownloadCommand;
+            IsDownloadButtonEnabled = true;
+
+            DownloadProgressIsIndeterminate = true;
+            ShowDownloadedItemsButtonIsEnabled = false;
+            DownloadProgressVisibility = Visibility.Visible;
+            DownloadProgressColor = Brushes.LimeGreen;
+        }
 
 
         private void OpenDownloadFolder()

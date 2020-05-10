@@ -7,6 +7,9 @@
         xmlns:properties="clr-namespace:MediaDownloader.Properties"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize">
+    <Window.Resources>
+        <local:DownloadStatusConverter x:Key="DownloadStatusConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.Resources>
             <DataTemplate x:Key="HistoryItemTemplate">
@@ -22,7 +25,9 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding FileName}"
                                TextAlignment="Left" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Success" FontSize="10" Foreground="Gray"
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="{Binding DownloadStatus, Converter={StaticResource DownloadStatusConverter}}"
+                               FontSize="10" Foreground="Gray"
                                TextAlignment="Left" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Text=" — " FontSize="10" Foreground="Gray"
                                TextAlignment="Left" />
@@ -153,19 +158,26 @@
                   IsExpanded="False"
                   Margin="5">
             <DataGrid ItemsSource="{Binding Path=DownloadHistory.View}" CanUserAddRows="False"
-                      IsReadOnly="True" AutoGenerateColumns="False" Hyperlink.Click="HistoryGridHyperlink_OnClick">
+                      IsReadOnly="True" AutoGenerateColumns="False" Hyperlink.Click="HistoryGridHyperlink_OnClick"
+                      Height="150" GridLinesVisibility="None" SelectedItem="{Binding DownloadHistorySelectedItem}">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Name" CellTemplate="{StaticResource HistoryItemTemplate}" Width="*" />
                     <DataGridHyperlinkColumn Header="Location" Binding="{Binding Url}" Width="*" />
                 </DataGrid.Columns>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Open Containing Folder" />
+                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemOpenFolder}"
+                                  Command="{Binding HistoryMenuItemOpenFolder}" />
                         <Separator />
-                        <MenuItem Header="Redownload" />
-                        <MenuItem Header="Copy Download Link" />
+                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemRedownload}"
+                                  Command="{Binding HistoryMenuItemRedownload}" />
+                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemCopyLink}"
+                                  Command="{Binding HistoryMenuItemCopyLink}" />
                         <Separator />
-                        <MenuItem Header="Remove From History" />
+                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemRemoveFromHistory}"
+                                  Command="{Binding HistoryMenuItemRemoveFromHistory}" />
+                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemClearHistory}"
+                                  Command="{Binding HistoryMenuItemClearHistory}" />
                     </ContextMenu>
                 </DataGrid.ContextMenu>
             </DataGrid>

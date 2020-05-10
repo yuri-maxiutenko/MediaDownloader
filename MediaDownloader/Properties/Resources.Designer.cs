@@ -268,6 +268,42 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string DownloadStatusCancel {
+            get {
+                return ResourceManager.GetString("DownloadStatusCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail.
+        /// </summary>
+        public static string DownloadStatusFail {
+            get {
+                return ResourceManager.GetString("DownloadStatusFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success.
+        /// </summary>
+        public static string DownloadStatusSuccess {
+            get {
+                return ResourceManager.GetString("DownloadStatusSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown.
+        /// </summary>
+        public static string DownloadStatusUnknown {
+            get {
+                return ResourceManager.GetString("DownloadStatusUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to explorer.exe.
         /// </summary>
         public static string ExplorerFileName {
@@ -282,6 +318,51 @@ namespace MediaDownloader.Properties {
         public static string ExplorerOptionSelect {
             get {
                 return ResourceManager.GetString("ExplorerOptionSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear History.
+        /// </summary>
+        public static string HistoryMenuItemClearHistory {
+            get {
+                return ResourceManager.GetString("HistoryMenuItemClearHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy Download Link.
+        /// </summary>
+        public static string HistoryMenuItemCopyLink {
+            get {
+                return ResourceManager.GetString("HistoryMenuItemCopyLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Download Folder.
+        /// </summary>
+        public static string HistoryMenuItemOpenFolder {
+            get {
+                return ResourceManager.GetString("HistoryMenuItemOpenFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Redownload.
+        /// </summary>
+        public static string HistoryMenuItemRedownload {
+            get {
+                return ResourceManager.GetString("HistoryMenuItemRedownload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove From History.
+        /// </summary>
+        public static string HistoryMenuItemRemoveFromHistory {
+            get {
+                return ResourceManager.GetString("HistoryMenuItemRemoveFromHistory", resourceCulture);
             }
         }
         

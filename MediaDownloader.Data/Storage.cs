@@ -75,5 +75,22 @@ namespace MediaDownloader.Data
             });
             _context.SaveChanges();
         }
+
+        public void RemoveHistoryRecord(HistoryRecord record)
+        {
+            if (record == null)
+            {
+                return;
+            }
+            _context.History.Remove(record);
+            _context.SaveChanges();
+        }
+
+        public void ClearHistory()
+        {
+            _context.Database.ExecuteSqlRaw("delete from History");
+            _context.SaveChanges();
+            _context.History.Load();
+        }
     }
 }
