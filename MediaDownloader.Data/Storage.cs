@@ -10,6 +10,9 @@ namespace MediaDownloader.Data
 {
     public class Storage
     {
+        private const int HistoryRecordsMax = 20;
+        private const int DownloadFoldersMax = 10;
+
         private readonly DataContext _context;
 
         public Storage()
@@ -41,6 +44,16 @@ namespace MediaDownloader.Data
 
         public void AddDownloadFolder(string path, DateTime lastSelectionDate)
         {
+            if (_context.DownloadFolders.Count() >= DownloadFoldersMax)
+            {
+                var oldestEntry = _context.DownloadFolders.OrderBy(item => item.LastSelectionDate)
+                    .FirstOrDefault();
+                if (oldestEntry != null)
+                {
+                    _context.DownloadFolders.Remove(oldestEntry);
+                }
+            }
+
             _context.DownloadFolders.Add(new DownloadFolder
             {
                 Path = path,
@@ -64,6 +77,16 @@ namespace MediaDownloader.Data
 
         public void AddHistoryRecord(string fileName, string path, string url, int downloadStatus, int downloadFormat)
         {
+            if (_context.History.Count() >= HistoryRecordsMax)
+            {
+                var oldestEntry = _context.History.OrderBy(item => item.DownloadDate)
+                    .FirstOrDefault();
+                if (oldestEntry != null)
+                {
+                    _context.History.Remove(oldestEntry);
+                }
+            }
+
             _context.History.Add(new HistoryRecord
             {
                 FileName = fileName,
@@ -105,6 +128,7 @@ namespace MediaDownloader.Data
             {
                 return;
             }
+
             _context.History.Remove(record);
             _context.SaveChanges();
         }
