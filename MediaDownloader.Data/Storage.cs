@@ -73,6 +73,29 @@ namespace MediaDownloader.Data
                 DownloadFormat = downloadFormat,
                 DownloadDate = DateTime.Now
             });
+
+            _context.SaveChanges();
+        }
+
+        public void AddOrUpdateHistoryRecord(string fileName, string path, string url, int downloadStatus,
+            int downloadFormat)
+        {
+            var entry = _context.History.FirstOrDefault(item =>
+                item.Url.ToLower() == url.ToLower());
+            if (entry == null)
+            {
+                AddHistoryRecord(fileName, path, url, downloadStatus, downloadFormat);
+            }
+            else
+            {
+                entry.FileName = fileName;
+                entry.Path = path;
+                entry.Url = url;
+                entry.DownloadStatus = downloadStatus;
+                entry.DownloadFormat = downloadFormat;
+                entry.DownloadDate = DateTime.Now;
+            }
+
             _context.SaveChanges();
         }
 

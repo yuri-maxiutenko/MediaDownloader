@@ -842,8 +842,9 @@ namespace MediaDownloader
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    _storage.AddHistoryRecord(fileName, downloadPath, downloadUrl, (int) status,
+                    _storage.AddOrUpdateHistoryRecord(fileName, downloadPath, downloadUrl, (int) status,
                         (int) SelectedDownloadOption.Format);
+                    DownloadHistory.View.Refresh();
                 });
             }
         }
