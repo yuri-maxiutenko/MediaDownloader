@@ -135,9 +135,11 @@ namespace MediaDownloader.Data
 
         public void ClearHistory()
         {
-            _context.Database.ExecuteSqlRaw("delete from History");
+            foreach (var item in _context.History)
+            {
+                _context.History.Remove(item);
+            }
             _context.SaveChanges();
-            _context.History.Load();
         }
     }
 }
