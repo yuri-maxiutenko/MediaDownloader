@@ -18,6 +18,8 @@ Comes with an installer, which includes everything necessary: the application it
 
 The application is installed to current user's AppData folder and doesn't require administrator's permissions.
 
+Curently **Media Downloader** is localized to English and Russian. The application language is automatically selected depending on current Windows locale.
+
 ## Download
 
 The latest build could be found here: [https://bitbucket.org/wolfcub/youtubedownloader/downloads](https://bitbucket.org/wolfcub/youtubedownloader/downloads/)
