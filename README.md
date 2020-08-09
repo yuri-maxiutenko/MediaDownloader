@@ -31,7 +31,7 @@ The latest build could be found here: [https://bitbucket.org/wolfcub/youtubedown
 ## Screenshots
 
 Video download in progress:
-![Video download in progress](https://bitbucket.org/wolfcub/youtubedownloader/raw/31dc25314f1fcc7146110a59a7a198c1ad45bb2b/Screenshots/Annotation%202020-06-29%20210558.png)
+![Video download in progress](https://bitbucket.org/wolfcub/mediadownloader/raw/440ff89ea572b69cf221473e9c0a1087ce483b6a/Screenshots/Annotation%202020-06-29%20210558.png)
 
 Video download complete:
-![Video download complete](https://bitbucket.org/wolfcub/youtubedownloader/raw/31dc25314f1fcc7146110a59a7a198c1ad45bb2b/Screenshots/Annotation%202020-06-29%20210909.png)
+![Video download complete](https://bitbucket.org/wolfcub/mediadownloader/raw/440ff89ea572b69cf221473e9c0a1087ce483b6a/Screenshots/Annotation%202020-06-29%20210909.png)
