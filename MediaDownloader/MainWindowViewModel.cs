@@ -538,7 +538,7 @@ namespace MediaDownloader
                 }
                 else if (Directory.Exists(SelectedDownloadFolder.Path))
                 {
-                    Process.Start(SelectedDownloadFolder.Path);
+                    Process.Start(Resources.ExplorerFileName, SelectedDownloadFolder.Path);
                 }
             }
             catch (Exception e)
