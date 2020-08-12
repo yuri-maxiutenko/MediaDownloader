@@ -14,7 +14,7 @@ namespace MediaDownloader.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3");
+                .HasAnnotation("ProductVersion", "3.1.7");
 
             modelBuilder.Entity("MediaDownloader.Data.Models.DownloadFolder", b =>
                 {

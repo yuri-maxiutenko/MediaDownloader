@@ -66,10 +66,10 @@ namespace MediaDownloader
         private BitmapImage _downloadButtonIcon;
 
         private readonly BitmapImage _startDownloadIcon =
-            new BitmapImage(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_download.png"));
+            new BitmapImage(new Uri(@"/Images/icon_download.png", UriKind.RelativeOrAbsolute));
 
         private readonly BitmapImage _stopDownloadIcon =
-            new BitmapImage(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_stop.png"));
+            new BitmapImage(new Uri(@"/Images/icon_stop.png", UriKind.RelativeOrAbsolute));
 
         private bool _downloadProgressIsIndeterminate;
 
