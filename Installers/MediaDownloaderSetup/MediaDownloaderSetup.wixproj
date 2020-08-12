@@ -13,12 +13,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug</DefineConstants>
+    <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug\netcoreapp3.1</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\bin\Release</DefineConstants>
+    <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\bin\Release\netcoreapp3.1</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Components.wxs" />
@@ -27,13 +27,31 @@
   <ItemGroup>
     <Content Include="HeatFilters.xslt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MediaDownloader.Data\MediaDownloader.Data.csproj">
+      <Name>MediaDownloader.Data</Name>
+      <Project>{645d945d-4d8b-4632-adf1-7f7b5ed89e20}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MediaDownloader\MediaDownloader.csproj">
+      <Name>MediaDownloader</Name>
+      <Project>{fe591d20-6291-42c1-89bb-e6aa6e298eb2}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
   <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir $(SolutionDir)MediaDownloader\$(OutDir) -gg -out $(ProjectDir)Components.wxs -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t $(ProjectDir)HeatFilters.xslt</PreBuildEvent>
+    <PreBuildEvent>"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir $(SolutionDir)MediaDownloader\$(OutDir)netcoreapp3.1 -gg -out $(ProjectDir)Components.wxs -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t $(ProjectDir)HeatFilters.xslt</PreBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

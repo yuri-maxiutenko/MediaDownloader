@@ -28,6 +28,11 @@
         use="@Id" />
 
     <xsl:key
+        name="DbToRemove"
+        match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 2 ) = '.db' ]"
+        use="@Id" />
+
+    <xsl:key
         name="LogToRemove"
         match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 3 ) = '.log' ]"
         use="@Id" />
@@ -47,6 +52,7 @@
     <!-- ...but if the element has the "ExeToRemove" key then don't render anything (i.e. removing it from the output) -->
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'ExeToRemove', @Id ) ]" />
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'PdbToRemove', @Id ) ]" />
+    <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'DbToRemove', @Id ) ]" />
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'LogToRemove', @Id ) ]" />
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'TxtToRemove', @Id ) ]" />
 

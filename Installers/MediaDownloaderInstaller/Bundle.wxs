@@ -3,7 +3,7 @@
      xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
 
     <?ifndef ProductName ?>
-    <?define ProductName = "Youtube Downloader"?>
+    <?define ProductName = "Media Downloader"?>
     <?endif?>
 
     <?ifndef ProductVersion ?>

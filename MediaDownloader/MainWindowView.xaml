@@ -64,28 +64,30 @@
             </Grid.RowDefinitions>
             <Label Grid.Column="0" Grid.Row="0" Content="{x:Static properties:Resources.DownloadFormatCaption}"
                    Margin="0,10,0,0" />
-            <ComboBox Grid.Column="0" Grid.Row="1" Margin="5" ItemsSource="{Binding Path=DownloadOptions}"
+            <ComboBox Grid.Column="0" Grid.Row="1" Margin="5" Height="25" 
+                      ItemsSource="{Binding Path=DownloadOptions}"
                       SelectedValue="{Binding SelectedDownloadOption, UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}"
                       IsSynchronizedWithCurrentItem="True" />
 
             <Label Grid.Column="0" Grid.Row="2" Content="{x:Static properties:Resources.DownloadFolderCaption}"
                    Margin="0,10,0,0" />
-            <ComboBox Grid.Column="0" Grid.Row="3" Margin="5" ItemsSource="{Binding Path=DownloadFolders.View}"
+            <ComboBox Grid.Column="0" Grid.Row="3" Margin="5" Height="25" 
+                      ItemsSource="{Binding Path=DownloadFolders.View}"
                       SelectedValue="{Binding SelectedDownloadFolder, Mode=OneWayToSource}"
                       IsReadOnly="True" IsEditable="True" />
-            <Button Grid.Column="1" Grid.Row="3" Width="100" HorizontalAlignment="Left"
+            <Button Grid.Column="1" Grid.Row="3" Width="100" Height="25" HorizontalAlignment="Left"
                     Content="{x:Static properties:Resources.BrowseButtonText}" Margin="5"
                     Click="BrowseButton_OnClick" />
 
             <Label Grid.Column="0" Grid.Row="4" Content="{x:Static properties:Resources.DownloadLinkCaption}"
                    Margin="0,10,0,0" />
-            <TextBox Grid.Column="0" Grid.Row="5" Margin="5"
+            <TextBox Grid.Column="0" Grid.Row="5" Margin="5" Height="25"
                      Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      TextChanged="YouTubeLink_OnTextChanged" MouseDoubleClick="YouTubeLink_OnMouseDoubleClick"
                      GotKeyboardFocus="YouTubeLink_OnGotKeyboardFocus"
                      PreviewMouseLeftButtonDown="YouTubeLink_OnPreviewMouseLeftButtonDown"
                      DataObject.Pasting="YouTubeLink_OnPasting" />
-            <Button Grid.Column="1" Grid.Row="5" Width="100" HorizontalAlignment="Left"
+            <Button Grid.Column="1" Grid.Row="5" Width="100" Height="25" HorizontalAlignment="Left"
                     Content="{x:Static properties:Resources.ClearButtonText}" Margin="5"
                     Command="{Binding ClearButtonClick}" />
         </Grid>
