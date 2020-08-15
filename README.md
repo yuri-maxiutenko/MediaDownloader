@@ -20,10 +20,6 @@ The application is installed to current user's AppData folder and doesn't requir
 
 Curently **Media Downloader** is localized to English and Russian. The application language is automatically selected depending on current Windows locale.
 
-## Download
-
-The latest build could be found here: [https://bitbucket.org/wolfcub/youtubedownloader/downloads](https://bitbucket.org/wolfcub/youtubedownloader/downloads/)
-
 ## Requirements
 
 **.NET Framework 4.7.2 or higher**
@@ -31,7 +27,7 @@ The latest build could be found here: [https://bitbucket.org/wolfcub/youtubedown
 ## Screenshots
 
 Video download in progress:
-![Video download in progress](https://bitbucket.org/wolfcub/mediadownloader/raw/440ff89ea572b69cf221473e9c0a1087ce483b6a/Screenshots/Annotation%202020-06-29%20210558.png)
+![Video download in progress](https://github.com/yuri-maxiutenko/MediaDownloader/blob/master/Screenshots/Annotation%202020-06-29%20210558.png?raw=true)
 
 Video download complete:
-![Video download complete](https://bitbucket.org/wolfcub/mediadownloader/raw/440ff89ea572b69cf221473e9c0a1087ce483b6a/Screenshots/Annotation%202020-06-29%20210909.png)
+![Video download complete](https://github.com/yuri-maxiutenko/MediaDownloader/blob/master/Screenshots/Annotation%202020-06-29%20210909.png?raw=true)
