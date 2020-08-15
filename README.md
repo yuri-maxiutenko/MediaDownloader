@@ -1,6 +1,6 @@
 The Media Downloader Project
 ====================
-Just a small user-friendly C#/WPF UI wrapper over the great video downloading command-line utility [youtube-dl](https://github.com/ytdl-org/youtube-dl) which allows to download videos in different quality from various internet resources (YouTube, Vimeo, Facebook, you name it). Downloading playlists is supported too.
+Just a small user-friendly UI wrapper (C#/WPF, .NET Core) over the great video downloading command-line utility [youtube-dl](https://github.com/ytdl-org/youtube-dl) which allows to download videos in different quality from various internet resources (YouTube, Vimeo, Facebook, you name it). Downloading playlists is supported too.
 
 ## Main Features
 
