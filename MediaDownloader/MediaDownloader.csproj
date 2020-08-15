@@ -11,7 +11,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Images\" />
+    <None Remove="Images\icon128.png" />
+    <None Remove="Images\icon16.png" />
+    <None Remove="Images\icon256.png" />
+    <None Remove="Images\icon32.png" />
+    <None Remove="Images\icon48.png" />
+    <None Remove="Images\icon512.png" />
+    <None Remove="Images\icon64.png" />
+    <None Remove="Images\icon_download.png" />
+    <None Remove="Images\icon_show.png" />
+    <None Remove="Images\icon_stop.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Properties\" />
   </ItemGroup>
@@ -23,6 +35,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MediaDownloader.Data\MediaDownloader.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\icon_download.png" />
+    <Resource Include="Images\icon_show.png" />
+    <Resource Include="Images\icon_stop.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
