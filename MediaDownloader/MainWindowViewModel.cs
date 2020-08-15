@@ -71,13 +71,12 @@ namespace MediaDownloader
         private readonly BitmapImage _stopDownloadIcon =
             new BitmapImage(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_stop.png"));
 
-        private bool _downloadProgressIsIndeterminate;
-
         private bool _downloadButtonIsEnabled;
+        private bool _downloadHistoryIsEnabled;
+        private bool _downloadProgressIsIndeterminate;
         private bool _generalInterfaceIsEnabled;
         private bool _isMultipleFiles;
         private bool _showDownloadedItemsButtonIsEnabled;
-        private bool _downloadHistoryIsEnabled;
 
         private Brush _downloadProgressColor;
 
@@ -228,12 +227,12 @@ namespace MediaDownloader
         {
             get
             {
-                return _clearButtonClick ?? (_clearButtonClick = new RelayCommand(
+                return _clearButtonClick ??= new RelayCommand(
                     param =>
                     {
                         YouTubeLink = string.Empty;
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -251,12 +250,12 @@ namespace MediaDownloader
         {
             get
             {
-                return _startDownloadCommand ?? (_startDownloadCommand = new RelayCommand(
+                return _startDownloadCommand ??= new RelayCommand(
                     param =>
                     {
                         StartDownload();
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -264,13 +263,13 @@ namespace MediaDownloader
         {
             get
             {
-                return _stopDownloadCommand ?? (_stopDownloadCommand = new RelayCommand(
+                return _stopDownloadCommand ??= new RelayCommand(
                     param =>
                     {
                         DownloadButtonIsEnabled = false;
                         _cancellation.Cancel();
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -278,12 +277,12 @@ namespace MediaDownloader
         {
             get
             {
-                return _showDownloadedItemsButtonClick ?? (_showDownloadedItemsButtonClick = new RelayCommand(
+                return _showDownloadedItemsButtonClick ??= new RelayCommand(
                     param =>
                     {
                         OpenDownloadFolder();
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -291,7 +290,7 @@ namespace MediaDownloader
         {
             get
             {
-                return _historyMenuItemOpenFolder ?? (_historyMenuItemOpenFolder = new RelayCommand(
+                return _historyMenuItemOpenFolder ??= new RelayCommand(
                     param =>
                     {
                         var path = DownloadHistorySelectedItem?.Path;
@@ -310,7 +309,7 @@ namespace MediaDownloader
                             Process.Start(SelectedDownloadFolder.Path);
                         }
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -318,7 +317,7 @@ namespace MediaDownloader
         {
             get
             {
-                return _historyMenuItemRedownload ?? (_historyMenuItemRedownload = new RelayCommand(
+                return _historyMenuItemRedownload ??= new RelayCommand(
                     param =>
                     {
                         if (string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
@@ -329,7 +328,7 @@ namespace MediaDownloader
                         YouTubeLink = DownloadHistorySelectedItem?.Url;
                         StartDownload();
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -337,7 +336,7 @@ namespace MediaDownloader
         {
             get
             {
-                return _historyMenuItemCopyLink ?? (_historyMenuItemCopyLink = new RelayCommand(
+                return _historyMenuItemCopyLink ??= new RelayCommand(
                     param =>
                     {
                         if (!string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
@@ -345,7 +344,7 @@ namespace MediaDownloader
                             Clipboard.SetText(DownloadHistorySelectedItem.Url);
                         }
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -353,7 +352,7 @@ namespace MediaDownloader
         {
             get
             {
-                return _historyMenuItemRemoveFromHistory ?? (_historyMenuItemRemoveFromHistory = new RelayCommand(
+                return _historyMenuItemRemoveFromHistory ??= new RelayCommand(
                     param =>
                     {
                         if (DownloadHistorySelectedItem != null)
@@ -362,7 +361,7 @@ namespace MediaDownloader
                             DownloadHistory.View.Refresh();
                         }
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -370,13 +369,13 @@ namespace MediaDownloader
         {
             get
             {
-                return _historyMenuItemClearHistory ?? (_historyMenuItemClearHistory = new RelayCommand(
+                return _historyMenuItemClearHistory ??= new RelayCommand(
                     param =>
                     {
                         _storage.ClearHistory();
                         DownloadHistory.View.Refresh();
                     },
-                    param => true));
+                    param => true);
             }
         }
 
@@ -425,8 +424,7 @@ namespace MediaDownloader
         public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         public string UserVideosFolder =>
-            _userVideosFolder ??
-            (_userVideosFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
+            _userVideosFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
 
         public string YouTubeLink
         {
