@@ -6,19 +6,19 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>1efe5ccb-f49f-41eb-9a2e-3700b8b27404</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>MediaDownloaderInstaller</OutputName>
+    <OutputName>MediaDownloaderSetup</OutputName>
     <OutputType>Bundle</OutputType>
     <Name>MediaDownloaderInstaller</Name>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\out\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\out\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>

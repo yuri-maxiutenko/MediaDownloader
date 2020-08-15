@@ -13,12 +13,12 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\out\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug\netcoreapp3.1</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\out\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\bin\Release\netcoreapp3.1</DefineConstants>
   </PropertyGroup>
@@ -53,7 +53,7 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir $(SolutionDir)MediaDownloader\$(OutDir)netcoreapp3.1 -gg -out $(ProjectDir)Components.wxs -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t $(ProjectDir)HeatFilters.xslt</PreBuildEvent>
+    <PreBuildEvent>"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir $(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\netcoreapp3.1 -gg -out $(ProjectDir)Components.wxs -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t $(ProjectDir)HeatFilters.xslt</PreBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.

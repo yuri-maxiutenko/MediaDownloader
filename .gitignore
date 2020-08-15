@@ -342,3 +342,4 @@ healthchecksdb
 /MediaDownloader/Data.db-wal
 /MediaDownloader/Data.db-shm
 /MediaDownloader/Data.db
+/out
