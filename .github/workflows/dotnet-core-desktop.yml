@@ -81,4 +81,4 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Build the application
-      run: msbuild $env:Solution_Name /nologo /p:Platform="x86" /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /nologo /p:Configuration=$env:Configuration
