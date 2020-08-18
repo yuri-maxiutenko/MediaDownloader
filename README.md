@@ -22,7 +22,7 @@ Curently **Media Downloader** is localized to English and Russian. The applicati
 
 ## Requirements
 
-**.NET Framework 4.7.2 or higher**
+**.NET Core 3.1 Desktop Runtime or higher**
 
 ## Screenshots
 
