@@ -22,7 +22,7 @@ Curently **Media Downloader** is localized to English and Russian. The applicati
 
 ## Requirements
 
-**.NET Core 3.1 Desktop Runtime or higher**
+**![.NET Core 3.1 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1) or higher**
 
 ## Screenshots
 
