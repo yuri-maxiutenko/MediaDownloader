@@ -110,7 +110,7 @@ jobs:
 
     # Upload release asset:   https://github.com/actions/upload-release-asset
     - name: Update release asset zip
-      id: upload-release-asset
+      id: upload-release-asset-zip
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -120,8 +120,8 @@ jobs:
         asset_name: ${{ env.Installer_Name }}.zip
         asset_content_type: application/zip
 
-      - name: Update release asset msi
-      id: upload-release-asset
+    - name: Update release asset msi
+      id: upload-release-asset-msi
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -131,8 +131,8 @@ jobs:
         asset_name: ${{ env.Installer_Name_Msi }}.zip
         asset_content_type: application/zip
 
-      - name: Update release asset exe
-      id: upload-release-asset
+    - name: Update release asset exe
+      id: upload-release-asset-exe
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
