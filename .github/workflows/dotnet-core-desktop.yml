@@ -94,7 +94,7 @@ jobs:
       run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Msi -DestinationPath $env:Output_Path\$env:Installer_Name_Msi.zip
 
     - name: Archive exe
-      run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Exe -DestinationPath $env:Output_Path\$env:$env:Installer_Name_Exe.zip
+      run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Exe -DestinationPath $env:Output_Path\$env:Installer_Name_Exe.zip
 
     # Create the release:  https://github.com/actions/create-release
     - name: Create release
