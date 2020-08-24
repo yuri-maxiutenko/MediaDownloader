@@ -82,7 +82,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Build the application
-      run: msbuild $env:Solution_Name /nologo /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /nologo /p:Configuration=$env:Configuration /p:PublicRelease=true
       env:
         Configuration: ${{ matrix.configuration }}
         
@@ -97,8 +97,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ github.ref }}-release
-        release_name:  Media Downloader
+        tag_name: refs/tags/v$env:GitBuildVersion
+        release_name:  Media Downloader $env:GitBuildVersion
         draft: false
         prerelease: false
 

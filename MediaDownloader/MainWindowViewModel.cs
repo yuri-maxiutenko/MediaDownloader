@@ -831,7 +831,7 @@ namespace MediaDownloader
 
                 return success;
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 status = DownloadStatus.Cancel;
                 throw;
