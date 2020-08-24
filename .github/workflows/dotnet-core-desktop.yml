@@ -58,7 +58,7 @@ jobs:
       Build_Path: MediaDownloader\bin\Release\netcoreapp3.1 
       Installer_Name_Msi: MediaDownloaderSetup.msi
       Installer_Name_Exe: MediaDownloaderSetup.exe
-      Installer_Name: MediaDownloaderSetup
+      Installer_Name: MediaDownloader
 
     steps:
     - name: Checkout
