@@ -88,7 +88,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
         
     - name: Archive binaries
-      run: Compress-Archive -Path $env:Build_Path\*.* -DestinationPath $env:Output_Path\$env:Installer_Name.zip
+      run: Compress-Archive -Path $env:Build_Path\* -DestinationPath $env:Output_Path\$env:Installer_Name.zip
 
     - name: Archive msi
       run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Msi -DestinationPath $env:Output_Path\$env:Installer_Name_Msi.zip
