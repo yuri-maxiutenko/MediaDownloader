@@ -55,9 +55,10 @@ jobs:
     env:
       Solution_Name: MediaDownloader.sln                        # Replace with your solution name, i.e. MyWpfApp.sln.
       Output_Path: out
+      Build_Path: MediaDownloader\bin\Release\netcoreapp3.1 
       Installer_Name_Msi: MediaDownloaderSetup.msi
       Installer_Name_Exe: MediaDownloaderSetup.exe
-      Installer_Archive: MediaDownloaderSetup.zip
+      Installer_Name: MediaDownloader
 
     steps:
     - name: Checkout
@@ -82,13 +83,18 @@ jobs:
         Configuration: ${{ matrix.configuration }}
 
     - name: Build the application
-      run: msbuild $env:Solution_Name /nologo /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /nologo /p:Configuration=$env:Configuration /p:PublicRelease=true
       env:
         Configuration: ${{ matrix.configuration }}
         
-    # Archive the package
-    - name: Create archive
-      run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Exe -DestinationPath $env:Output_Path\$env:Installer_Archive
+    - name: Archive binaries
+      run: Compress-Archive -Path $env:Build_Path\* -DestinationPath $env:Output_Path\$env:Installer_Name.zip
+
+    - name: Archive msi
+      run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Msi -DestinationPath $env:Output_Path\$env:Installer_Name_Msi.zip
+
+    - name: Archive exe
+      run: Compress-Archive -Path $env:Output_Path\$env:Installer_Name_Exe -DestinationPath $env:Output_Path\$env:Installer_Name_Exe.zip
 
     # Create the release:  https://github.com/actions/create-release
     - name: Create release
@@ -97,19 +103,41 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ github.ref }}-release
-        release_name:  Media Downloader
+        tag_name: refs/tags/v${{ env.GitBuildVersion }}
+        release_name:  Media Downloader ${{ env.GitBuildVersion }}
         draft: false
         prerelease: false
 
     # Upload release asset:   https://github.com/actions/upload-release-asset
-    - name: Update release asset
-      id: upload-release-asset
+    - name: Update release asset zip
+      id: upload-release-asset-zip
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}  # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-        asset_path: ${{ env.Output_Path }}\${{ env.Installer_Archive }}
-        asset_name: ${{ env.Installer_Archive }}
+        asset_path: ${{ env.Output_Path }}\${{ env.Installer_Name }}.zip
+        asset_name: ${{ env.Installer_Name }}.zip
+        asset_content_type: application/zip
+
+    - name: Update release asset msi
+      id: upload-release-asset-msi
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}  # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: ${{ env.Output_Path }}\${{ env.Installer_Name_Msi }}.zip
+        asset_name: ${{ env.Installer_Name_Msi }}.zip
+        asset_content_type: application/zip
+
+    - name: Update release asset exe
+      id: upload-release-asset-exe
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}  # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+        asset_path: ${{ env.Output_Path }}\${{ env.Installer_Name_Exe }}.zip
+        asset_name: ${{ env.Installer_Name_Exe }}.zip
         asset_content_type: application/zip
