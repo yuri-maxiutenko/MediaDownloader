@@ -22,9 +22,9 @@ Curently **Media Downloader** is localized to English and Russian. The applicati
 
 ## Requirements
 
-**![.NET Core 3.1 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1) or higher**
+**[.NET Core 3.1 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet-core/3.1) or higher**
 
-Also, **youtube-dl** requires **![Microsoft Visual C++ 2010 Redistributable Package (x86)](https://www.microsoft.com/en-us/download/details.aspx?id=5555)**.
+Also, **youtube-dl** requires **[Microsoft Visual C++ 2010 Redistributable Package (x86)](https://www.microsoft.com/en-us/download/details.aspx?id=5555)**.
 
 ## Screenshots
 
