@@ -17,6 +17,12 @@
     <?define UpgradeCode = "006c680b-7607-4170-9f90-53d7a69866ec"?>
     <?endif?>
 
+    <?if $(var.Platform) = "x64" ?>
+    <?define ProgramFilesFolder = "ProgramFiles64Folder"?>
+    <?else?>
+    <?define ProgramFilesFolder = "ProgramFilesFolder"?>
+    <?endif?>
+
     <Product Id="*"
              Name="$(var.ProductName)"
              Language="1033"
@@ -48,7 +54,7 @@
             <Directory Id="ProgramMenuFolder">
                 <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)" />
             </Directory>
-            <Directory Id="ProgramFilesFolder">
+            <Directory Id="$(var.ProgramFilesFolder)">
                 <Directory Id="AppRootDirectory" Name="$(var.Manufacturer)">
                     <Directory Id="INSTALLDIR" Name="$(var.ProductName)">
                     </Directory>
