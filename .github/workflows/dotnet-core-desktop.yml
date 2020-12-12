@@ -90,9 +90,6 @@ jobs:
         Configuration: ${{ matrix.configuration }}
         Platform: ${{ matrix.platform }}
     
-    - name: Create out directory
-      run: mkdir $env:Output_Path
-    
     - name: Archive binaries
       run: Compress-Archive -Path $env:Build_Path\* -DestinationPath $env:Output_Path\$env:Installer_Name.zip
 
