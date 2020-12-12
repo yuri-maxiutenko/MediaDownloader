@@ -68,7 +68,7 @@
             <Component Id="MediaDownloaderComponent" Directory="INSTALLDIR"
                        Guid="{66CF73EA-F47C-4617-88D9-3D03204DDD95}">
                 <File Name="MediaDownloader.exe" Id="MediaDownloader.exe" KeyPath="yes"
-                      Source="$(var.MediaDownloader.TargetDir)MediaDownloader.exe" />
+                      Source="$(var.SourceDir)\MediaDownloader.exe" />
             </Component>
         </ComponentGroup>
 

@@ -63,9 +63,11 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>dotnet publish $(SolutionDir)MediaDownloader\MediaDownloader.csproj -r win-$(PlatformName) -p:PublishSingleFile=true --self-contained true
-            xcopy $(SolutionDir)third-party $(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\ /E /Y
-            "C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir $(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish -gg -out $(ProjectDir)Components.wxs -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t $(ProjectDir)HeatFilters.xslt</PreBuildEvent>
+    <PreBuildEvent>dotnet publish $(SolutionDir)MediaDownloader\MediaDownloader.csproj -c $(ConfigurationName) -r win-$(PlatformName) -p:PublishSingleFile=true --self-contained true
+
+xcopy $(SolutionDir)third-party $(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\ /E /Y
+
+"C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir $(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish -gg -out $(ProjectDir)Components.wxs -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t $(ProjectDir)HeatFilters.xslt</PreBuildEvent>
   </PropertyGroup>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
