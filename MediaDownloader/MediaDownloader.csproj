@@ -1,68 +1,81 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>true</UseWindowsForms>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ApplicationIcon>Images\icon.ico</ApplicationIcon>
-    <Authors>Yuri Maxiutenko</Authors>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Platforms>AnyCPU;x64</Platforms>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<ApplicationIcon>Images\icon.ico</ApplicationIcon>
+		<Authors>Yuri Maxiutenko</Authors>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Images\icon128.png" />
-    <None Remove="Images\icon16.png" />
-    <None Remove="Images\icon256.png" />
-    <None Remove="Images\icon32.png" />
-    <None Remove="Images\icon48.png" />
-    <None Remove="Images\icon512.png" />
-    <None Remove="Images\icon64.png" />
-    <None Remove="Images\icon_download.png" />
-    <None Remove="Images\icon_show.png" />
-    <None Remove="Images\icon_stop.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Images\icon128.png" />
+		<None Remove="Images\icon16.png" />
+		<None Remove="Images\icon256.png" />
+		<None Remove="Images\icon32.png" />
+		<None Remove="Images\icon48.png" />
+		<None Remove="Images\icon512.png" />
+		<None Remove="Images\icon64.png" />
+		<None Remove="Images\icon_download.png" />
+		<None Remove="Images\icon_show.png" />
+		<None Remove="Images\icon_stop.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Properties\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Models\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.3.37">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NLog" Version="4.7.6" />
-    <PackageReference Include="WiX" Version="3.11.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.3.37">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="NLog" Version="4.7.7" />
+		<PackageReference Include="WiX" Version="3.11.2" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MediaDownloader.Data\MediaDownloader.Data.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MediaDownloader.Data\MediaDownloader.Data.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Images\icon_download.png" />
-    <Resource Include="Images\icon_show.png" />
-    <Resource Include="Images\icon_stop.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Images\icon_download.png" />
+		<Resource Include="Images\icon_show.png" />
+		<Resource Include="Images\icon_stop.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\Resources.ru-RU.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
 
+	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 </Project>

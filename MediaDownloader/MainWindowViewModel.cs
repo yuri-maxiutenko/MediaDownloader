@@ -24,6 +24,7 @@ namespace MediaDownloader
     internal enum DownloadFormat
     {
         Best,
+        BestMp4,
         BestDirectLink,
         AudioOnly
     }
@@ -680,6 +681,12 @@ namespace MediaDownloader
                     Format = DownloadFormat.Best,
                     Name = Resources.DownloaderFormatBestName,
                     Option = Resources.DownloaderOptionFormatBest
+                },
+                new DownloadOption
+                {
+                    Format = DownloadFormat.BestMp4,
+                    Name = Resources.DownloaderFormatBestMp4Name,
+                    Option = Resources.DownloaderOptionFormatBestMp4
                 },
                 new DownloadOption
                 {

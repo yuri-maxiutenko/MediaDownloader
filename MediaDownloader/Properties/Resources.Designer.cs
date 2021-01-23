@@ -133,6 +133,15 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Best quality MP4 video.
+        /// </summary>
+        public static string DownloaderFormatBestMp4Name {
+            get {
+                return ResourceManager.GetString("DownloaderFormatBestMp4Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Best quality video.
         /// </summary>
         public static string DownloaderFormatBestName {
@@ -178,7 +187,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best.
+        ///   Looks up a localized string similar to bestvideo+bestaudio/best.
         /// </summary>
         public static string DownloaderOptionFormatBest {
             get {
@@ -192,6 +201,15 @@ namespace MediaDownloader.Properties {
         public static string DownloaderOptionFormatBestDirectLink {
             get {
                 return ResourceManager.GetString("DownloaderOptionFormatBestDirectLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best.
+        /// </summary>
+        public static string DownloaderOptionFormatBestMp4 {
+            get {
+                return ResourceManager.GetString("DownloaderOptionFormatBestMp4", resourceCulture);
             }
         }
         
