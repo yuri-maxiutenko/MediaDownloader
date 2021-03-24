@@ -8,10 +8,10 @@ Just a small user-friendly UI wrapper (C#/WPF, .NET Core) over the great video d
 
 Currently the application supports the following download formats:
 
-* best video quality overall;
-* * best video quality overall;
-* best video quality available via direct link;
-* audio only.
+* Best quality video
+* Best quality MP4 video
+* Best quality video available by direct link
+* Audio only
 
 Also, **Media Downloader** supports download history and stores the list of recently used folders.
 
