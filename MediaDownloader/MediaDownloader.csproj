@@ -10,7 +10,11 @@
 		<Authors>Yuri Maxiutenko</Authors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<Platforms>AnyCPU;x64</Platforms>
-	</PropertyGroup>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <SelfContained>true</SelfContained>
+        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    </PropertyGroup>
 
 	<ItemGroup>
 		<None Remove="Images\icon128.png" />
