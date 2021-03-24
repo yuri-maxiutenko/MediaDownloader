@@ -8,13 +8,14 @@ Just a small user-friendly UI wrapper (C#/WPF, .NET Core) over the great video d
 
 Currently the application supports the following download formats:
 
-* best video quality;
+* best video quality overall;
+* * best video quality overall;
 * best video quality available via direct link;
 * audio only.
 
 Also, **Media Downloader** supports download history and stores the list of recently used folders.
 
-Comes with an installer, which includes everything necessary: the application itself, **youtube-dl** and the [FFmpeg](https://ffmpeg.org/) converter.
+Comes with an installer, which includes everything necessary: the application itself, [youtube-dl](https://github.com/ytdl-org/youtube-dl) and the [FFmpeg](https://ffmpeg.org/) converter.
 
 The application is installed to current user's AppData folder and doesn't require administrator's permissions.
 
