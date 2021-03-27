@@ -187,7 +187,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bestvideo+bestaudio/best.
+        ///   Looks up a localized string similar to bestvideo+bestaudio/bestvideo[ext=webm]+bestaudio[ext=webm]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best.
         /// </summary>
         public static string DownloaderOptionFormatBest {
             get {
@@ -503,11 +503,29 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to \[download\]\s* (.*?)\s*has already been downloaded and merged.
+        /// </summary>
+        public static string SearchPatternAlreadyDownloadedFilePath {
+            get {
+                return ResourceManager.GetString("SearchPatternAlreadyDownloadedFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (\[download\]\s*)(\S*)(\s*)% of.
         /// </summary>
         public static string SearchPatternDownloadProgress {
             get {
                 return ResourceManager.GetString("SearchPatternDownloadProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to \[ffmpeg\]\s*Merging formats into\s*&quot;(.*)&quot;.
+        /// </summary>
+        public static string SearchPatternResultFilePath {
+            get {
+                return ResourceManager.GetString("SearchPatternResultFilePath", resourceCulture);
             }
         }
         

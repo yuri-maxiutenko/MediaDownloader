@@ -1,267 +1,292 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-		Microsoft ResX Schema
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
-	
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="StartDownloadButtonText" xml:space="preserve">
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="StartDownloadButtonText" xml:space="preserve">
     <value>Download!</value>
   </data>
-	<data name="StopDownloadButtonText" xml:space="preserve">
+  <data name="StopDownloadButtonText" xml:space="preserve">
     <value>Stop!</value>
   </data>
-	<data name="BrowseButtonText" xml:space="preserve">
+  <data name="BrowseButtonText" xml:space="preserve">
     <value>Browse...</value>
   </data>
-	<data name="ClearButtonText" xml:space="preserve">
+  <data name="ClearButtonText" xml:space="preserve">
     <value>Clear</value>
   </data>
-	<data name="ShowDownloadedItemsButtonText" xml:space="preserve">
+  <data name="ShowDownloadedItemsButtonText" xml:space="preserve">
     <value>Show downloaded items</value>
   </data>
-	<data name="ShowLogExpanderText" xml:space="preserve">
+  <data name="ShowLogExpanderText" xml:space="preserve">
     <value>Show Log</value>
   </data>
-	<data name="ShowHistoryExpanderText" xml:space="preserve">
+  <data name="ShowHistoryExpanderText" xml:space="preserve">
     <value>Show History</value>
   </data>
-	<data name="DownloaderFileName" xml:space="preserve">
+  <data name="DownloaderFileName" xml:space="preserve">
     <value>youtube-dl.exe</value>
   </data>
-	<data name="ConverterDirectoryName" xml:space="preserve">
+  <data name="ConverterDirectoryName" xml:space="preserve">
     <value>ffmpeg</value>
   </data>
-	<data name="BinDirectoryName" xml:space="preserve">
+  <data name="BinDirectoryName" xml:space="preserve">
     <value>bin</value>
   </data>
-	<data name="DownloaderFormatBestName" xml:space="preserve">
+  <data name="DownloaderFormatBestName" xml:space="preserve">
     <value>Best quality video</value>
   </data>
-	<data name="DownloaderFormatBestMp4Name" xml:space="preserve">
+  <data name="DownloaderFormatBestMp4Name" xml:space="preserve">
     <value>Best quality MP4 video</value>
   </data>
-	<data name="DownloaderFormatBestDirectLinkName" xml:space="preserve">
+  <data name="DownloaderFormatBestDirectLinkName" xml:space="preserve">
     <value>Best quality video available by direct link</value>
   </data>
-	<data name="DownloaderFormatAudioOnlyName" xml:space="preserve">
+  <data name="DownloaderFormatAudioOnlyName" xml:space="preserve">
     <value>Audio only</value>
   </data>
-	<data name="DownloaderOptionFormatBest" xml:space="preserve">
-    <value>bestvideo+bestaudio/best</value>
+  <data name="DownloaderOptionFormatBest" xml:space="preserve">
+    <value>bestvideo+bestaudio/bestvideo[ext=webm]+bestaudio[ext=webm]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best</value>
   </data>
-	<data name="DownloaderOptionFormatBestMp4" xml:space="preserve">
+  <data name="DownloaderOptionFormatBestMp4" xml:space="preserve">
     <value>bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best</value>
   </data>
-	<data name="DownloaderOptionFormatBestDirectLink" xml:space="preserve">
+  <data name="DownloaderOptionFormatBestDirectLink" xml:space="preserve">
     <value>(bestvideo+bestaudio/best)[protocol^=http]</value>
   </data>
-	<data name="DownloaderOptionFormatAudioOnly" xml:space="preserve">
+  <data name="DownloaderOptionFormatAudioOnly" xml:space="preserve">
     <value>mp3/ogg/m4a/aac</value>
   </data>
-	<data name="DownloaderOptionEncodingUtf8" xml:space="preserve">
+  <data name="DownloaderOptionEncodingUtf8" xml:space="preserve">
     <value>--encoding utf-8</value>
   </data>
-	<data name="DownloaderOptionGetFilename" xml:space="preserve">
+  <data name="DownloaderOptionGetFilename" xml:space="preserve">
     <value>--get-filename</value>
   </data>
-	<data name="DownloaderItemTitleTemplate" xml:space="preserve">
+  <data name="DownloaderItemTitleTemplate" xml:space="preserve">
     <value>%(title)s.%(ext)s</value>
   </data>
-	<data name="DownloaderOptionConverterLocation" xml:space="preserve">
+  <data name="DownloaderOptionConverterLocation" xml:space="preserve">
     <value>--ffmpeg-location</value>
   </data>
-	<data name="DownloaderOptionNoOriginalDateTime" xml:space="preserve">
+  <data name="DownloaderOptionNoOriginalDateTime" xml:space="preserve">
     <value>--no-mtime</value>
   </data>
-	<data name="DownloaderOptionNoPlaylist" xml:space="preserve">
+  <data name="DownloaderOptionNoPlaylist" xml:space="preserve">
     <value>--no-playlist</value>
   </data>
-	<data name="DownloaderOptionSocketTimeout" xml:space="preserve">
+  <data name="DownloaderOptionSocketTimeout" xml:space="preserve">
     <value>--socket-timeout</value>
   </data>
-	<data name="DownloaderOptionRetries" xml:space="preserve">
+  <data name="DownloaderOptionRetries" xml:space="preserve">
     <value>--retries</value>
   </data>
-	<data name="ExplorerFileName" xml:space="preserve">
+  <data name="ExplorerFileName" xml:space="preserve">
     <value>explorer.exe</value>
   </data>
-	<data name="ExplorerOptionSelect" xml:space="preserve">
+  <data name="ExplorerOptionSelect" xml:space="preserve">
     <value>/select</value>
   </data>
-	<data name="DownloadFormatCaption" xml:space="preserve">
+  <data name="DownloadFormatCaption" xml:space="preserve">
     <value>Choose what you want to download:</value>
   </data>
-	<data name="DownloadFolderCaption" xml:space="preserve">
+  <data name="DownloadFolderCaption" xml:space="preserve">
     <value>Select the download folder:</value>
   </data>
-	<data name="DownloadLinkCaption" xml:space="preserve">
+  <data name="DownloadLinkCaption" xml:space="preserve">
     <value>Put link to a video here:</value>
   </data>
-	<data name="LogMessageDownloadStart" xml:space="preserve">
+  <data name="LogMessageDownloadStart" xml:space="preserve">
     <value>Starting to download your files...</value>
   </data>
-	<data name="LogMessageDownloadSuccess" xml:space="preserve">
+  <data name="LogMessageDownloadSuccess" xml:space="preserve">
     <value>Congratulations! Your download successfully completed!</value>
-</data>
-	<data name="LogMessageLocationOfFile" xml:space="preserve">
-      <value>You may find your file here: {0}</value>
   </data>
-	<data name="LogMessageLocationOfFiles" xml:space="preserve">
-      <value>You may find your files here: {0}</value>
+  <data name="LogMessageLocationOfFile" xml:space="preserve">
+    <value>You may find your file here: {0}</value>
   </data>
-	<data name="LogMessageDownloadFail" xml:space="preserve">
+  <data name="LogMessageLocationOfFiles" xml:space="preserve">
+    <value>You may find your files here: {0}</value>
+  </data>
+  <data name="LogMessageDownloadFail" xml:space="preserve">
     <value>Download failed.</value>
   </data>
-	<data name="LogMessageDownloadCancel" xml:space="preserve">
+  <data name="LogMessageDownloadCancel" xml:space="preserve">
     <value>You have cancelled the download.</value>
   </data>
-	<data name="LogMessageFileNameRetrieved" xml:space="preserve">
+  <data name="LogMessageFileNameRetrieved" xml:space="preserve">
     <value>File name successfully retrieved: {0}</value>
   </data>
-	<data name="SearchPatternDownloadProgress" xml:space="preserve">
+  <data name="SearchPatternDownloadProgress" xml:space="preserve">
     <value>(\[download\]\s*)(\S*)(\s*)% of</value>
   </data>
-	<data name="LogMessageDownloadingFile" xml:space="preserve">
+  <data name="SearchPatternResultFilePath" xml:space="preserve">
+    <value>\[ffmpeg\]\s*Merging formats into\s*"(.*)"</value>
+  </data>
+  <data name="SearchPatternAlreadyDownloadedFilePath" xml:space="preserve">
+    <value>\[download\]\s* (.*?)\s*has already been downloaded and merged</value>
+  </data>
+  <data name="LogMessageDownloadingFile" xml:space="preserve">
     <value>Downloading the file: {0}
 Url: {1}</value>
   </data>
-	<data name="MessageDownloading" xml:space="preserve">
+  <data name="MessageDownloading" xml:space="preserve">
     <value>Downloading: {0}</value>
   </data>
-	<data name="MessageDownloadComplete" xml:space="preserve">
+  <data name="MessageDownloadComplete" xml:space="preserve">
     <value>Download complete! {0}</value>
   </data>
-	<data name="MessageDownloadFailed" xml:space="preserve">
+  <data name="MessageDownloadFailed" xml:space="preserve">
     <value>Download Failed! {0}</value>
   </data>
-	<data name="MessageDownloadCancelled" xml:space="preserve">
+  <data name="MessageDownloadCancelled" xml:space="preserve">
     <value>Download cancelled! {0}</value>
   </data>
-	<data name="MessageDownloadPreparing" xml:space="preserve">
+  <data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Preparing to download...</value>
   </data>
-	<data name="AppName" xml:space="preserve">
+  <data name="AppName" xml:space="preserve">
     <value>Media Downloader</value>
   </data>
-	<data name="HistoryMenuItemOpenFolder" xml:space="preserve">
+  <data name="HistoryMenuItemOpenFolder" xml:space="preserve">
     <value>Open Download Folder</value>
   </data>
-	<data name="HistoryMenuItemRedownload" xml:space="preserve">
+  <data name="HistoryMenuItemRedownload" xml:space="preserve">
     <value>Redownload</value>
   </data>
-	<data name="HistoryMenuItemCopyLink" xml:space="preserve">
+  <data name="HistoryMenuItemCopyLink" xml:space="preserve">
     <value>Copy Download Link</value>
   </data>
-	<data name="HistoryMenuItemRemoveFromHistory" xml:space="preserve">
+  <data name="HistoryMenuItemRemoveFromHistory" xml:space="preserve">
     <value>Remove From History</value>
   </data>
-	<data name="HistoryMenuItemClearHistory" xml:space="preserve">
+  <data name="HistoryMenuItemClearHistory" xml:space="preserve">
     <value>Clear History</value>
   </data>
-	<data name="DownloadStatusSuccess" xml:space="preserve">
+  <data name="DownloadStatusSuccess" xml:space="preserve">
     <value>Success</value>
   </data>
-	<data name="DownloadStatusFail" xml:space="preserve">
+  <data name="DownloadStatusFail" xml:space="preserve">
     <value>Fail</value>
   </data>
-	<data name="DownloadStatusCancel" xml:space="preserve">
+  <data name="DownloadStatusCancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-	<data name="DownloadStatusUnknown" xml:space="preserve">
+  <data name="DownloadStatusUnknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
 </root>

@@ -20,6 +20,7 @@ using MediaDownloader.Properties;
 using Microsoft.Extensions.Configuration;
 
 using NLog;
+using NLog.Common;
 using NLog.Config;
 
 namespace MediaDownloader
@@ -45,6 +46,7 @@ namespace MediaDownloader
         private CancellationTokenSource _cancellation;
 
         private ICommand _clearButtonClick;
+        private DownloadedItemInfo _currentDownloadedItem;
         private ICommand _downloadButtonClick;
 
         private BitmapImage _downloadButtonIcon;
@@ -570,9 +572,9 @@ namespace MediaDownloader
 
         private void Initialize()
         {
-            NLog.Common.InternalLogger.LogLevel = LogLevel.Debug;
-            NLog.Common.InternalLogger.LogToConsole = true;
-            NLog.Common.InternalLogger.LogFile = @"C:\Users\thewo\Documents\nlog.log";
+            InternalLogger.LogLevel = LogLevel.Debug;
+            InternalLogger.LogToConsole = true;
+            InternalLogger.LogFile = @"C:\Users\thewo\Documents\nlog.log";
             Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
             LogManager.Configuration = new XmlLoggingConfiguration(NlogSettingsFilePath);
 
@@ -711,10 +713,15 @@ namespace MediaDownloader
 
                     Logger.Info(Resources.MessageDownloading, entry);
 
-                    var currentItemDownloadPath = Path.Combine(LastDownloadedItem.Path, LastDownloadedItem.Name);
+                    _currentDownloadedItem = new DownloadedItemInfo
+                    {
+                        Url = LastDownloadedItem.Url,
+                        Name = LastDownloadedItem.Name,
+                        Path = Path.Combine(LastDownloadedItem.Path, LastDownloadedItem.Name)
+                    };
 
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile, currentItemDownloadPath,
+                    DownloadLog = string.Format(Resources.LogMessageDownloadingFile, _currentDownloadedItem,
                         LastDownloadedItem.Url);
                     DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
 
@@ -723,7 +730,7 @@ namespace MediaDownloader
                     while (!success && retryCounter < DownloadRetriesNumber)
                     {
                         success = DownloadItem(LastDownloadedItem.Name, LastDownloadedItem.Url,
-                            currentItemDownloadPath);
+                            _currentDownloadedItem.Path);
                         retryCounter++;
                     }
 
@@ -731,7 +738,8 @@ namespace MediaDownloader
 
                     _downloadProgressSectionMin += DownloadProgressSectionStep;
 
-                    LastDownloadedItem.Path = _isMultipleFiles ? LastDownloadedItem.Path : currentItemDownloadPath;
+                    LastDownloadedItem.Name = _currentDownloadedItem.Name;
+                    LastDownloadedItem.Path = _isMultipleFiles ? LastDownloadedItem.Path : _currentDownloadedItem.Path;
                 }
             }
             catch (OperationCanceledException e)
@@ -810,6 +818,11 @@ namespace MediaDownloader
 
                     DownloadPercentText =
                         $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
+                }
+                else if (Utilities.TryParseResultFilePath(record, out var path))
+                {
+                    _currentDownloadedItem.Name = Path.GetFileName(path);
+                    _currentDownloadedItem.Path = path;
                 }
 
                 Logger.Info(record);

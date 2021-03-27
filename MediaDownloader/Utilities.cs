@@ -11,8 +11,8 @@ namespace MediaDownloader
     {
         public static bool IsValidUrl(string url)
         {
-            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
-                   && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult) &&
+                   (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
         public static bool TryParseDownloadProgress(string record, out double percent)
@@ -25,11 +25,34 @@ namespace MediaDownloader
 
             if (matches.Success && matches.Groups.Count >= 3)
             {
-                return double.TryParse(matches.Groups[2].ToString(), NumberStyles.Number, 
-                    CultureInfo.InvariantCulture, out percent);
+                return double.TryParse(matches.Groups[2].ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                    out percent);
             }
 
             return false;
+        }
+
+        public static bool TryParseResultFilePath(string record, out string path)
+        {
+            path = null;
+
+            var regex = new Regex(Resources.SearchPatternResultFilePath,
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            var matches = regex.Match(record);
+
+            if (!matches.Success || matches.Groups.Count < 2)
+            {
+                regex = new Regex(Resources.SearchPatternAlreadyDownloadedFilePath,
+                    RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.RightToLeft);
+                matches = regex.Match(record);
+                if (!matches.Success || matches.Groups.Count < 2)
+                {
+                    return false;
+                }
+            }
+
+            path = matches.Groups[1].ToString();
+            return true;
         }
 
         public static string SanitizeFileName(string fileName)
