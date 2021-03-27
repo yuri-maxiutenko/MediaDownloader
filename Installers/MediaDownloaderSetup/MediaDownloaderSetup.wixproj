@@ -63,9 +63,9 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>dotnet publish "$(SolutionDir)MediaDownloader\MediaDownloader.csproj" -c $(ConfigurationName) -r win-$(PlatformName) -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:IncludeNativeLibrariesForSelfExtract=true --self-contained true -o "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\"
+    <PreBuildEvent>dotnet publish "$(SolutionDir)MediaDownloader\MediaDownloader.csproj" -c $(ConfigurationName) -r win-$(PlatformName) -p:PublishReadyToRun=true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true --self-contained true -o "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\"
 
-xcopy "$(SolutionDir)third-party\" "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\" /E /Y
+xcopy "$(SolutionDir)third-party" "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\" /E /Y
 copy "$(SolutionDir)MediaDownloader\%2a.json" "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\" /Y
 copy "$(SolutionDir)MediaDownloader\%2a.config" "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish\" /Y
 "C:\Program Files (x86)\WiX Toolset v3.11\bin\heat.exe" dir "$(SolutionDir)MediaDownloader\bin\$(ConfigurationName)\net5.0-windows\win-$(PlatformName)\publish" -gg -out "$(ProjectDir)Components.wxs" -srd -scom -sfrag -sreg -dr INSTALLDIR -cg ProductComponents -var var.SourceDir -t "$(ProjectDir)HeatFilters.xslt"</PreBuildEvent>
