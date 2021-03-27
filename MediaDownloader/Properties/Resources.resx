@@ -160,7 +160,7 @@
     <value>Audio only</value>
   </data>
   <data name="DownloaderOptionFormatBest" xml:space="preserve">
-    <value>bestvideo+bestaudio/bestvideo[ext=webm]+bestaudio[ext=webm]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best</value>
+    <value>bestvideo+bestaudio/best</value>
   </data>
   <data name="DownloaderOptionFormatBestMp4" xml:space="preserve">
     <value>bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best</value>

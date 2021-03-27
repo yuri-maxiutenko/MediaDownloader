@@ -187,7 +187,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bestvideo+bestaudio/bestvideo[ext=webm]+bestaudio[ext=webm]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best.
+        ///   Looks up a localized string similar to bestvideo+bestaudio/best.
         /// </summary>
         public static string DownloaderOptionFormatBest {
             get {
