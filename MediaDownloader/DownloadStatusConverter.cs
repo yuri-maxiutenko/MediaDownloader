@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 
+using MediaDownloader.Models;
 using MediaDownloader.Properties;
 
 namespace MediaDownloader
@@ -10,20 +11,20 @@ namespace MediaDownloader
     [ValueConversion(typeof(DownloadStatus), typeof(string))]
     internal class DownloadStatusConverter : IValueConverter
     {
-        private Dictionary<DownloadStatus, string> _downloadStatusValues = new Dictionary<DownloadStatus, string>
-        {
-            {DownloadStatus.Success, Resources.DownloadStatusSuccess},
-            {DownloadStatus.Fail, Resources.DownloadStatusFail},
-            {DownloadStatus.Cancel, Resources.DownloadStatusCancel},
-            {DownloadStatus.Unknown, Resources.DownloadStatusUnknown},
-        };
-
-        private Dictionary<string, DownloadStatus> _downloadStatusKeys = new Dictionary<string, DownloadStatus>
+        private readonly Dictionary<string, DownloadStatus> _downloadStatusKeys = new()
         {
             {Resources.DownloadStatusSuccess, DownloadStatus.Success},
             {Resources.DownloadStatusFail, DownloadStatus.Fail},
             {Resources.DownloadStatusCancel, DownloadStatus.Cancel},
-            {Resources.DownloadStatusUnknown, DownloadStatus.Unknown},
+            {Resources.DownloadStatusUnknown, DownloadStatus.Unknown}
+        };
+
+        private readonly Dictionary<DownloadStatus, string> _downloadStatusValues = new()
+        {
+            {DownloadStatus.Success, Resources.DownloadStatusSuccess},
+            {DownloadStatus.Fail, Resources.DownloadStatusFail},
+            {DownloadStatus.Cancel, Resources.DownloadStatusCancel},
+            {DownloadStatus.Unknown, Resources.DownloadStatusUnknown}
         };
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

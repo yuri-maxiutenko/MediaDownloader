@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -11,6 +10,8 @@ using MediaDownloader.Properties;
 
 using Newtonsoft.Json;
 
+using NLog;
+
 namespace MediaDownloader
 {
     public class Downloader
@@ -19,17 +20,17 @@ namespace MediaDownloader
         private const int ProcessWaitTimeoutMs = 500;
 
         private readonly string _converterPath;
-
         private readonly string _downloaderPath;
 
-        public Downloader()
+        public Downloader(string downloaderPath, string converterPath)
         {
-            _downloaderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.DownloaderFileName);
-            _converterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Resources.ConverterDirectoryName,
-                Resources.BinDirectoryName);
+            _downloaderPath = downloaderPath;
+            _converterPath = converterPath;
         }
 
-        public bool TryGetItems(string link, string downloadOption, DataReceivedEventHandler onErrorReceived, 
+        public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
+        public bool TryGetItems(string link, string downloadOption, DataReceivedEventHandler onErrorReceived,
             CancellationToken cancelToken, out DownloadItem result)
         {
             result = new DownloadItem();
@@ -65,10 +66,7 @@ namespace MediaDownloader
 
                 downloaderProcess.ErrorDataReceived += onErrorReceived;
 
-                downloaderProcess.OutputDataReceived += (sender, args) =>
-                {
-                    outputReader.Append(args.Data);
-                };
+                downloaderProcess.OutputDataReceived += (sender, args) => { outputReader.Append(args.Data); };
 
                 downloaderProcess.Start();
 
@@ -101,7 +99,7 @@ namespace MediaDownloader
                 {
                     result.Entries = new List<DownloadItem>
                     {
-                        new DownloadItem
+                        new()
                         {
                             Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.Title), info.Ext),
                             Url = info.WebpageUrl

@@ -37,11 +37,6 @@
         match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 3 ) = '.log' ]"
         use="@Id" />
 
-    <xsl:key
-        name="TxtToRemove"
-        match="wix:Component[ substring( wix:File/@Source, string-length( wix:File/@Source ) - 3 ) = '.txt' ]"
-        use="@Id" />
-
     <!-- By default, copy all elements and nodes into the output... -->
     <xsl:template match="@*|node()">
         <xsl:copy>
@@ -54,6 +49,5 @@
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'PdbToRemove', @Id ) ]" />
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'DbToRemove', @Id ) ]" />
     <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'LogToRemove', @Id ) ]" />
-    <xsl:template match="*[ self::wix:Component or self::wix:ComponentRef ][ key( 'TxtToRemove', @Id ) ]" />
 
 </xsl:stylesheet>
