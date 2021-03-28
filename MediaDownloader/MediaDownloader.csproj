@@ -9,11 +9,7 @@
 		<ApplicationIcon>Images\icon.ico</ApplicationIcon>
 		<Authors>Yuri Maxiutenko</Authors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-		<Platforms>AnyCPU;x64</Platforms>
-        <PublishSingleFile>true</PublishSingleFile>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <SelfContained>true</SelfContained>
-        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <Platforms>AnyCPU;x64</Platforms>
     </PropertyGroup>
 
 	<ItemGroup>
