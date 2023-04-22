@@ -94,4 +94,10 @@
 	    <SubType>Designer</SubType>
 	  </Page>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\version.json">
+	    <Link>version.json</Link>
+	  </Content>
+	</ItemGroup>
 </Project>
