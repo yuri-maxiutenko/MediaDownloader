@@ -35,9 +35,7 @@
                       AllowSameVersionUpgrades="yes" />
 
         <Media Id="1" Cabinet="_494C9D65561241F4803B47835AD70ADC" EmbedCab="yes" />
-
-        <Property Id="ALLUSERS" Secure="yes" Value="2" />
-        <Property Id="MSIINSTALLPERUSER" Secure="yes" Value="1" />
+        
         <Property Id="ARPPRODUCTICON" Value="APPICON" />
         <Icon Id="APPICON" SourceFile="..\Common\Images\icon.ico" />
 
