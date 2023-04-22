@@ -13,12 +13,12 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\MediaDownloader\bin\Debug\net7.0-windows\win-x64\publish</DefineConstants>
+    <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug\net7.0-windows\win-x64\publish</DefineConstants>
     <OutputPath>..\..\out\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\MediaDownloader\bin\Release\net7.0-windows\win-x64\publish</DefineConstants>
+    <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\bin\Release\net7.0-windows\win-x64\publish</DefineConstants>
     <OutputPath>..\..\out\</OutputPath>
     <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
