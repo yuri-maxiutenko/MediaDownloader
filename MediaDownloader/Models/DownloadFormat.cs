@@ -1,10 +1,9 @@
-﻿namespace MediaDownloader.Models
+﻿namespace MediaDownloader.Models;
+
+public enum DownloadFormat
 {
-    public enum DownloadFormat
-    {
-        Best,
-        BestMp4,
-        BestDirectLink,
-        AudioOnly
-    }
+    Best,
+    BestMp4,
+    BestDirectLink,
+    AudioOnly
 }

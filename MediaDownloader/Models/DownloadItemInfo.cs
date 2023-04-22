@@ -1,9 +1,8 @@
-﻿namespace MediaDownloader.Models
+﻿namespace MediaDownloader.Models;
+
+public class DownloadedItemInfo
 {
-    public class DownloadedItemInfo
-    {
-        public string Name { get; set; }
-        public string Url { get; set; }
-        public string Path { get; set; }
-    }
+    public string Name { get; set; }
+    public string Url { get; set; }
+    public string Path { get; set; }
 }

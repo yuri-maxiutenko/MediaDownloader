@@ -1,10 +1,9 @@
-﻿namespace MediaDownloader.Models
+﻿namespace MediaDownloader.Models;
+
+internal enum DownloadStatus
 {
-    internal enum DownloadStatus
-    {
-        Success,
-        Fail,
-        Cancel,
-        Unknown
-    }
+    Success,
+    Fail,
+    Cancel,
+    Unknown
 }

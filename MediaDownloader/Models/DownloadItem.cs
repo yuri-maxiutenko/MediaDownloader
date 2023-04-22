@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace MediaDownloader.Models
-{
-    public class DownloadItem
-    {
-        public string Name { get; set; }
-        public string Url { get; set; }
-        public List<DownloadItem> Entries { get; set; }
+namespace MediaDownloader.Models;
 
-        public override string ToString()
-        {
-            return $"FileName={Name} Url={Url}";
-        }
+public class DownloadItem
+{
+    public string Name { get; set; }
+    public string Url { get; set; }
+    public List<DownloadItem> Entries { get; set; }
+
+    public override string ToString()
+    {
+        return $"FileName={Name} Url={Url}";
     }
 }

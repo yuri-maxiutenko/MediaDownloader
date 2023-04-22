@@ -29,28 +29,28 @@
              Version="$(var.ProductVersion)"
              Manufacturer="$(var.Manufacturer)"
              UpgradeCode="$(var.UpgradeCode)">
-        <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited" />
+        <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited"/>
 
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-                      AllowSameVersionUpgrades="yes" />
+                      AllowSameVersionUpgrades="yes"/>
 
-        <Media Id="1" Cabinet="_494C9D65561241F4803B47835AD70ADC" EmbedCab="yes" />
-        
-        <Property Id="ARPPRODUCTICON" Value="APPICON" />
-        <Icon Id="APPICON" SourceFile="..\Common\Images\icon.ico" />
+        <Media Id="1" Cabinet="_494C9D65561241F4803B47835AD70ADC" EmbedCab="yes"/>
+
+        <Property Id="ARPPRODUCTICON" Value="APPICON"/>
+        <Icon Id="APPICON" SourceFile="..\Common\Images\icon.ico"/>
 
         <Feature Id="ProductFeature" Title="[ProductName]" Level="1">
-            <ComponentGroupRef Id="ProductComponents" />
-            <ComponentGroupRef Id="MediaDownloaderComponents" />
-            <ComponentGroupRef Id="ShortcutComponents" />
+            <ComponentGroupRef Id="ProductComponents"/>
+            <ComponentGroupRef Id="MediaDownloaderComponents"/>
+            <ComponentGroupRef Id="ShortcutComponents"/>
         </Feature>
     </Product>
 
     <Fragment>
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="DesktopFolder" />
+            <Directory Id="DesktopFolder"/>
             <Directory Id="ProgramMenuFolder">
-                <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)" />
+                <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)"/>
             </Directory>
             <Directory Id="$(var.ProgramFilesFolder)">
                 <Directory Id="AppRootDirectory" Name="$(var.Manufacturer)">
@@ -66,7 +66,7 @@
             <Component Id="MediaDownloaderComponent" Directory="INSTALLDIR"
                        Guid="{66CF73EA-F47C-4617-88D9-3D03204DDD95}">
                 <File Name="MediaDownloader.exe" Id="MediaDownloader.exe" KeyPath="yes"
-                      Source="$(var.SourceDir)\MediaDownloader.exe" />
+                      Source="$(var.SourceDir)\MediaDownloader.exe"/>
             </Component>
         </ComponentGroup>
 
@@ -77,22 +77,22 @@
                           Directory="DesktopFolder"
                           Target="[#MediaDownloader.exe]"
                           WorkingDirectory="INSTALLDIR"
-                          Icon="APPICON" />
+                          Icon="APPICON"/>
                 <!--Remove desktop shortcut on uninstall-->
-                <RemoveFolder Id="DesktopFolder" On="uninstall" />
+                <RemoveFolder Id="DesktopFolder" On="uninstall"/>
                 <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="installed"
-                               Type="integer" Value="1" KeyPath="yes" />
+                               Type="integer" Value="1" KeyPath="yes"/>
             </Component>
 
             <Component Id="ApplicationShortcut" Guid="*" Directory="ApplicationProgramsFolder">
                 <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.ProductName)"
-                          Icon="APPICON" Target="[#MediaDownloader.exe]" WorkingDirectory="INSTALLDIR" />
+                          Icon="APPICON" Target="[#MediaDownloader.exe]" WorkingDirectory="INSTALLDIR"/>
                 <!--Remove application shortcut from Program Menu on uninstall-->
-                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
                 <!--Create application registry entry-->
                 <RegistryValue Root="HKCU" Key="Software\Microsoft\$(var.Manufacturer)\$(var.ProductName)"
                                Name="installed"
-                               Type="integer" Value="1" KeyPath="yes" />
+                               Type="integer" Value="1" KeyPath="yes"/>
             </Component>
         </ComponentGroup>
     </Fragment>
