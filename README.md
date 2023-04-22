@@ -1,6 +1,6 @@
 The Media Downloader Project
 ====================
-Just a small user-friendly UI wrapper (C#/WPF, .NET Core) over the great video downloading command-line utility [youtube-dl](https://github.com/ytdl-org/youtube-dl) which allows to download videos in different quality from various internet resources (YouTube, Vimeo, Facebook, you name it). Downloading playlists is supported too.
+Just a small user-friendly UI wrapper (C#/WPF, .NET) over the great video downloading command-line utility [yt-dlp](https://github.com/yt-dlp/yt-dlp) which allows to download videos in different quality from various internet resources (YouTube, Vimeo, Facebook, you name it). Downloading playlists is supported too.
 
 ## Main Features
 
@@ -15,7 +15,7 @@ Currently the application supports the following download formats:
 
 Also, **Media Downloader** supports download history and stores the list of recently used folders.
 
-Comes with an installer, which includes everything necessary: the application itself, [youtube-dl](https://github.com/ytdl-org/youtube-dl) and the [FFmpeg](https://ffmpeg.org/) converter.
+Comes with an installer, which includes everything necessary: the application itself, [yt-dlp](https://github.com/yt-dlp/yt-dlp) and the [FFmpeg](https://ffmpeg.org/) converter.
 
 The application is installed to current user's AppData folder and doesn't require administrator's permissions.
 
@@ -23,9 +23,9 @@ Curently **Media Downloader** is localized to English and Russian. The applicati
 
 ## Requirements
 
-Starting from version **2.1**, the application uses **[.NET 5 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/5.0)**. But you shouldn't need to install it, as Media Downloader is provided as **[a self-contained application](https://devblogs.microsoft.com/dotnet/app-trimming-in-net-5/)**.
+Starting from version **2.1**, the application uses **[.NET 7 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)**. But you shouldn't need to install it, as Media Downloader is provided as **[a self-contained application](https://devblogs.microsoft.com/dotnet/app-trimming-in-net-5/)**.
 
-Also, **youtube-dl** requires **[Microsoft Visual C++ 2010 Redistributable Package (x86)](https://www.microsoft.com/en-us/download/details.aspx?id=5555)**.
+Also, **yt-dlp** requires **[Microsoft Visual C++ 2010 Redistributable Package (x86)](https://www.microsoft.com/en-us/download/details.aspx?id=5555)**.
 
 ## Screenshots
 
