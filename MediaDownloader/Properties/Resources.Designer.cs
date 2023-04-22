@@ -105,7 +105,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to youtube-dl.exe.
+        ///   Looks up a localized string similar to yt-dlp.exe.
         /// </summary>
         public static string DownloaderFileName {
             get {
@@ -507,6 +507,15 @@ namespace MediaDownloader.Properties {
         public static string MessageDownloadPreparing {
             get {
                 return ResourceManager.GetString("MessageDownloadPreparing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Updating the downloader....
+        /// </summary>
+        public static string MessageUpdatingDownloader {
+            get {
+                return ResourceManager.GetString("MessageUpdatingDownloader", resourceCulture);
             }
         }
         

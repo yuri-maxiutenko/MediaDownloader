@@ -207,4 +207,7 @@
 	<data name="DownloadStatusUnknown" xml:space="preserve">
     <value>Неизвестно</value>
   </data>
+	<data name="MessageUpdatingDownloader" xml:space="preserve">
+    <value>Обновляем загрузчик...</value>
+  </data>
 </root>

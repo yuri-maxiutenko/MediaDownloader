@@ -139,7 +139,7 @@
     <value>Show History</value>
   </data>
   <data name="DownloaderFileName" xml:space="preserve">
-    <value>youtube-dl.exe</value>
+    <value>yt-dlp.exe</value>
   </data>
   <data name="ConverterDirectoryName" xml:space="preserve">
     <value>ffmpeg</value>
@@ -246,6 +246,9 @@
   <data name="LogMessageDownloadingFile" xml:space="preserve">
     <value>Downloading the file: {0}
 Url: {1}</value>
+  </data>
+  <data name="MessageUpdatingDownloader" xml:space="preserve">
+    <value>Updating the downloader...</value>
   </data>
   <data name="MessageDownloading" xml:space="preserve">
     <value>Downloading:</value>

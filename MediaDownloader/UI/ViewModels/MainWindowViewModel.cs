@@ -69,7 +69,6 @@ public sealed class MainWindowViewModel : BaseViewModel
     private int _downloadProgressValue;
 
     private Visibility _downloadProgressVisibility;
-    private int _downloadProgressWidth;
     private bool _generalInterfaceIsEnabled;
     private ICommand _historyMenuItemClearHistory;
     private ICommand _historyMenuItemCopyLink;
@@ -297,15 +296,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadProgressMax, value);
     }
 
-    public int DownloadProgressWidth
-    {
-        get => _downloadProgressWidth;
-        set => SetField(ref _downloadProgressWidth, value);
-    }
-
     public List<DownloadOption> DownloadOptions { get; private set; }
 
-    public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+    private Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
     public string UserVideosFolder =>
         _userVideosFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
@@ -360,6 +353,45 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadProgressVisibility, value);
     }
 
+    public void UpdateDownloader()
+    {
+        GeneralInterfaceIsEnabled = false;
+        DownloadButtonIsEnabled = false;
+        DownloadHistoryIsEnabled = false;
+        DownloadProgressIsIndeterminate = true;
+        ShowDownloadedItemsButtonIsEnabled = false;
+        DownloadProgressVisibility = Visibility.Visible;
+        DownloadProgressColor = Brushes.LimeGreen;
+        DownloadMessage = Resources.MessageUpdatingDownloader;
+
+        _cancellation = new CancellationTokenSource();
+
+        var worker = new BackgroundWorker();
+        worker.DoWork += UpdateDownloaderAsync;
+        worker.RunWorkerCompleted += OnUpdateDownloaderCompleted;
+        worker.RunWorkerAsync();
+    }
+
+    private void OnUpdateDownloaderCompleted(object sender, RunWorkerCompletedEventArgs e)
+    {
+        GeneralInterfaceIsEnabled = true;
+        DownloadButtonIsEnabled = true;
+        DownloadHistoryIsEnabled = true;
+        ShowDownloadedItemsButtonIsEnabled = true;
+        DownloadProgressIsIndeterminate = false;
+        DownloadProgressColor = Brushes.Gainsboro;
+        DownloadMessage = string.Empty;
+    }
+
+    private void UpdateDownloaderAsync(object sender, DoWorkEventArgs e)
+    {
+        _cancellation.Token.ThrowIfCancellationRequested();
+        var success = _downloader.Update(
+            (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data); },
+            (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
+            _cancellation.Token);
+    }
+
     private void StartDownload()
     {
         GeneralInterfaceIsEnabled = false;
@@ -385,7 +417,6 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadProgressVisibility = Visibility.Visible;
         DownloadProgressColor = Brushes.LimeGreen;
     }
-
 
     private void OpenDownloadFolder()
     {
