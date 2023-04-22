@@ -56,7 +56,7 @@ jobs:
     env:
       Solution_Name: MediaDownloader.sln
       Output_Path: out
-      Build_Path: MediaDownloader\bin\${{ matrix.configuration }}\net5.0-windows\win-${{ matrix.platform }}\publish 
+      Build_Path: MediaDownloader\bin\${{ matrix.configuration }}\net7.0-windows\win-${{ matrix.platform }}\publish 
       Installer_Name_Msi: MediaDownloaderSetup.msi
       Installer_Name_Exe: MediaDownloaderSetup.exe
       Installer_Name: MediaDownloader
