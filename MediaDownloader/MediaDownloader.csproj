@@ -1,19 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<Authors>Yuri Maxiutenko</Authors>
+		<Product>Media Downloader</Product>
+		<Copyright>Yuri Maxiutenko, 2023</Copyright>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<UseWindowsForms>true</UseWindowsForms>
-		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 		<ApplicationIcon>Images\icon.ico</ApplicationIcon>
-		<Authors>Yuri Maxiutenko</Authors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <Platforms>x64</Platforms>
         <LangVersion>latest</LangVersion>
         <Configurations>Debug;Release</Configurations>
         <IsPackable>false</IsPackable>
-        <Product>Media Downloader</Product>
     </PropertyGroup>
 
 	<ItemGroup>
