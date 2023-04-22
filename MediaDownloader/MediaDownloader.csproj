@@ -9,7 +9,9 @@
 		<ApplicationIcon>Images\icon.ico</ApplicationIcon>
 		<Authors>Yuri Maxiutenko</Authors>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <Platforms>AnyCPU;x64</Platforms>
+        <Platforms>x64</Platforms>
+        <LangVersion>latest</LangVersion>
+        <Configurations>Debug;Release</Configurations>
     </PropertyGroup>
 
 	<ItemGroup>

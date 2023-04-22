@@ -6,7 +6,9 @@
     <Company />
     <Product>Media Downloader</Product>
     <Copyright>Yuri Maxiutenko, 2020</Copyright>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

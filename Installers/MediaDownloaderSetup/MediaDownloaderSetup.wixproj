@@ -12,16 +12,6 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\..\out\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug\net5.0-windows\win-x86\publish</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\out\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\bin\Release\net5.0-windows\win-x86\publish</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug\net5.0-windows\win-x64\publish</DefineConstants>
     <OutputPath>..\..\out\</OutputPath>
