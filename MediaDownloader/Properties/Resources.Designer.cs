@@ -258,6 +258,15 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to -U.
+        /// </summary>
+        public static string DownloaderOptionUpdate {
+            get {
+                return ResourceManager.GetString("DownloaderOptionUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select the download folder:.
         /// </summary>
         public static string DownloadFolderCaption {

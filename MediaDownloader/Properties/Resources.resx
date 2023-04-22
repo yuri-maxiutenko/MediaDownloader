@@ -195,6 +195,9 @@
   <data name="DownloaderOptionRetries" xml:space="preserve">
     <value>--retries</value>
   </data>
+  <data name="DownloaderOptionUpdate" xml:space="preserve">
+    <value>-U</value>
+  </data>
   <data name="ExplorerFileName" xml:space="preserve">
     <value>explorer.exe</value>
   </data>

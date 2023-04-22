@@ -10,8 +10,6 @@ using MediaDownloader.Properties;
 
 using Newtonsoft.Json;
 
-using NLog;
-
 namespace MediaDownloader;
 
 public class Downloader
@@ -20,15 +18,22 @@ public class Downloader
     private const int ProcessWaitTimeoutMs = 500;
 
     private readonly string _converterPath;
-    private readonly string _downloaderPath;
+    private readonly ProcessStartInfo _processStartInfo;
 
     public Downloader(string downloaderPath, string converterPath)
     {
-        _downloaderPath = downloaderPath;
         _converterPath = converterPath;
+        _processStartInfo = new ProcessStartInfo
+        {
+            FileName = downloaderPath,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
+        };
     }
-
-    public Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
     public bool TryGetItems(string link, string downloadOption, DataReceivedEventHandler onErrorReceived,
         CancellationToken cancelToken, out DownloadItem result)
@@ -45,19 +50,10 @@ public class Downloader
         arguments.Append("-J");
         arguments.Append(' ');
         arguments.Append(link);
+        _processStartInfo.Arguments = arguments.ToString();
         var downloaderProcess = new Process
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = _downloaderPath,
-                Arguments = arguments.ToString(),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
-            }
+            StartInfo = _processStartInfo
         };
 
         try
@@ -137,21 +133,18 @@ public class Downloader
         arguments.Append($"{Resources.DownloaderOptionConverterLocation} \"{_converterPath}\"");
         arguments.Append(' ');
         arguments.Append(link);
+        _processStartInfo.Arguments = arguments.ToString();
         var downloaderProcess = new Process
         {
-            StartInfo = new ProcessStartInfo
-            {
-                FileName = _downloaderPath,
-                Arguments = arguments.ToString(),
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
-            }
+            StartInfo = _processStartInfo
         };
 
+        return ExecuteDownloader(downloaderProcess, onOutputReceived, onErrorReceived, cancelToken);
+    }
+
+    private static bool ExecuteDownloader(Process downloaderProcess, DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived, CancellationToken cancelToken)
+    {
         try
         {
             downloaderProcess.OutputDataReceived += onOutputReceived;
@@ -165,12 +158,14 @@ public class Downloader
             while (!downloaderProcess.HasExited)
             {
                 downloaderProcess.WaitForExit(ProcessWaitTimeoutMs);
-                if (cancelToken.IsCancellationRequested)
+                if (!cancelToken.IsCancellationRequested)
                 {
-                    downloaderProcess.Kill();
-                    downloaderProcess.WaitForExit();
-                    cancelToken.ThrowIfCancellationRequested();
+                    continue;
                 }
+
+                downloaderProcess.Kill();
+                downloaderProcess.WaitForExit();
+                cancelToken.ThrowIfCancellationRequested();
             }
 
             return downloaderProcess.ExitCode == 0;
@@ -180,5 +175,17 @@ public class Downloader
             downloaderProcess.OutputDataReceived -= onOutputReceived;
             downloaderProcess.ErrorDataReceived -= onErrorReceived;
         }
+    }
+
+    public bool Update(DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
+        CancellationToken cancelToken)
+    {
+        _processStartInfo.Arguments = Resources.DownloaderOptionUpdate;
+        var downloaderProcess = new Process
+        {
+            StartInfo = _processStartInfo
+        };
+
+        return ExecuteDownloader(downloaderProcess, onOutputReceived, onErrorReceived, cancelToken);
     }
 }
