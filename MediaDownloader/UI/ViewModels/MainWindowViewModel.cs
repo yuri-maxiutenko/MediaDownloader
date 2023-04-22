@@ -23,9 +23,9 @@ using NLog;
 using NLog.Common;
 using NLog.Config;
 
-namespace MediaDownloader;
+namespace MediaDownloader.UI.ViewModels;
 
-internal class MainWindowViewModel : INotifyPropertyChanged
+public sealed class MainWindowViewModel : BaseViewModel
 {
     private const string AppSettingsFilePath = @".\appsettings.json";
     private const string NlogSettingsFilePath = @".\nlog.config";
@@ -101,71 +101,43 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     public BitmapImage DownloadButtonIcon
     {
         get => _downloadButtonIcon;
-        set
-        {
-            _downloadButtonIcon = value;
-            OnPropertyChanged("DownloadButtonIcon");
-        }
+        set => SetField(ref _downloadButtonIcon, value);
     }
 
     public bool DownloadButtonIsEnabled
     {
         get => _downloadButtonIsEnabled;
-        set
-        {
-            _downloadButtonIsEnabled = value;
-            OnPropertyChanged("DownloadButtonIsEnabled");
-        }
+        set => SetField(ref _downloadButtonIsEnabled, value);
     }
 
     public bool ShowDownloadedItemsButtonIsEnabled
     {
         get => _showDownloadedItemsButtonIsEnabled;
-        set
-        {
-            _showDownloadedItemsButtonIsEnabled = value;
-            OnPropertyChanged("ShowDownloadedItemsButtonIsEnabled");
-        }
+        set => SetField(ref _showDownloadedItemsButtonIsEnabled, value);
     }
 
     public bool GeneralInterfaceIsEnabled
     {
         get => _generalInterfaceIsEnabled;
-        set
-        {
-            _generalInterfaceIsEnabled = value;
-            OnPropertyChanged("GeneralInterfaceIsEnabled");
-        }
+        set => SetField(ref _generalInterfaceIsEnabled, value);
     }
 
     public bool DownloadProgressIsIndeterminate
     {
         get => _downloadProgressIsIndeterminate;
-        set
-        {
-            _downloadProgressIsIndeterminate = value;
-            OnPropertyChanged("DownloadProgressIsIndeterminate");
-        }
+        set => SetField(ref _downloadProgressIsIndeterminate, value);
     }
 
     public bool DownloadHistoryIsEnabled
     {
         get => _downloadHistoryIsEnabled;
-        set
-        {
-            _downloadHistoryIsEnabled = value;
-            OnPropertyChanged("DownloadHistoryIsEnabled");
-        }
+        set => SetField(ref _downloadHistoryIsEnabled, value);
     }
 
     public Brush DownloadProgressColor
     {
         get => _downloadProgressColor;
-        set
-        {
-            _downloadProgressColor = value;
-            OnPropertyChanged("DownloadProgressColor");
-        }
+        set => SetField(ref _downloadProgressColor, value);
     }
 
     public CollectionViewSource DownloadFolders { get; private set; }
@@ -187,61 +159,49 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     public DownloadOption SelectedDownloadOption
     {
         get => _selectedDownloadOption;
-        set
-        {
-            _selectedDownloadOption = value;
-            OnPropertyChanged("SelectedDownloadOption");
-        }
+        set => SetField(ref _selectedDownloadOption, value);
     }
 
     public HistoryRecord DownloadHistorySelectedItem { get; set; }
 
     public ICommand ClearButtonClick
     {
-        get { return _clearButtonClick ??= new RelayCommand(param => { YouTubeLink = string.Empty; }, param => true); }
+        get { return _clearButtonClick ??= new RelayCommand(_ => { YouTubeLink = string.Empty; }, _ => true); }
     }
 
     public ICommand DownloadButtonClick
     {
         get => _downloadButtonClick;
-        set
-        {
-            _downloadButtonClick = value;
-            OnPropertyChanged("DownloadButtonClick");
-        }
+        set => SetField(ref _downloadButtonClick, value);
     }
 
     public ICommand StartDownloadCommand
     {
-        get { return _startDownloadCommand ??= new RelayCommand(param => { StartDownload(); }, param => true); }
+        get { return _startDownloadCommand ??= new RelayCommand(_ => { StartDownload(); }, _ => true); }
     }
 
     public ICommand StopDownloadCommand
     {
         get
         {
-            return _stopDownloadCommand ??= new RelayCommand(param =>
+            return _stopDownloadCommand ??= new RelayCommand(_ =>
             {
                 DownloadButtonIsEnabled = false;
                 _cancellation.Cancel();
-            }, param => true);
+            }, _ => true);
         }
     }
 
     public ICommand ShowDownloadedItemsButtonClick
     {
-        get
-        {
-            return _showDownloadedItemsButtonClick ??=
-                new RelayCommand(param => { OpenDownloadFolder(); }, param => true);
-        }
+        get { return _showDownloadedItemsButtonClick ??= new RelayCommand(_ => { OpenDownloadFolder(); }, _ => true); }
     }
 
     public ICommand HistoryMenuItemOpenFolder
     {
         get
         {
-            return _historyMenuItemOpenFolder ??= new RelayCommand(param =>
+            return _historyMenuItemOpenFolder ??= new RelayCommand(_ =>
             {
                 var path = DownloadHistorySelectedItem?.Path;
                 if (string.IsNullOrEmpty(path))
@@ -257,7 +217,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
                 {
                     Process.Start(SelectedDownloadFolder.Path);
                 }
-            }, param => true);
+            }, _ => true);
         }
     }
 
@@ -265,7 +225,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         get
         {
-            return _historyMenuItemRedownload ??= new RelayCommand(param =>
+            return _historyMenuItemRedownload ??= new RelayCommand(_ =>
             {
                 if (string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
                 {
@@ -274,7 +234,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
 
                 YouTubeLink = DownloadHistorySelectedItem?.Url;
                 StartDownload();
-            }, param => true);
+            }, _ => true);
         }
     }
 
@@ -282,13 +242,13 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         get
         {
-            return _historyMenuItemCopyLink ??= new RelayCommand(param =>
+            return _historyMenuItemCopyLink ??= new RelayCommand(_ =>
             {
                 if (!string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
                 {
                     Clipboard.SetText(DownloadHistorySelectedItem.Url);
                 }
-            }, param => true);
+            }, _ => true);
         }
     }
 
@@ -296,14 +256,14 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         get
         {
-            return _historyMenuItemRemoveFromHistory ??= new RelayCommand(param =>
+            return _historyMenuItemRemoveFromHistory ??= new RelayCommand(_ =>
             {
                 if (DownloadHistorySelectedItem != null)
                 {
                     _storage.RemoveHistoryRecord(DownloadHistorySelectedItem);
                     DownloadHistory.View.Refresh();
                 }
-            }, param => true);
+            }, _ => true);
         }
     }
 
@@ -311,52 +271,36 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         get
         {
-            return _historyMenuItemClearHistory ??= new RelayCommand(param =>
+            return _historyMenuItemClearHistory ??= new RelayCommand(_ =>
             {
                 _storage.ClearHistory();
                 DownloadHistory.View.Refresh();
-            }, param => true);
+            }, _ => true);
         }
     }
 
     public int DownloadProgressValue
     {
         get => _downloadProgressValue;
-        set
-        {
-            _downloadProgressValue = value;
-            OnPropertyChanged("DownloadProgressValue");
-        }
+        set => SetField(ref _downloadProgressValue, value);
     }
 
     public int DownloadProgressMin
     {
         get => _downloadProgressMin;
-        set
-        {
-            _downloadProgressMin = value;
-            OnPropertyChanged("DownloadProgressMin");
-        }
+        set => SetField(ref _downloadProgressMin, value);
     }
 
     public int DownloadProgressMax
     {
         get => _downloadProgressMax;
-        set
-        {
-            _downloadProgressMax = value;
-            OnPropertyChanged("DownloadProgressMax");
-        }
+        set => SetField(ref _downloadProgressMax, value);
     }
 
     public int DownloadProgressWidth
     {
         get => _downloadProgressWidth;
-        set
-        {
-            _downloadProgressWidth = value;
-            OnPropertyChanged("DownloadProgressWidth");
-        }
+        set => SetField(ref _downloadProgressWidth, value);
     }
 
     public List<DownloadOption> DownloadOptions { get; private set; }
@@ -369,11 +313,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     public string YouTubeLink
     {
         get => _youTubeLink;
-        set
-        {
-            _youTubeLink = value;
-            OnPropertyChanged("YouTubeLink");
-        }
+        set => SetField(ref _youTubeLink, value);
     }
 
     public string DownloadLog
@@ -392,51 +332,33 @@ internal class MainWindowViewModel : INotifyPropertyChanged
                 _downloadLog.Append(value);
             }
 
-            OnPropertyChanged("DownloadLog");
+            OnPropertyChanged();
         }
     }
 
     public string DownloadButtonText
     {
         get => _downloadButtonText;
-        set
-        {
-            _downloadButtonText = value;
-            OnPropertyChanged("DownloadButtonText");
-        }
+        set => SetField(ref _downloadButtonText, value);
     }
 
     public string DownloadMessage
     {
         get => _downloadMessage;
-        set
-        {
-            _downloadMessage = value;
-            OnPropertyChanged("DownloadMessage");
-        }
+        set => SetField(ref _downloadMessage, value);
     }
 
     public string DownloadPercentText
     {
         get => _downloadPercentText;
-        set
-        {
-            _downloadPercentText = value;
-            OnPropertyChanged("DownloadPercentText");
-        }
+        set => SetField(ref _downloadPercentText, value);
     }
 
     public Visibility DownloadProgressVisibility
     {
         get => _downloadProgressVisibility;
-        set
-        {
-            _downloadProgressVisibility = value;
-            OnPropertyChanged("DownloadProgressVisibility");
-        }
+        set => SetField(ref _downloadProgressVisibility, value);
     }
-
-    public event PropertyChangedEventHandler PropertyChanged;
 
     private void StartDownload()
     {
@@ -546,11 +468,6 @@ internal class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
-    protected virtual void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
     public void AddOrUpdateDownloadFolder(string path, DateTime lastSelectionDate)
     {
         _storage.AddOrUpdateDownloadFolder(path, lastSelectionDate);
@@ -559,7 +476,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
         DownloadFolders.View.MoveCurrentTo(firstItem);
     }
 
-    public void UpdateDownloadFolder(DownloadFolder folder, DateTime lastSelectionDate)
+    private void UpdateDownloadFolder(DownloadFolder folder, DateTime lastSelectionDate)
     {
         _storage.UpdateDownloadFolder(folder.DownloadFolderId, folder.Path, lastSelectionDate);
         DownloadFolders.View.Refresh();
@@ -571,7 +488,6 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         InternalLogger.LogLevel = LogLevel.Debug;
         InternalLogger.LogToConsole = true;
-        InternalLogger.LogFile = @"C:\Users\thewo\Documents\nlog.log";
         Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
         LogManager.Configuration = new XmlLoggingConfiguration(NlogSettingsFilePath);
 
@@ -707,7 +623,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
 
                 _cancellation.Token.ThrowIfCancellationRequested();
 
-                Logger.Info(Resources.MessageDownloading, entry);
+                Logger.Info("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
 
                 _currentDownloadedItem = new DownloadedItemInfo
                 {
@@ -758,7 +674,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         _cancellation.Token.ThrowIfCancellationRequested();
         return _downloader.TryGetItems(YouTubeLink, SelectedDownloadOption.Option,
-            (o, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
+            (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
             _cancellation.Token, out item);
     }
 
@@ -770,8 +686,8 @@ internal class MainWindowViewModel : INotifyPropertyChanged
         {
             _cancellation.Token.ThrowIfCancellationRequested();
             var success = _downloader.TryDownloadItem(downloadPath, downloadUrl, SelectedDownloadOption.Option,
-                (o, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data); },
-                (o, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
+                (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data); },
+                (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
                 _cancellation.Token);
 
             status = success ? DownloadStatus.Success : DownloadStatus.Fail;
@@ -798,7 +714,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         try
         {
-            if (!(state is string record))
+            if (state is not string record)
             {
                 return;
             }
@@ -833,12 +749,14 @@ internal class MainWindowViewModel : INotifyPropertyChanged
     {
         try
         {
-            if (state is string record)
+            if (state is not string record)
             {
-                DownloadLog = record;
-                DownloadLog = Environment.NewLine;
-                Logger.Info(record);
+                return;
             }
+
+            DownloadLog = record;
+            DownloadLog = Environment.NewLine;
+            Logger.Info(record);
         }
         catch (Exception e)
         {

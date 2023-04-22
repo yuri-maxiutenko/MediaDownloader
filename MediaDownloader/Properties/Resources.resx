@@ -245,7 +245,7 @@
 Url: {1}</value>
   </data>
   <data name="MessageDownloading" xml:space="preserve">
-    <value>Downloading: {0}</value>
+    <value>Downloading:</value>
   </data>
   <data name="MessageDownloadComplete" xml:space="preserve">
     <value>Download complete! {0}</value>

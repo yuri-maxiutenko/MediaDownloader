@@ -66,7 +66,7 @@ public class Downloader
 
             downloaderProcess.ErrorDataReceived += onErrorReceived;
 
-            downloaderProcess.OutputDataReceived += (sender, args) => { outputReader.Append(args.Data); };
+            downloaderProcess.OutputDataReceived += (_, args) => { outputReader.Append(args.Data); };
 
             downloaderProcess.Start();
 

@@ -6,45 +6,46 @@ using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 
+using MediaDownloader.UI.ViewModels;
+
 using TextBox = System.Windows.Controls.TextBox;
 
-namespace MediaDownloader;
+namespace MediaDownloader.UI.Views;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
-    private readonly MainWindowViewModel _model;
-
     public MainWindow()
     {
-        InitializeComponent();
+        ViewModel = new MainWindowViewModel();
 
-        _model = new MainWindowViewModel();
-        DataContext = _model;
+        InitializeComponent();
     }
+
+    public MainWindowViewModel ViewModel { get; }
 
     private void BrowseButton_OnClick(object sender, RoutedEventArgs e)
     {
         var selectFolderDialog = new FolderBrowserDialog
         {
             ShowNewFolderButton = true,
-            SelectedPath = string.IsNullOrEmpty(_model.SelectedDownloadFolder?.Path)
-                ? _model.UserVideosFolder
-                : _model.SelectedDownloadFolder.Path
+            SelectedPath = string.IsNullOrEmpty(ViewModel.SelectedDownloadFolder?.Path)
+                ? ViewModel.UserVideosFolder
+                : ViewModel.SelectedDownloadFolder.Path
         };
 
         var result = selectFolderDialog.ShowDialog();
         if (result == System.Windows.Forms.DialogResult.OK)
         {
-            _model.AddOrUpdateDownloadFolder(selectFolderDialog.SelectedPath, DateTime.Now);
+            ViewModel.AddOrUpdateDownloadFolder(selectFolderDialog.SelectedPath, DateTime.Now);
         }
     }
 
     private void YouTubeLink_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        _model.ValidateDownload();
+        ViewModel.ValidateDownload();
     }
 
     private void YouTubeLink_OnPasting(object sender, DataObjectPastingEventArgs e)
@@ -58,16 +59,18 @@ public partial class MainWindow : Window
             }
         }
 
-        _model.ValidateDownload();
+        ViewModel.ValidateDownload();
     }
 
     private void DownloadLog_OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (sender is TextBox downloadLog)
+        if (sender is not TextBox downloadLog)
         {
-            downloadLog.CaretIndex = downloadLog.Text.Length;
-            downloadLog.ScrollToEnd();
+            return;
         }
+
+        downloadLog.CaretIndex = downloadLog.Text.Length;
+        downloadLog.ScrollToEnd();
     }
 
     private void YouTubeLink_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -82,14 +85,18 @@ public partial class MainWindow : Window
 
     private void YouTubeLink_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (sender is TextBox textBox)
+        if (sender is not TextBox textBox)
         {
-            if (!textBox.IsKeyboardFocusWithin)
-            {
-                e.Handled = true;
-                textBox.Focus();
-            }
+            return;
         }
+
+        if (textBox.IsKeyboardFocusWithin)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        textBox.Focus();
     }
 
     private void SelectText(object sender)

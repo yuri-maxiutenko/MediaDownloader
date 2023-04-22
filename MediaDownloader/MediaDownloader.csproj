@@ -86,4 +86,12 @@
 			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
 		</None>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="UI\Views\MainWindowView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	    <XamlRuntime>Wpf</XamlRuntime>
+	    <SubType>Designer</SubType>
+	  </Page>
+	</ItemGroup>
 </Project>
