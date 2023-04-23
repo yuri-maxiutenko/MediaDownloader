@@ -11,13 +11,13 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
 using MediaDownloader.Download;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
+using MediaDownloader.Utilities;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -37,20 +37,13 @@ public sealed class MainWindowViewModel : BaseViewModel
     private const int DownloadRetriesNumber = 2;
 
     private readonly StringBuilder _downloadLog = new();
-
     private readonly object _logWritingLock = new();
-
-    private readonly BitmapImage _startDownloadIcon =
-        new(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_download.png"));
-
-    private readonly BitmapImage _stopDownloadIcon =
-        new(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_stop.png"));
 
     private CancellationTokenSource _cancellationTokenSource;
     private ICommand _clearButtonClick;
     private DownloadedItemInfo _currentDownloadedItem;
     private ICommand _downloadButtonClick;
-    private BitmapImage _downloadButtonIcon;
+    private string _downloadButtonIcon;
     private bool _downloadButtonIsEnabled;
     private string _downloadButtonText;
     private IAsyncRelayCommand _downloadCommand;
@@ -89,7 +82,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public IConfiguration Configuration { get; set; }
 
-    public BitmapImage DownloadButtonIcon
+    public string DownloadButtonIcon
     {
         get => _downloadButtonIcon;
         set => SetField(ref _downloadButtonIcon, value);
@@ -389,7 +382,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         UpdateDownloadFolder(DownloadFolders.View.CurrentItem as DownloadFolder, DateTime.Now);
 
-        DownloadButtonIcon = _stopDownloadIcon;
+        DownloadButtonIcon = IconHelper.GetDownloadIcon(true);
         DownloadButtonText = Resources.StopDownloadButtonText;
         DownloadButtonClick = StopDownloadCommand;
         DownloadButtonIsEnabled = true;
@@ -460,7 +453,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
 
         DownloadButtonIsEnabled = false;
-        DownloadButtonIcon = _startDownloadIcon;
+        DownloadButtonIcon = IconHelper.GetDownloadIcon(false);
         DownloadButtonText = Resources.StartDownloadButtonText;
         DownloadButtonClick = DownloadCommand;
         DownloadButtonIsEnabled = true;
@@ -477,7 +470,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         try
         {
             var downloadDirectoryExists = Directory.Exists(SelectedDownloadFolder?.Path);
-            DownloadButtonIsEnabled = Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
+            DownloadButtonIsEnabled = Utilities.Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
             ShowDownloadedItemsButtonIsEnabled = downloadDirectoryExists;
         }
         catch (Exception e)
@@ -517,7 +510,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         GeneralInterfaceIsEnabled = true;
 
-        DownloadButtonIcon = _startDownloadIcon;
+        DownloadButtonIcon = IconHelper.GetDownloadIcon(false);
         DownloadButtonText = Resources.StartDownloadButtonText;
         DownloadButtonClick = DownloadCommand;
 
@@ -728,16 +721,16 @@ public sealed class MainWindowViewModel : BaseViewModel
             DownloadLog = record;
             DownloadLog = Environment.NewLine;
 
-            if (Utilities.TryParseDownloadProgress(record, out var progress))
+            if (DownloadOutputParser.TryParseDownloadProgress(record, out var progress))
             {
                 DownloadProgressIsIndeterminate = false;
                 var newValue = _downloadProgressSectionMin + (int)Math.Round(progress);
                 DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
 
                 DownloadPercentText =
-                    $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
+                    $"{Utilities.Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
             }
-            else if (Utilities.TryParseResultFilePath(record, out var path))
+            else if (DownloadOutputParser.TryParseResultFilePath(record, out var path))
             {
                 _currentDownloadedItem.Name = Path.GetFileName(path);
                 _currentDownloadedItem.Path = path;

@@ -48,9 +48,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Images\icon_download.png" />
-		<Resource Include="Images\icon_show.png" />
-		<Resource Include="Images\icon_stop.png" />
+		<None Remove="Fonts\Segoe Fluent Icons.ttf" />
+		<Resource Include="Fonts\Segoe Fluent Icons.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -101,5 +100,9 @@
 	  <Content Include="..\version.json">
 	    <Link>version.json</Link>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="UI\Themes\" />
 	</ItemGroup>
 </Project>

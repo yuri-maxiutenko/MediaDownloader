@@ -83,13 +83,13 @@ public class Downloader : IDownloader
 
             var result = new DownloadItem
             {
-                Name = Utilities.SanitizeFileName(info.Title)
+                Name = Utilities.Utilities.SanitizeFileName(info.Title)
             };
             if (info.Entries != null)
             {
                 result.Entries = info.Entries.Select(item => new DownloadItem
                 {
-                    Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.Title), item.Ext),
+                    Name = Path.ChangeExtension(Utilities.Utilities.SanitizeFileName(item.Title), item.Ext),
                     Url = item.WebpageUrl
                 }).ToList();
             }
@@ -99,7 +99,7 @@ public class Downloader : IDownloader
                 {
                     new()
                     {
-                        Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.Title), info.Ext),
+                        Name = Path.ChangeExtension(Utilities.Utilities.SanitizeFileName(info.Title), info.Ext),
                         Url = info.WebpageUrl
                     }
                 };
@@ -163,7 +163,7 @@ public class Downloader : IDownloader
 
         return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
     }
-    
+
     private static async Task<bool> ExecuteDownloaderAsync(Process downloaderProcess,
         DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
         CancellationToken cancellationToken)
