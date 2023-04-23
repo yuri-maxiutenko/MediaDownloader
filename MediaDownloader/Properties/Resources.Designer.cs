@@ -62,6 +62,15 @@ namespace MediaDownloader.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Media Downloader.
         /// </summary>
+        public static string AppFolderName {
+            get {
+                return ResourceManager.GetString("AppFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Media Downloader.
+        /// </summary>
         public static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
@@ -393,6 +402,15 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Logs.
+        /// </summary>
+        public static string LogFolderName {
+            get {
+                return ResourceManager.GetString("LogFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You have cancelled the download..
         /// </summary>
         public static string LogMessageDownloadCancel {
@@ -462,6 +480,15 @@ namespace MediaDownloader.Properties {
         public static string LogMessageLocationOfFiles {
             get {
                 return ResourceManager.GetString("LogMessageLocationOfFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wolfcub.
+        /// </summary>
+        public static string ManufacturerFolderName {
+            get {
+                return ResourceManager.GetString("ManufacturerFolderName", resourceCulture);
             }
         }
         
