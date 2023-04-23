@@ -114,6 +114,24 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Data.db.
+        /// </summary>
+        public static string DatabaseName {
+            get {
+                return ResourceManager.GetString("DatabaseName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data.
+        /// </summary>
+        public static string DataFolderName {
+            get {
+                return ResourceManager.GetString("DataFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to yt-dlp.exe.
         /// </summary>
         public static string DownloaderFileName {
