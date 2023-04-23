@@ -8,6 +8,8 @@ using System.Windows.Input;
 
 using MediaDownloader.UI.ViewModels;
 
+using Serilog;
+
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace MediaDownloader.UI.Views;
@@ -107,8 +109,20 @@ public partial class MainWindow
 
     private void HistoryGridHyperlink_OnClick(object sender, RoutedEventArgs e)
     {
-        var destination = ((Hyperlink)e.OriginalSource).NavigateUri;
-        Process.Start(destination.ToString());
+        try
+        {
+            if (e.OriginalSource is not Hyperlink hyperlink)
+            {
+                return;
+            }
+
+            var destination = hyperlink.NavigateUri;
+            Process.Start(new ProcessStartInfo(destination.ToString()) { UseShellExecute = true });
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to open hyperlink");
+        }
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
