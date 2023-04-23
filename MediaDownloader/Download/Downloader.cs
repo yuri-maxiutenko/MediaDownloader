@@ -12,9 +12,9 @@ using MediaDownloader.Properties;
 
 using Newtonsoft.Json;
 
-namespace MediaDownloader;
+namespace MediaDownloader.Download;
 
-public class Downloader
+public class Downloader : IDownloader
 {
     private const int DownloadTimeoutSec = 60;
 
@@ -152,6 +152,18 @@ public class Downloader
         return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
     }
 
+    public async Task<bool> UpdateAsync(DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived, CancellationToken cancellationToken)
+    {
+        _processStartInfo.Arguments = Resources.DownloaderOptionUpdate;
+        var downloaderProcess = new Process
+        {
+            StartInfo = _processStartInfo
+        };
+
+        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
+    }
+    
     private static async Task<bool> ExecuteDownloaderAsync(Process downloaderProcess,
         DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
         CancellationToken cancellationToken)
@@ -184,17 +196,5 @@ public class Downloader
             downloaderProcess.OutputDataReceived -= onOutputReceived;
             downloaderProcess.ErrorDataReceived -= onErrorReceived;
         }
-    }
-
-    public async Task<bool> UpdateAsync(DataReceivedEventHandler onOutputReceived,
-        DataReceivedEventHandler onErrorReceived, CancellationToken cancellationToken)
-    {
-        _processStartInfo.Arguments = Resources.DownloaderOptionUpdate;
-        var downloaderProcess = new Process
-        {
-            StartInfo = _processStartInfo
-        };
-
-        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
     }
 }

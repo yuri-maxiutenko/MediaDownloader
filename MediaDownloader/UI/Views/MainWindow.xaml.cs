@@ -115,15 +115,8 @@ public partial class MainWindow
         Process.Start(destination.ToString());
     }
 
-    private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            await ViewModel.UpdateDownloaderAsync();
-        }
-        catch (Exception exception)
-        {
-            Logger.Error(exception, "Failed to load main window");
-        }
+        _ = ViewModel.UpdateDownloaderAsync();
     }
 }

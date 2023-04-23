@@ -271,7 +271,7 @@ Url: {1}</value>
   <data name="HistoryMenuItemOpenFolder" xml:space="preserve">
     <value>Open Download Folder</value>
   </data>
-  <data name="HistoryMenuItemRedownload" xml:space="preserve">
+  <data name="HistoryMenuItemReDownload" xml:space="preserve">
     <value>Redownload</value>
   </data>
   <data name="HistoryMenuItemCopyLink" xml:space="preserve">

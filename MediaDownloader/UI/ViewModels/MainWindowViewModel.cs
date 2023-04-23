@@ -17,6 +17,7 @@ using AsyncAwaitBestPractices.MVVM;
 
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
+using MediaDownloader.Download;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
 
@@ -59,7 +60,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private string _downloadButtonText;
     private IAsyncCommand _downloadCommand;
 
-    private Downloader _downloader;
+    private IDownloader _downloader;
     private bool _downloadHistoryIsEnabled;
     private string _downloadMessage;
     private string _downloadPercentText;
@@ -358,31 +359,38 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public async Task UpdateDownloaderAsync()
     {
-        GeneralInterfaceIsEnabled = false;
-        DownloadButtonIsEnabled = false;
-        DownloadHistoryIsEnabled = false;
-        DownloadProgressIsIndeterminate = true;
-        ShowDownloadedItemsButtonIsEnabled = false;
-        DownloadProgressVisibility = Visibility.Visible;
-        DownloadProgressColor = Brushes.LimeGreen;
-        DownloadMessage = Resources.MessageUpdatingDownloader;
+        try
+        {
+            GeneralInterfaceIsEnabled = false;
+            DownloadButtonIsEnabled = false;
+            DownloadHistoryIsEnabled = false;
+            DownloadProgressIsIndeterminate = true;
+            ShowDownloadedItemsButtonIsEnabled = false;
+            DownloadProgressVisibility = Visibility.Visible;
+            DownloadProgressColor = Brushes.LimeGreen;
+            DownloadMessage = Resources.MessageUpdatingDownloader;
 
-        _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource = new CancellationTokenSource();
 
-        await UpdateDownloaderAsync(_cancellationTokenSource.Token);
+            await UpdateDownloaderAsync(_downloader, _cancellationTokenSource.Token);
 
-        GeneralInterfaceIsEnabled = true;
-        DownloadButtonIsEnabled = true;
-        DownloadHistoryIsEnabled = true;
-        ShowDownloadedItemsButtonIsEnabled = true;
-        DownloadProgressIsIndeterminate = false;
-        DownloadProgressColor = Brushes.Gainsboro;
-        DownloadMessage = string.Empty;
+            GeneralInterfaceIsEnabled = true;
+            DownloadButtonIsEnabled = true;
+            DownloadHistoryIsEnabled = true;
+            ShowDownloadedItemsButtonIsEnabled = true;
+            DownloadProgressIsIndeterminate = false;
+            DownloadProgressColor = Brushes.Gainsboro;
+            DownloadMessage = string.Empty;
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e, "Failed to update the downloader");
+        }
     }
 
-    private async Task<bool> UpdateDownloaderAsync(CancellationToken cancellationToken)
+    private async Task<bool> UpdateDownloaderAsync(IDownloader downloader, CancellationToken cancellationToken)
     {
-        return await _downloader.UpdateAsync(ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
+        return await downloader.UpdateAsync(ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
     }
 
     private async Task DownloadAsync()
@@ -404,7 +412,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadProgressColor = Brushes.LimeGreen;
 
         _cancellationTokenSource = new CancellationTokenSource();
-        await DownloadItemAsync(_cancellationTokenSource.Token);
+        await DownloadItemAsync(_downloader, _cancellationTokenSource.Token);
 
         ProcessDownloadResult();
     }
@@ -585,7 +593,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         ValidateDownload();
     }
 
-    private async Task DownloadItemAsync(CancellationToken cancellationToken)
+    private async Task DownloadItemAsync(IDownloader downloader, CancellationToken cancellationToken)
     {
         try
         {
@@ -607,7 +615,7 @@ public sealed class MainWindowViewModel : BaseViewModel
             DownloadItem item = null;
             while (item is null && retryCounter < DownloadRetriesNumber)
             {
-                item = await GetItemAsync(cancellationToken);
+                item = await GetItemAsync(downloader, cancellationToken);
                 retryCounter++;
             }
 
@@ -658,7 +666,7 @@ public sealed class MainWindowViewModel : BaseViewModel
                 retryCounter = 0;
                 while (!success && retryCounter < DownloadRetriesNumber)
                 {
-                    success = await DownloadItemAsync(LastDownloadedItem.Name, LastDownloadedItem.Url,
+                    success = await DownloadItemAsync(downloader, LastDownloadedItem.Name, LastDownloadedItem.Url,
                         _currentDownloadedItem.Path, cancellationToken);
                     retryCounter++;
                 }
@@ -687,21 +695,21 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private async Task<DownloadItem> GetItemAsync(CancellationToken cancellationToken)
+    private async Task<DownloadItem> GetItemAsync(IDownloader downloader, CancellationToken cancellationToken)
     {
-        return await _downloader.GetItemsAsync(YouTubeLink, SelectedDownloadOption.Option, ProcessDownloaderError,
+        return await downloader.GetItemsAsync(YouTubeLink, SelectedDownloadOption.Option, ProcessDownloaderError,
             cancellationToken);
     }
 
-    private async Task<bool> DownloadItemAsync(string fileName, string downloadUrl, string downloadPath,
-        CancellationToken cancellationToken)
+    private async Task<bool> DownloadItemAsync(IDownloader downloader, string fileName, string downloadUrl,
+        string downloadPath, CancellationToken cancellationToken)
     {
         var status = DownloadStatus.Fail;
 
         try
         {
             _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-            var success = await _downloader.DownloadItemAsync(downloadPath, downloadUrl, SelectedDownloadOption.Option,
+            var success = await downloader.DownloadItemAsync(downloadPath, downloadUrl, SelectedDownloadOption.Option,
                 ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
 
             status = success ? DownloadStatus.Success : DownloadStatus.Fail;

@@ -3,14 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MediaDownloader"
         xmlns:properties="clr-namespace:MediaDownloader.Properties"
+        xmlns:download="clr-namespace:MediaDownloader.Download"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize"
         DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
         Loaded="MainWindow_OnLoaded">
     <Window.Resources>
-        <local:DownloadStatusConverter x:Key="DownloadStatusConverter" />
+        <download:DownloadStatusConverter x:Key="DownloadStatusConverter" />
     </Window.Resources>
     <Grid>
         <Grid.Resources>
@@ -173,7 +173,7 @@
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemOpenFolder}"
                                   Command="{Binding HistoryMenuItemOpenFolder}" />
                         <Separator />
-                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemRedownload}"
+                        <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemReDownload}"
                                   Command="{Binding HistoryMenuItemReDownload}" />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemCopyLink}"
                                   Command="{Binding HistoryMenuItemCopyLink}" />
