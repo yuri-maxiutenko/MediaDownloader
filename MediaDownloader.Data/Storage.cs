@@ -15,9 +15,10 @@ public class Storage
 
     private readonly DataContext _context;
 
-    public Storage()
+    public Storage(string connectionString)
     {
-        _context = new DataContext();
+        var factory = new DataContextFactory();
+        _context = factory.CreateDbContext(new[] { connectionString });
         _context.Database.Migrate();
         _context.DownloadFolders.Load();
         _context.History.Load();

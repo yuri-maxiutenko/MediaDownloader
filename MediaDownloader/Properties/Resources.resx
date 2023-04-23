@@ -304,4 +304,10 @@ Url: {1}</value>
   <data name="AppFolderName" xml:space="preserve">
     <value>Media Downloader</value>
   </data>
+  <data name="DatabaseName" xml:space="preserve">
+    <value>Data.db</value>
+  </data>
+  <data name="DataFolderName" xml:space="preserve">
+    <value>Data</value>
+  </data>
 </root>

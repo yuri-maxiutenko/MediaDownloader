@@ -35,7 +35,6 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private readonly StringBuilder _downloadLog = new();
     private readonly object _logWritingLock = new();
-    private readonly string _userDataFolderPath;
 
     private CancellationTokenSource _cancellationTokenSource;
     private ICommand _clearButtonClick;
@@ -75,11 +74,11 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public MainWindowViewModel()
     {
-        _userDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        var userDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             Resources.ManufacturerFolderName, Resources.AppFolderName);
-        Directory.CreateDirectory(_userDataFolderPath);
+        Directory.CreateDirectory(userDataFolderPath);
 
-        Initialize(_userDataFolderPath);
+        Initialize(userDataFolderPath);
     }
 
     public IConfiguration Configuration { get; set; }
@@ -502,7 +501,9 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         _downloader = new Downloader(Configuration["DownloaderPath"], Configuration["ConverterPath"]);
 
-        _storage = new Storage();
+        var dataFolderPath = Path.Combine(userDataFolderPath, Resources.DataFolderName);
+        Directory.CreateDirectory(dataFolderPath);
+        _storage = new Storage($"Data Source={Path.Combine(dataFolderPath, Resources.DatabaseName)}");
 
         LastDownloadedItem = new DownloadedItemInfo();
 
