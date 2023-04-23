@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:properties="clr-namespace:MediaDownloader.Properties"
         xmlns:download="clr-namespace:MediaDownloader.Download"
+        xmlns:converters="clr-namespace:MediaDownloader.UI.Converters"
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize"
         DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
@@ -16,6 +17,7 @@
                     Source="pack://application:,,,/MediaDownloader;component/UI/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <download:DownloadStatusConverter x:Key="DownloadStatusConverter" />
+            <converters:HumanizedDateTimeConverter x:Key="HumanizedDateTimeConverter" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid Margin="10">
@@ -39,7 +41,9 @@
                                TextAlignment="Left" />
                     <TextBlock Grid.Row="1" Grid.Column="1" Text=" — " FontSize="10" Foreground="Gray"
                                TextAlignment="Left" />
-                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DownloadDate, StringFormat=D}"
+                    <TextBlock Grid.Row="1" Grid.Column="2"
+                               Text="{Binding DownloadDate, 
+                               Converter={StaticResource HumanizedDateTimeConverter}}"
                                FontSize="10" Foreground="Gray" TextAlignment="Left" />
                 </Grid>
             </DataTemplate>
