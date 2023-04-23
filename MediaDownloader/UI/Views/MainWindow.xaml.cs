@@ -115,11 +115,11 @@ public partial class MainWindow
         Process.Start(destination.ToString());
     }
 
-    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
         try
         {
-            ViewModel.UpdateDownloader();
+            await ViewModel.UpdateDownloaderAsync();
         }
         catch (Exception exception)
         {

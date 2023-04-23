@@ -174,7 +174,7 @@
                                   Command="{Binding HistoryMenuItemOpenFolder}" />
                         <Separator />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemRedownload}"
-                                  Command="{Binding HistoryMenuItemRedownload}" />
+                                  Command="{Binding HistoryMenuItemReDownload}" />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemCopyLink}"
                                   Command="{Binding HistoryMenuItemCopyLink}" />
                         <Separator />
