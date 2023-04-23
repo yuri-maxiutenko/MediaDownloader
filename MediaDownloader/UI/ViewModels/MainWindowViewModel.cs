@@ -13,8 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-using AsyncAwaitBestPractices.MVVM;
-
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
 using MediaDownloader.Download;
@@ -22,6 +20,7 @@ using MediaDownloader.Models;
 using MediaDownloader.Properties;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Toolkit.Mvvm.Input;
 
 using NLog;
 using NLog.Common;
@@ -48,48 +47,37 @@ public sealed class MainWindowViewModel : BaseViewModel
         new(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_stop.png"));
 
     private CancellationTokenSource _cancellationTokenSource;
-
     private ICommand _clearButtonClick;
     private DownloadedItemInfo _currentDownloadedItem;
     private ICommand _downloadButtonClick;
-
     private BitmapImage _downloadButtonIcon;
-
     private bool _downloadButtonIsEnabled;
-
     private string _downloadButtonText;
-    private IAsyncCommand _downloadCommand;
-
+    private IAsyncRelayCommand _downloadCommand;
     private IDownloader _downloader;
     private bool _downloadHistoryIsEnabled;
     private string _downloadMessage;
     private string _downloadPercentText;
-
     private Brush _downloadProgressColor;
     private bool _downloadProgressIsIndeterminate;
-
     private int _downloadProgressMax;
     private int _downloadProgressMin;
     private int _downloadProgressSectionMin;
     private int _downloadProgressValue;
-
     private Visibility _downloadProgressVisibility;
     private bool _generalInterfaceIsEnabled;
     private ICommand _historyMenuItemClearHistory;
     private ICommand _historyMenuItemCopyLink;
     private ICommand _historyMenuItemOpenFolder;
-    private IAsyncCommand _historyMenuItemReDownload;
+    private IAsyncRelayCommand _historyMenuItemReDownload;
     private ICommand _historyMenuItemRemoveFromHistory;
     private bool _isMultipleFiles;
-
     private DownloadStatus _lastDownloadStatus;
     private DownloadFolder _selectedDownloadFolder;
-
     private DownloadOption _selectedDownloadOption;
     private ICommand _showDownloadedItemsButtonClick;
     private bool _showDownloadedItemsButtonIsEnabled;
     private ICommand _stopDownloadCommand;
-
     private Storage _storage;
     private string _userVideosFolder;
     private string _youTubeLink;
@@ -169,7 +157,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public ICommand ClearButtonClick
     {
-        get { return _clearButtonClick ??= new RelayCommand(_ => { YouTubeLink = string.Empty; }, _ => true); }
+        get { return _clearButtonClick ??= new RelayCommand(() => { YouTubeLink = string.Empty; }, () => true); }
     }
 
     public ICommand DownloadButtonClick
@@ -178,33 +166,33 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadButtonClick, value);
     }
 
-    public IAsyncCommand DownloadCommand
+    public IAsyncRelayCommand DownloadCommand
     {
-        get { return _downloadCommand ??= new AsyncCommand(DownloadAsync); }
+        get { return _downloadCommand ??= new AsyncRelayCommand(DownloadAsync); }
     }
 
     public ICommand StopDownloadCommand
     {
         get
         {
-            return _stopDownloadCommand ??= new RelayCommand(_ =>
+            return _stopDownloadCommand ??= new RelayCommand(() =>
             {
                 DownloadButtonIsEnabled = false;
                 _cancellationTokenSource.Cancel();
-            }, _ => true);
+            }, () => true);
         }
     }
 
     public ICommand ShowDownloadedItemsButtonClick
     {
-        get { return _showDownloadedItemsButtonClick ??= new RelayCommand(_ => { OpenDownloadFolder(); }, _ => true); }
+        get { return _showDownloadedItemsButtonClick ??= new RelayCommand(OpenDownloadFolder, () => true); }
     }
 
     public ICommand HistoryMenuItemOpenFolder
     {
         get
         {
-            return _historyMenuItemOpenFolder ??= new RelayCommand(_ =>
+            return _historyMenuItemOpenFolder ??= new RelayCommand(() =>
             {
                 var path = DownloadHistorySelectedItem?.Path;
                 if (string.IsNullOrEmpty(path))
@@ -220,15 +208,15 @@ public sealed class MainWindowViewModel : BaseViewModel
                 {
                     Process.Start(SelectedDownloadFolder.Path);
                 }
-            }, _ => true);
+            }, () => true);
         }
     }
 
-    public IAsyncCommand HistoryMenuItemReDownload
+    public IAsyncRelayCommand HistoryMenuItemReDownload
     {
         get
         {
-            return _historyMenuItemReDownload ??= new AsyncCommand(async () =>
+            return _historyMenuItemReDownload ??= new AsyncRelayCommand(async () =>
             {
                 if (string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
                 {
@@ -245,13 +233,13 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         get
         {
-            return _historyMenuItemCopyLink ??= new RelayCommand(_ =>
+            return _historyMenuItemCopyLink ??= new RelayCommand(() =>
             {
                 if (!string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
                 {
                     Clipboard.SetText(DownloadHistorySelectedItem.Url);
                 }
-            }, _ => true);
+            }, () => true);
         }
     }
 
@@ -259,14 +247,14 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         get
         {
-            return _historyMenuItemRemoveFromHistory ??= new RelayCommand(_ =>
+            return _historyMenuItemRemoveFromHistory ??= new RelayCommand(() =>
             {
                 if (DownloadHistorySelectedItem != null)
                 {
                     _storage.RemoveHistoryRecord(DownloadHistorySelectedItem);
                     DownloadHistory.View.Refresh();
                 }
-            }, _ => true);
+            }, () => true);
         }
     }
 
@@ -274,11 +262,11 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         get
         {
-            return _historyMenuItemClearHistory ??= new RelayCommand(_ =>
+            return _historyMenuItemClearHistory ??= new RelayCommand(() =>
             {
                 _storage.ClearHistory();
                 DownloadHistory.View.Refresh();
-            }, _ => true);
+            }, () => true);
         }
     }
 
