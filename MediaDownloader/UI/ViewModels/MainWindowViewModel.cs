@@ -22,22 +22,20 @@ using MediaDownloader.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
 
-using NLog;
-using NLog.Common;
-using NLog.Config;
+using Serilog;
 
 namespace MediaDownloader.UI.ViewModels;
 
 public sealed class MainWindowViewModel : BaseViewModel
 {
     private const string AppSettingsFilePath = @".\appsettings.json";
-    private const string NlogSettingsFilePath = @".\nlog.config";
 
     private const int DownloadProgressSectionStep = 100;
     private const int DownloadRetriesNumber = 2;
 
     private readonly StringBuilder _downloadLog = new();
     private readonly object _logWritingLock = new();
+    private readonly string _userDataFolderPath;
 
     private CancellationTokenSource _cancellationTokenSource;
     private ICommand _clearButtonClick;
@@ -77,7 +75,11 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public MainWindowViewModel()
     {
-        Initialize();
+        _userDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            Resources.ManufacturerFolderName, Resources.AppFolderName);
+        Directory.CreateDirectory(_userDataFolderPath);
+
+        Initialize(_userDataFolderPath);
     }
 
     public IConfiguration Configuration { get; set; }
@@ -283,8 +285,6 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public List<DownloadOption> DownloadOptions { get; private set; }
 
-    private Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
     public string UserVideosFolder =>
         _userVideosFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
 
@@ -365,7 +365,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
         catch (Exception e)
         {
-            Logger.Error(e, "Failed to update the downloader");
+            Log.Error(e, "Failed to update the downloader");
         }
     }
 
@@ -414,7 +414,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
         catch (Exception e)
         {
-            Logger.Error(e);
+            Log.Error(e, "Failed to open download folder");
         }
     }
 
@@ -475,7 +475,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
         catch (Exception e)
         {
-            Logger.Error(e);
+            Log.Error(e, "Failed to validate download");
         }
     }
 
@@ -495,12 +495,10 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadFolders.View.MoveCurrentTo(firstItem);
     }
 
-    private void Initialize()
+    private void Initialize(string userDataFolderPath)
     {
-        InternalLogger.LogLevel = LogLevel.Debug;
-        InternalLogger.LogToConsole = true;
+        LogConfigurator.SetupLogs(userDataFolderPath);
         Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
-        LogManager.Configuration = new XmlLoggingConfiguration(NlogSettingsFilePath);
 
         _downloader = new Downloader(Configuration["DownloaderPath"], Configuration["ConverterPath"]);
 
@@ -629,7 +627,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
                 DownloadMessage = string.Format(Resources.MessageDownloading, LastDownloadedItem.Name);
 
-                Logger.Info("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
+                Log.Information("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
 
                 _currentDownloadedItem = new DownloadedItemInfo
                 {
@@ -662,14 +660,13 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
         catch (OperationCanceledException e)
         {
-            Logger.Info(e);
             _lastDownloadStatus = DownloadStatus.Cancel;
             DownloadLog = Environment.NewLine;
             DownloadLog = e.Message;
         }
         catch (Exception e)
         {
-            Logger.Error(e);
+            Log.Error(e, "Failed to download item");
             _lastDownloadStatus = DownloadStatus.Fail;
             DownloadLog = Environment.NewLine;
             DownloadLog = e.Message;
@@ -718,6 +715,11 @@ public sealed class MainWindowViewModel : BaseViewModel
         try
         {
             var record = e.Data;
+            if (string.IsNullOrEmpty(record))
+            {
+                return;
+            }
+
             DownloadLog = record;
             DownloadLog = Environment.NewLine;
 
@@ -736,11 +738,11 @@ public sealed class MainWindowViewModel : BaseViewModel
                 _currentDownloadedItem.Path = path;
             }
 
-            Logger.Info(record);
+            Log.Information("{Record}", record);
         }
         catch (Exception exception)
         {
-            Logger.Error(exception);
+            Log.Error(exception, "Failed to process download output");
         }
     }
 
@@ -749,13 +751,18 @@ public sealed class MainWindowViewModel : BaseViewModel
         try
         {
             var record = e.Data;
+            if (string.IsNullOrEmpty(record))
+            {
+                return;
+            }
+
             DownloadLog = record;
             DownloadLog = Environment.NewLine;
-            Logger.Info(record);
+            Log.Information("{Record}", record);
         }
         catch (Exception exception)
         {
-            Logger.Error(exception);
+            Log.Error(exception, "Failed to process download error");
         }
     }
 }

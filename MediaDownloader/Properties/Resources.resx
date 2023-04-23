@@ -295,4 +295,13 @@ Url: {1}</value>
   <data name="DownloadStatusUnknown" xml:space="preserve">
     <value>Unknown</value>
   </data>
+  <data name="LogFolderName" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="ManufacturerFolderName" xml:space="preserve">
+    <value>Wolfcub</value>
+  </data>
+  <data name="AppFolderName" xml:space="preserve">
+    <value>Media Downloader</value>
+  </data>
 </root>

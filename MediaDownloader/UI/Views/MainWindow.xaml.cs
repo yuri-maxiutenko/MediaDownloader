@@ -8,8 +8,6 @@ using System.Windows.Input;
 
 using MediaDownloader.UI.ViewModels;
 
-using NLog;
-
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace MediaDownloader.UI.Views;
@@ -25,8 +23,6 @@ public partial class MainWindow
 
         InitializeComponent();
     }
-
-    private Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
     public MainWindowViewModel ViewModel { get; }
 
