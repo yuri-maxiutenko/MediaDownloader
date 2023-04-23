@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
 
 using Newtonsoft.Json;
 
-namespace MediaDownloader;
+namespace MediaDownloader.Download;
 
-public class Downloader
+public class Downloader : IDownloader
 {
     private const int DownloadTimeoutSec = 60;
-    private const int ProcessWaitTimeoutMs = 500;
 
     private readonly string _converterPath;
     private readonly ProcessStartInfo _processStartInfo;
@@ -35,11 +36,9 @@ public class Downloader
         };
     }
 
-    public bool TryGetItems(string link, string downloadOption, DataReceivedEventHandler onErrorReceived,
-        CancellationToken cancelToken, out DownloadItem result)
+    public async Task<DownloadItem> GetItemsAsync(string link, string downloadOption,
+        DataReceivedEventHandler onErrorDataReceived, CancellationToken cancellationToken)
     {
-        result = new DownloadItem();
-
         var arguments = new StringBuilder();
         arguments.Append(Resources.DownloaderOptionEncodingUtf8);
         arguments.Append(' ');
@@ -56,40 +55,41 @@ public class Downloader
             StartInfo = _processStartInfo
         };
 
+        var outputReader = new StringBuilder();
+
+        void OnOutputDataReceived(object _, DataReceivedEventArgs args)
+        {
+            outputReader.Append(args.Data);
+        }
+
         try
         {
-            var outputReader = new StringBuilder();
-
-            downloaderProcess.ErrorDataReceived += onErrorReceived;
-
-            downloaderProcess.OutputDataReceived += (_, args) => { outputReader.Append(args.Data); };
+            downloaderProcess.ErrorDataReceived += onErrorDataReceived;
+            downloaderProcess.OutputDataReceived += OnOutputDataReceived;
 
             downloaderProcess.Start();
 
             downloaderProcess.BeginErrorReadLine();
             downloaderProcess.BeginOutputReadLine();
 
-            while (!downloaderProcess.HasExited)
-            {
-                downloaderProcess.WaitForExit(ProcessWaitTimeoutMs);
-                if (!cancelToken.IsCancellationRequested)
-                {
-                    continue;
-                }
+            await downloaderProcess.WaitForExitAsync(cancellationToken);
 
-                downloaderProcess.Kill();
-                downloaderProcess.WaitForExit();
-                cancelToken.ThrowIfCancellationRequested();
+            if (downloaderProcess.ExitCode != 0)
+            {
+                return null;
             }
 
             var info = JsonConvert.DeserializeObject<DownloadItemJson>(outputReader.ToString());
 
-            result.Name = Utilities.SanitizeFileName(info.Title);
+            var result = new DownloadItem
+            {
+                Name = Utilities.Utilities.SanitizeFileName(info.Title)
+            };
             if (info.Entries != null)
             {
                 result.Entries = info.Entries.Select(item => new DownloadItem
                 {
-                    Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.Title), item.Ext),
+                    Name = Path.ChangeExtension(Utilities.Utilities.SanitizeFileName(item.Title), item.Ext),
                     Url = item.WebpageUrl
                 }).ToList();
             }
@@ -99,23 +99,33 @@ public class Downloader
                 {
                     new()
                     {
-                        Name = Path.ChangeExtension(Utilities.SanitizeFileName(info.Title), info.Ext),
+                        Name = Path.ChangeExtension(Utilities.Utilities.SanitizeFileName(info.Title), info.Ext),
                         Url = info.WebpageUrl
                     }
                 };
             }
 
-            return downloaderProcess.ExitCode == 0;
+            return result;
+        }
+        catch (OperationCanceledException)
+        {
+            if (!downloaderProcess.HasExited)
+            {
+                downloaderProcess.Kill();
+            }
+
+            throw;
         }
         finally
         {
-            downloaderProcess.ErrorDataReceived -= onErrorReceived;
+            downloaderProcess.ErrorDataReceived -= onErrorDataReceived;
+            downloaderProcess.OutputDataReceived -= OnOutputDataReceived;
         }
     }
 
-    public bool TryDownloadItem(string downloadFilePath, string link, string downloadOption,
+    public async Task<bool> DownloadItemAsync(string downloadFilePath, string link, string downloadOption,
         DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
-        CancellationToken cancelToken)
+        CancellationToken cancellationToken)
     {
         var arguments = new StringBuilder();
         arguments.Append(Resources.DownloaderOptionEncodingUtf8);
@@ -139,11 +149,24 @@ public class Downloader
             StartInfo = _processStartInfo
         };
 
-        return ExecuteDownloader(downloaderProcess, onOutputReceived, onErrorReceived, cancelToken);
+        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
     }
 
-    private static bool ExecuteDownloader(Process downloaderProcess, DataReceivedEventHandler onOutputReceived,
-        DataReceivedEventHandler onErrorReceived, CancellationToken cancelToken)
+    public async Task<bool> UpdateAsync(DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived, CancellationToken cancellationToken)
+    {
+        _processStartInfo.Arguments = Resources.DownloaderOptionUpdate;
+        var downloaderProcess = new Process
+        {
+            StartInfo = _processStartInfo
+        };
+
+        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
+    }
+
+    private static async Task<bool> ExecuteDownloaderAsync(Process downloaderProcess,
+        DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -155,37 +178,23 @@ public class Downloader
             downloaderProcess.BeginErrorReadLine();
             downloaderProcess.BeginOutputReadLine();
 
-            while (!downloaderProcess.HasExited)
-            {
-                downloaderProcess.WaitForExit(ProcessWaitTimeoutMs);
-                if (!cancelToken.IsCancellationRequested)
-                {
-                    continue;
-                }
-
-                downloaderProcess.Kill();
-                downloaderProcess.WaitForExit();
-                cancelToken.ThrowIfCancellationRequested();
-            }
+            await downloaderProcess.WaitForExitAsync(cancellationToken);
 
             return downloaderProcess.ExitCode == 0;
+        }
+        catch (OperationCanceledException)
+        {
+            if (!downloaderProcess.HasExited)
+            {
+                downloaderProcess.Kill();
+            }
+
+            throw;
         }
         finally
         {
             downloaderProcess.OutputDataReceived -= onOutputReceived;
             downloaderProcess.ErrorDataReceived -= onErrorReceived;
         }
-    }
-
-    public bool Update(DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
-        CancellationToken cancelToken)
-    {
-        _processStartInfo.Arguments = Resources.DownloaderOptionUpdate;
-        var downloaderProcess = new Process
-        {
-            StartInfo = _processStartInfo
-        };
-
-        return ExecuteDownloader(downloaderProcess, onOutputReceived, onErrorReceived, cancelToken);
     }
 }

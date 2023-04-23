@@ -377,9 +377,9 @@ namespace MediaDownloader.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Redownload.
         /// </summary>
-        public static string HistoryMenuItemRedownload {
+        public static string HistoryMenuItemReDownload {
             get {
-                return ResourceManager.GetString("HistoryMenuItemRedownload", resourceCulture);
+                return ResourceManager.GetString("HistoryMenuItemReDownload", resourceCulture);
             }
         }
         

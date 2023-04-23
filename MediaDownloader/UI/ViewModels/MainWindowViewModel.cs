@@ -6,18 +6,21 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
+using MediaDownloader.Download;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
+using MediaDownloader.Utilities;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Toolkit.Mvvm.Input;
 
 using NLog;
 using NLog.Common;
@@ -34,58 +37,40 @@ public sealed class MainWindowViewModel : BaseViewModel
     private const int DownloadRetriesNumber = 2;
 
     private readonly StringBuilder _downloadLog = new();
-
     private readonly object _logWritingLock = new();
 
-    private readonly BitmapImage _startDownloadIcon =
-        new(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_download.png"));
-
-    private readonly BitmapImage _stopDownloadIcon =
-        new(new Uri("pack://application:,,,/MediaDownloader;component/Images/icon_stop.png"));
-
-    private CancellationTokenSource _cancellation;
-
+    private CancellationTokenSource _cancellationTokenSource;
     private ICommand _clearButtonClick;
     private DownloadedItemInfo _currentDownloadedItem;
     private ICommand _downloadButtonClick;
-
-    private BitmapImage _downloadButtonIcon;
-
+    private string _downloadButtonIcon;
     private bool _downloadButtonIsEnabled;
-
     private string _downloadButtonText;
-
-    private Downloader _downloader;
+    private IAsyncRelayCommand _downloadCommand;
+    private IDownloader _downloader;
     private bool _downloadHistoryIsEnabled;
     private string _downloadMessage;
     private string _downloadPercentText;
-
     private Brush _downloadProgressColor;
     private bool _downloadProgressIsIndeterminate;
-
     private int _downloadProgressMax;
     private int _downloadProgressMin;
     private int _downloadProgressSectionMin;
     private int _downloadProgressValue;
-
     private Visibility _downloadProgressVisibility;
     private bool _generalInterfaceIsEnabled;
     private ICommand _historyMenuItemClearHistory;
     private ICommand _historyMenuItemCopyLink;
     private ICommand _historyMenuItemOpenFolder;
-    private ICommand _historyMenuItemRedownload;
+    private IAsyncRelayCommand _historyMenuItemReDownload;
     private ICommand _historyMenuItemRemoveFromHistory;
     private bool _isMultipleFiles;
-
     private DownloadStatus _lastDownloadStatus;
     private DownloadFolder _selectedDownloadFolder;
-
     private DownloadOption _selectedDownloadOption;
     private ICommand _showDownloadedItemsButtonClick;
     private bool _showDownloadedItemsButtonIsEnabled;
-    private ICommand _startDownloadCommand;
     private ICommand _stopDownloadCommand;
-
     private Storage _storage;
     private string _userVideosFolder;
     private string _youTubeLink;
@@ -97,7 +82,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public IConfiguration Configuration { get; set; }
 
-    public BitmapImage DownloadButtonIcon
+    public string DownloadButtonIcon
     {
         get => _downloadButtonIcon;
         set => SetField(ref _downloadButtonIcon, value);
@@ -165,7 +150,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public ICommand ClearButtonClick
     {
-        get { return _clearButtonClick ??= new RelayCommand(_ => { YouTubeLink = string.Empty; }, _ => true); }
+        get { return _clearButtonClick ??= new RelayCommand(() => { YouTubeLink = string.Empty; }, () => true); }
     }
 
     public ICommand DownloadButtonClick
@@ -174,33 +159,33 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadButtonClick, value);
     }
 
-    public ICommand StartDownloadCommand
+    public IAsyncRelayCommand DownloadCommand
     {
-        get { return _startDownloadCommand ??= new RelayCommand(_ => { StartDownload(); }, _ => true); }
+        get { return _downloadCommand ??= new AsyncRelayCommand(DownloadAsync); }
     }
 
     public ICommand StopDownloadCommand
     {
         get
         {
-            return _stopDownloadCommand ??= new RelayCommand(_ =>
+            return _stopDownloadCommand ??= new RelayCommand(() =>
             {
                 DownloadButtonIsEnabled = false;
-                _cancellation.Cancel();
-            }, _ => true);
+                _cancellationTokenSource.Cancel();
+            }, () => true);
         }
     }
 
     public ICommand ShowDownloadedItemsButtonClick
     {
-        get { return _showDownloadedItemsButtonClick ??= new RelayCommand(_ => { OpenDownloadFolder(); }, _ => true); }
+        get { return _showDownloadedItemsButtonClick ??= new RelayCommand(OpenDownloadFolder, () => true); }
     }
 
     public ICommand HistoryMenuItemOpenFolder
     {
         get
         {
-            return _historyMenuItemOpenFolder ??= new RelayCommand(_ =>
+            return _historyMenuItemOpenFolder ??= new RelayCommand(() =>
             {
                 var path = DownloadHistorySelectedItem?.Path;
                 if (string.IsNullOrEmpty(path))
@@ -216,15 +201,15 @@ public sealed class MainWindowViewModel : BaseViewModel
                 {
                     Process.Start(SelectedDownloadFolder.Path);
                 }
-            }, _ => true);
+            }, () => true);
         }
     }
 
-    public ICommand HistoryMenuItemRedownload
+    public IAsyncRelayCommand HistoryMenuItemReDownload
     {
         get
         {
-            return _historyMenuItemRedownload ??= new RelayCommand(_ =>
+            return _historyMenuItemReDownload ??= new AsyncRelayCommand(async () =>
             {
                 if (string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
                 {
@@ -232,8 +217,8 @@ public sealed class MainWindowViewModel : BaseViewModel
                 }
 
                 YouTubeLink = DownloadHistorySelectedItem?.Url;
-                StartDownload();
-            }, _ => true);
+                await DownloadAsync();
+            });
         }
     }
 
@@ -241,13 +226,13 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         get
         {
-            return _historyMenuItemCopyLink ??= new RelayCommand(_ =>
+            return _historyMenuItemCopyLink ??= new RelayCommand(() =>
             {
                 if (!string.IsNullOrEmpty(DownloadHistorySelectedItem?.Url))
                 {
                     Clipboard.SetText(DownloadHistorySelectedItem.Url);
                 }
-            }, _ => true);
+            }, () => true);
         }
     }
 
@@ -255,14 +240,14 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         get
         {
-            return _historyMenuItemRemoveFromHistory ??= new RelayCommand(_ =>
+            return _historyMenuItemRemoveFromHistory ??= new RelayCommand(() =>
             {
                 if (DownloadHistorySelectedItem != null)
                 {
                     _storage.RemoveHistoryRecord(DownloadHistorySelectedItem);
                     DownloadHistory.View.Refresh();
                 }
-            }, _ => true);
+            }, () => true);
         }
     }
 
@@ -270,11 +255,11 @@ public sealed class MainWindowViewModel : BaseViewModel
     {
         get
         {
-            return _historyMenuItemClearHistory ??= new RelayCommand(_ =>
+            return _historyMenuItemClearHistory ??= new RelayCommand(() =>
             {
                 _storage.ClearHistory();
                 DownloadHistory.View.Refresh();
-            }, _ => true);
+            }, () => true);
         }
     }
 
@@ -353,61 +338,51 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadProgressVisibility, value);
     }
 
-    public void UpdateDownloader()
+    public async Task UpdateDownloaderAsync()
+    {
+        try
+        {
+            GeneralInterfaceIsEnabled = false;
+            DownloadButtonIsEnabled = false;
+            DownloadHistoryIsEnabled = false;
+            DownloadProgressIsIndeterminate = true;
+            ShowDownloadedItemsButtonIsEnabled = false;
+            DownloadProgressVisibility = Visibility.Visible;
+            DownloadProgressColor = Brushes.LimeGreen;
+            DownloadMessage = Resources.MessageUpdatingDownloader;
+
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            await UpdateDownloaderAsync(_downloader, _cancellationTokenSource.Token);
+
+            GeneralInterfaceIsEnabled = true;
+            DownloadButtonIsEnabled = true;
+            DownloadHistoryIsEnabled = true;
+            ShowDownloadedItemsButtonIsEnabled = true;
+            DownloadProgressIsIndeterminate = false;
+            DownloadProgressColor = Brushes.Gainsboro;
+            DownloadMessage = string.Empty;
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e, "Failed to update the downloader");
+        }
+    }
+
+    private async Task<bool> UpdateDownloaderAsync(IDownloader downloader, CancellationToken cancellationToken)
+    {
+        return await downloader.UpdateAsync(ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
+    }
+
+    private async Task DownloadAsync()
     {
         GeneralInterfaceIsEnabled = false;
         DownloadButtonIsEnabled = false;
         DownloadHistoryIsEnabled = false;
-        DownloadProgressIsIndeterminate = true;
-        ShowDownloadedItemsButtonIsEnabled = false;
-        DownloadProgressVisibility = Visibility.Visible;
-        DownloadProgressColor = Brushes.LimeGreen;
-        DownloadMessage = Resources.MessageUpdatingDownloader;
-
-        _cancellation = new CancellationTokenSource();
-
-        var worker = new BackgroundWorker();
-        worker.DoWork += UpdateDownloaderAsync;
-        worker.RunWorkerCompleted += OnUpdateDownloaderCompleted;
-        worker.RunWorkerAsync();
-    }
-
-    private void OnUpdateDownloaderCompleted(object sender, RunWorkerCompletedEventArgs e)
-    {
-        GeneralInterfaceIsEnabled = true;
-        DownloadButtonIsEnabled = true;
-        DownloadHistoryIsEnabled = true;
-        ShowDownloadedItemsButtonIsEnabled = true;
-        DownloadProgressIsIndeterminate = false;
-        DownloadProgressColor = Brushes.Gainsboro;
-        DownloadMessage = string.Empty;
-    }
-
-    private void UpdateDownloaderAsync(object sender, DoWorkEventArgs e)
-    {
-        _cancellation.Token.ThrowIfCancellationRequested();
-        var success = _downloader.Update(
-            (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data); },
-            (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
-            _cancellation.Token);
-    }
-
-    private void StartDownload()
-    {
-        GeneralInterfaceIsEnabled = false;
-        DownloadButtonIsEnabled = false;
-        DownloadHistoryIsEnabled = false;
-
-        _cancellation = new CancellationTokenSource();
 
         UpdateDownloadFolder(DownloadFolders.View.CurrentItem as DownloadFolder, DateTime.Now);
 
-        var worker = new BackgroundWorker();
-        worker.DoWork += DownloadItemAsync;
-        worker.RunWorkerCompleted += OnDownloadItemCompleted;
-        worker.RunWorkerAsync();
-
-        DownloadButtonIcon = _stopDownloadIcon;
+        DownloadButtonIcon = IconHelper.GetDownloadIcon(true);
         DownloadButtonText = Resources.StopDownloadButtonText;
         DownloadButtonClick = StopDownloadCommand;
         DownloadButtonIsEnabled = true;
@@ -416,6 +391,11 @@ public sealed class MainWindowViewModel : BaseViewModel
         ShowDownloadedItemsButtonIsEnabled = false;
         DownloadProgressVisibility = Visibility.Visible;
         DownloadProgressColor = Brushes.LimeGreen;
+
+        _cancellationTokenSource = new CancellationTokenSource();
+        await DownloadItemAsync(_downloader, _cancellationTokenSource.Token);
+
+        ProcessDownloadResult();
     }
 
     private void OpenDownloadFolder()
@@ -438,7 +418,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private void OnDownloadItemCompleted(object sender, RunWorkerCompletedEventArgs e)
+    private void ProcessDownloadResult()
     {
         DownloadLog = Environment.NewLine;
         DownloadLog = Environment.NewLine;
@@ -473,9 +453,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
 
         DownloadButtonIsEnabled = false;
-        DownloadButtonIcon = _startDownloadIcon;
+        DownloadButtonIcon = IconHelper.GetDownloadIcon(false);
         DownloadButtonText = Resources.StartDownloadButtonText;
-        DownloadButtonClick = StartDownloadCommand;
+        DownloadButtonClick = DownloadCommand;
         DownloadButtonIsEnabled = true;
 
         ShowDownloadedItemsButtonIsEnabled = true;
@@ -490,7 +470,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         try
         {
             var downloadDirectoryExists = Directory.Exists(SelectedDownloadFolder?.Path);
-            DownloadButtonIsEnabled = Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
+            DownloadButtonIsEnabled = Utilities.Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
             ShowDownloadedItemsButtonIsEnabled = downloadDirectoryExists;
         }
         catch (Exception e)
@@ -530,9 +510,9 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         GeneralInterfaceIsEnabled = true;
 
-        DownloadButtonIcon = _startDownloadIcon;
+        DownloadButtonIcon = IconHelper.GetDownloadIcon(false);
         DownloadButtonText = Resources.StartDownloadButtonText;
-        DownloadButtonClick = StartDownloadCommand;
+        DownloadButtonClick = DownloadCommand;
 
         DownloadProgressColor = Brushes.Gainsboro;
 
@@ -594,13 +574,11 @@ public sealed class MainWindowViewModel : BaseViewModel
         ValidateDownload();
     }
 
-    private void DownloadItemAsync(object sender, DoWorkEventArgs args)
+    private async Task DownloadItemAsync(IDownloader downloader, CancellationToken cancellationToken)
     {
         try
         {
             _lastDownloadStatus = DownloadStatus.Fail;
-
-            _cancellation.Token.ThrowIfCancellationRequested();
 
             lock (_logWritingLock)
             {
@@ -613,17 +591,16 @@ public sealed class MainWindowViewModel : BaseViewModel
 
             DownloadMessage = Resources.MessageDownloadPreparing;
 
-            var success = false;
             var retryCounter = 0;
 
             DownloadItem item = null;
-            while (!success && retryCounter < DownloadRetriesNumber)
+            while (item is null && retryCounter < DownloadRetriesNumber)
             {
-                success = GetItem(out item);
+                item = await GetItemAsync(downloader, cancellationToken);
                 retryCounter++;
             }
 
-            if (!success || item == null)
+            if (item is null)
             {
                 _lastDownloadStatus = DownloadStatus.Fail;
                 return;
@@ -652,8 +629,6 @@ public sealed class MainWindowViewModel : BaseViewModel
 
                 DownloadMessage = string.Format(Resources.MessageDownloading, LastDownloadedItem.Name);
 
-                _cancellation.Token.ThrowIfCancellationRequested();
-
                 Logger.Info("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
 
                 _currentDownloadedItem = new DownloadedItemInfo
@@ -668,12 +643,12 @@ public sealed class MainWindowViewModel : BaseViewModel
                     LastDownloadedItem.Url);
                 DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
 
-                success = false;
+                var success = false;
                 retryCounter = 0;
                 while (!success && retryCounter < DownloadRetriesNumber)
                 {
-                    success = DownloadItem(LastDownloadedItem.Name, LastDownloadedItem.Url,
-                        _currentDownloadedItem.Path);
+                    success = await DownloadItemAsync(downloader, LastDownloadedItem.Name, LastDownloadedItem.Url,
+                        _currentDownloadedItem.Path, cancellationToken);
                     retryCounter++;
                 }
 
@@ -701,25 +676,22 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private bool GetItem(out DownloadItem item)
+    private async Task<DownloadItem> GetItemAsync(IDownloader downloader, CancellationToken cancellationToken)
     {
-        _cancellation.Token.ThrowIfCancellationRequested();
-        return _downloader.TryGetItems(YouTubeLink, SelectedDownloadOption.Option,
-            (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
-            _cancellation.Token, out item);
+        return await downloader.GetItemsAsync(YouTubeLink, SelectedDownloadOption.Option, ProcessDownloaderError,
+            cancellationToken);
     }
 
-    private bool DownloadItem(string fileName, string downloadUrl, string downloadPath)
+    private async Task<bool> DownloadItemAsync(IDownloader downloader, string fileName, string downloadUrl,
+        string downloadPath, CancellationToken cancellationToken)
     {
         var status = DownloadStatus.Fail;
 
         try
         {
-            _cancellation.Token.ThrowIfCancellationRequested();
-            var success = _downloader.TryDownloadItem(downloadPath, downloadUrl, SelectedDownloadOption.Option,
-                (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderOutputAsync, eventArgs.Data); },
-                (_, eventArgs) => { ThreadPool.QueueUserWorkItem(ProcessDownloaderErrorAsync, eventArgs.Data); },
-                _cancellation.Token);
+            _cancellationTokenSource.Token.ThrowIfCancellationRequested();
+            var success = await downloader.DownloadItemAsync(downloadPath, downloadUrl, SelectedDownloadOption.Option,
+                ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
 
             status = success ? DownloadStatus.Success : DownloadStatus.Fail;
 
@@ -741,28 +713,24 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private void ProcessDownloaderOutputAsync(object state)
+    private void ProcessDownloaderOutput(object sender, DataReceivedEventArgs e)
     {
         try
         {
-            if (state is not string record)
-            {
-                return;
-            }
-
+            var record = e.Data;
             DownloadLog = record;
             DownloadLog = Environment.NewLine;
 
-            if (Utilities.TryParseDownloadProgress(record, out var progress))
+            if (DownloadOutputParser.TryParseDownloadProgress(record, out var progress))
             {
                 DownloadProgressIsIndeterminate = false;
                 var newValue = _downloadProgressSectionMin + (int)Math.Round(progress);
                 DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
 
                 DownloadPercentText =
-                    $"{Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
+                    $"{Utilities.Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
             }
-            else if (Utilities.TryParseResultFilePath(record, out var path))
+            else if (DownloadOutputParser.TryParseResultFilePath(record, out var path))
             {
                 _currentDownloadedItem.Name = Path.GetFileName(path);
                 _currentDownloadedItem.Path = path;
@@ -770,28 +738,24 @@ public sealed class MainWindowViewModel : BaseViewModel
 
             Logger.Info(record);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger.Error(e);
+            Logger.Error(exception);
         }
     }
 
-    private void ProcessDownloaderErrorAsync(object state)
+    private void ProcessDownloaderError(object sender, DataReceivedEventArgs e)
     {
         try
         {
-            if (state is not string record)
-            {
-                return;
-            }
-
+            var record = e.Data;
             DownloadLog = record;
             DownloadLog = Environment.NewLine;
             Logger.Info(record);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Logger.Error(e);
+            Logger.Error(exception);
         }
     }
 }

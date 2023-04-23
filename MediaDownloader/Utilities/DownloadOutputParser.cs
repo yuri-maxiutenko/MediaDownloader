@@ -1,20 +1,12 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
 using MediaDownloader.Properties;
 
-namespace MediaDownloader;
+namespace MediaDownloader.Utilities;
 
-internal static class Utilities
+public static class DownloadOutputParser
 {
-    public static bool IsValidUrl(string url)
-    {
-        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult) &&
-               (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-    }
-
     public static bool TryParseDownloadProgress(string record, out double percent)
     {
         percent = 0;
@@ -51,17 +43,5 @@ internal static class Utilities
 
         path = matches.Groups[1].ToString();
         return true;
-    }
-
-    public static string SanitizeFileName(string fileName)
-    {
-        var regexSearch = new string(Path.GetInvalidFileNameChars());
-        var regex = new Regex($"[{Regex.Escape(regexSearch)}]");
-        return regex.Replace(fileName, "_");
-    }
-
-    public static int CalculateAbsolutePercent(int value, int maximum)
-    {
-        return (int)Math.Round(100 * (double)value / maximum);
     }
 }

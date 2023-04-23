@@ -6,7 +6,7 @@ using System.Windows.Data;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
 
-namespace MediaDownloader;
+namespace MediaDownloader.Download;
 
 [ValueConversion(typeof(DownloadStatus), typeof(string))]
 internal class DownloadStatusConverter : IValueConverter

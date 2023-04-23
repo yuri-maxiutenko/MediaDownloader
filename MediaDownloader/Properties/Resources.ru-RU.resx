@@ -183,7 +183,7 @@
 	<data name="HistoryMenuItemOpenFolder" xml:space="preserve">
     <value>Открыть папку с файлом</value>
   </data>
-	<data name="HistoryMenuItemRedownload" xml:space="preserve">
+	<data name="HistoryMenuItemReDownload" xml:space="preserve">
     <value>Скачать еще раз</value>
   </data>
 	<data name="HistoryMenuItemCopyLink" xml:space="preserve">

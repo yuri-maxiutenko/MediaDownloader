@@ -57,7 +57,7 @@ public partial class MainWindow
         if (e.DataObject.GetDataPresent(typeof(string)))
         {
             var text = (string)e.DataObject.GetData(typeof(string));
-            if (!Utilities.IsValidUrl(text))
+            if (!Utilities.Utilities.IsValidUrl(text))
             {
                 e.CancelCommand();
             }
@@ -117,13 +117,6 @@ public partial class MainWindow
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            ViewModel.UpdateDownloader();
-        }
-        catch (Exception exception)
-        {
-            Logger.Error(exception, "Failed to load main window");
-        }
+        _ = ViewModel.UpdateDownloaderAsync();
     }
 }
