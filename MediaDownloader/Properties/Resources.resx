@@ -138,15 +138,6 @@
   <data name="ShowHistoryExpanderText" xml:space="preserve">
     <value>Show History</value>
   </data>
-  <data name="DownloaderFileName" xml:space="preserve">
-    <value>yt-dlp.exe</value>
-  </data>
-  <data name="ConverterDirectoryName" xml:space="preserve">
-    <value>ffmpeg</value>
-  </data>
-  <data name="BinDirectoryName" xml:space="preserve">
-    <value>bin</value>
-  </data>
   <data name="DownloaderFormatBestName" xml:space="preserve">
     <value>Best quality video</value>
   </data>
@@ -194,15 +185,6 @@
   </data>
   <data name="LogMessageFileNameRetrieved" xml:space="preserve">
     <value>File name successfully retrieved: {0}</value>
-  </data>
-  <data name="SearchPatternDownloadProgress" xml:space="preserve">
-    <value>(\[download\]\s*)(\S*)(\s*)% of</value>
-  </data>
-  <data name="SearchPatternResultFilePath" xml:space="preserve">
-    <value>\[ffmpeg\]\s*Merging formats into\s*"(.*)"</value>
-  </data>
-  <data name="SearchPatternAlreadyDownloadedFilePath" xml:space="preserve">
-    <value>\[download\]\s* (.*?)\s*has already been downloaded and merged</value>
   </data>
   <data name="LogMessageDownloadingFile" xml:space="preserve">
     <value>Downloading the file: {0}

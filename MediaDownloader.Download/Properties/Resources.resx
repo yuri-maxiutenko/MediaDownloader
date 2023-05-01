@@ -57,4 +57,13 @@
     <data name="DownloaderOptionUpdate" xml:space="preserve">
     <value>-U</value>
   </data>
+    <data name="SearchPatternDownloadProgress" xml:space="preserve">
+    <value>(\[download\]\s*)(\S*)(\s*)% of</value>
+  </data>
+    <data name="SearchPatternResultFilePath" xml:space="preserve">
+    <value>\[ffmpeg\]\s*Merging formats into\s*"(.*)"</value>
+  </data>
+    <data name="SearchPatternAlreadyDownloadedFilePath" xml:space="preserve">
+    <value>\[download\]\s* (.*?)\s*has already been downloaded and merged</value>
+  </data>
 </root>

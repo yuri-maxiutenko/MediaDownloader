@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
-using MediaDownloader.Properties;
+using MediaDownloader.Download.Properties;
 
-namespace MediaDownloader.Utilities;
+namespace MediaDownloader.Download.Utilities;
 
 public static class DownloadOutputParser
 {

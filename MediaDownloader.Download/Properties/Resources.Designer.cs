@@ -175,5 +175,32 @@ namespace MediaDownloader.Download.Properties {
                 return ResourceManager.GetString("DownloaderOptionUpdate", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to \[download\]\s* (.*?)\s*has already been downloaded and merged.
+        /// </summary>
+        internal static string SearchPatternAlreadyDownloadedFilePath {
+            get {
+                return ResourceManager.GetString("SearchPatternAlreadyDownloadedFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (\[download\]\s*)(\S*)(\s*)% of.
+        /// </summary>
+        internal static string SearchPatternDownloadProgress {
+            get {
+                return ResourceManager.GetString("SearchPatternDownloadProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to \[ffmpeg\]\s*Merging formats into\s*&quot;(.*)&quot;.
+        /// </summary>
+        internal static string SearchPatternResultFilePath {
+            get {
+                return ResourceManager.GetString("SearchPatternResultFilePath", resourceCulture);
+            }
+        }
     }
 }

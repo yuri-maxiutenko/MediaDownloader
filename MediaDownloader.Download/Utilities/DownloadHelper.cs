@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace MediaDownloader.Download;
+namespace MediaDownloader.Download.Utilities;
 
-public static class Utilities
+public static class DownloadHelper
 {
     public static string SanitizeFileName(string fileName)
     {

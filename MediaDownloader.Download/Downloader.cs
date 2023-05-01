@@ -3,6 +3,7 @@ using System.Text;
 
 using MediaDownloader.Download.Models;
 using MediaDownloader.Download.Properties;
+using MediaDownloader.Download.Utilities;
 
 using Newtonsoft.Json;
 
@@ -94,11 +95,11 @@ public class Downloader : IDownloader
 
             var result = new DownloadItem
             {
-                Name = Utilities.SanitizeFileName(info.Title)
+                Name = DownloadHelper.SanitizeFileName(info.Title)
             };
             result.Entries = info.Entries.Select(item => new DownloadItem
             {
-                Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.Title), item.Ext),
+                Name = Path.ChangeExtension(DownloadHelper.SanitizeFileName(item.Title), item.Ext),
                 Url = item.WebpageUrl
             }).ToList();
 

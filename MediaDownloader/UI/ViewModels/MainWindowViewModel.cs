@@ -16,6 +16,7 @@ using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
 using MediaDownloader.Download;
 using MediaDownloader.Download.Models;
+using MediaDownloader.Download.Utilities;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
 using MediaDownloader.Utilities;

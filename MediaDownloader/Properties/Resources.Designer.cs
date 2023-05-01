@@ -78,15 +78,6 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bin.
-        /// </summary>
-        public static string BinDirectoryName {
-            get {
-                return ResourceManager.GetString("BinDirectoryName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Browse....
         /// </summary>
         public static string BrowseButtonText {
@@ -105,15 +96,6 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ffmpeg.
-        /// </summary>
-        public static string ConverterDirectoryName {
-            get {
-                return ResourceManager.GetString("ConverterDirectoryName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Data.db.
         /// </summary>
         public static string DatabaseName {
@@ -128,15 +110,6 @@ namespace MediaDownloader.Properties {
         public static string DataFolderName {
             get {
                 return ResourceManager.GetString("DataFolderName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to yt-dlp.exe.
-        /// </summary>
-        public static string DownloaderFileName {
-            get {
-                return ResourceManager.GetString("DownloaderFileName", resourceCulture);
             }
         }
         
@@ -444,33 +417,6 @@ namespace MediaDownloader.Properties {
         public static string MessageUpdatingDownloader {
             get {
                 return ResourceManager.GetString("MessageUpdatingDownloader", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to \[download\]\s* (.*?)\s*has already been downloaded and merged.
-        /// </summary>
-        public static string SearchPatternAlreadyDownloadedFilePath {
-            get {
-                return ResourceManager.GetString("SearchPatternAlreadyDownloadedFilePath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (\[download\]\s*)(\S*)(\s*)% of.
-        /// </summary>
-        public static string SearchPatternDownloadProgress {
-            get {
-                return ResourceManager.GetString("SearchPatternDownloadProgress", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to \[ffmpeg\]\s*Merging formats into\s*&quot;(.*)&quot;.
-        /// </summary>
-        public static string SearchPatternResultFilePath {
-            get {
-                return ResourceManager.GetString("SearchPatternResultFilePath", resourceCulture);
             }
         }
         
