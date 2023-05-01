@@ -16,7 +16,6 @@ using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
 using MediaDownloader.Download;
 using MediaDownloader.Download.Models;
-using MediaDownloader.Download.Utilities;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
 using MediaDownloader.Utilities;
@@ -31,16 +30,12 @@ namespace MediaDownloader.UI.ViewModels;
 public sealed class MainWindowViewModel : BaseViewModel
 {
     private const string AppSettingsFilePath = @".\appsettings.json";
-
-    private const int DownloadProgressSectionStep = 100;
-    private const int DownloadRetriesNumber = 2;
+    private const double DownloadProgressMax = 100.0;
 
     private readonly StringBuilder _downloadLog = new();
-    private readonly object _logWritingLock = new();
 
     private CancellationTokenSource _cancellationTokenSource;
     private ICommand _clearButtonClick;
-    private DownloadedItemInfo _currentDownloadedItem;
     private ICommand _downloadButtonClick;
     private string _downloadButtonIcon;
     private bool _downloadButtonIsEnabled;
@@ -48,14 +43,12 @@ public sealed class MainWindowViewModel : BaseViewModel
     private IAsyncRelayCommand _downloadCommand;
     private IDownloader _downloader;
     private bool _downloadHistoryIsEnabled;
+    private IDownloadManager _downloadManager;
     private string _downloadMessage;
     private string _downloadPercentText;
     private Brush _downloadProgressColor;
     private bool _downloadProgressIsIndeterminate;
-    private int _downloadProgressMax;
-    private int _downloadProgressMin;
-    private int _downloadProgressSectionMin;
-    private int _downloadProgressValue;
+    private double _downloadProgressValue;
     private Visibility _downloadProgressVisibility;
     private bool _generalInterfaceIsEnabled;
     private ICommand _historyMenuItemClearHistory;
@@ -63,8 +56,6 @@ public sealed class MainWindowViewModel : BaseViewModel
     private ICommand _historyMenuItemOpenFolder;
     private IAsyncRelayCommand _historyMenuItemReDownload;
     private ICommand _historyMenuItemRemoveFromHistory;
-    private bool _isMultipleFiles;
-    private DownloadStatus _lastDownloadStatus;
     private DownloadFolder _selectedDownloadFolder;
     private DownloadOption _selectedDownloadOption;
     private ICommand _showDownloadedItemsButtonClick;
@@ -266,22 +257,10 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    public int DownloadProgressValue
+    public double DownloadProgressValue
     {
         get => _downloadProgressValue;
         set => SetField(ref _downloadProgressValue, value);
-    }
-
-    public int DownloadProgressMin
-    {
-        get => _downloadProgressMin;
-        set => SetField(ref _downloadProgressMin, value);
-    }
-
-    public int DownloadProgressMax
-    {
-        get => _downloadProgressMax;
-        set => SetField(ref _downloadProgressMax, value);
     }
 
     public List<DownloadOption> DownloadOptions { get; private set; }
@@ -297,20 +276,10 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public string DownloadLog
     {
-        get
-        {
-            lock (_logWritingLock)
-            {
-                return _downloadLog.ToString();
-            }
-        }
+        get => _downloadLog.ToString();
         set
         {
-            lock (_logWritingLock)
-            {
-                _downloadLog.Append(value);
-            }
-
+            _downloadLog.Append(value);
             OnPropertyChanged();
         }
     }
@@ -354,7 +323,8 @@ public sealed class MainWindowViewModel : BaseViewModel
 
             _cancellationTokenSource = new CancellationTokenSource();
 
-            await UpdateDownloaderAsync(_downloader, _cancellationTokenSource.Token);
+            var progress = new Progress<ProgressReportModel>(HandleProgress);
+            await _downloadManager.UpdateDownloaderAsync(progress, _cancellationTokenSource.Token);
 
             GeneralInterfaceIsEnabled = true;
             DownloadButtonIsEnabled = true;
@@ -368,11 +338,6 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             Log.Error(e, "Failed to update the downloader");
         }
-    }
-
-    private async Task<bool> UpdateDownloaderAsync(IDownloader downloader, CancellationToken cancellationToken)
-    {
-        return await downloader.UpdateAsync(ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
     }
 
     private async Task DownloadAsync()
@@ -393,10 +358,37 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadProgressVisibility = Visibility.Visible;
         DownloadProgressColor = Brushes.LimeGreen;
 
-        _cancellationTokenSource = new CancellationTokenSource();
-        await DownloadItemAsync(_downloader, _cancellationTokenSource.Token);
+        await DownloadItemsAsync();
+    }
 
-        ProcessDownloadResult();
+    private async Task DownloadItemsAsync()
+    {
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        var progress = new Progress<ProgressReportModel>(HandleProgress);
+
+        var downloadedItemsInfo = await _downloadManager.DownloadItemAsync(YouTubeLink, SelectedDownloadFolder.Path,
+            SelectedDownloadOption.FormatType, progress, _cancellationTokenSource.Token);
+
+        ProcessDownloadResult(downloadedItemsInfo);
+    }
+
+    private void HandleProgress(ProgressReportModel reportModel)
+    {
+        if (!string.IsNullOrEmpty(reportModel.Message))
+        {
+            DownloadLog = reportModel.Message;
+            DownloadLog = Environment.NewLine;
+        }
+
+        if (reportModel.Value is not { } progressValue)
+        {
+            return;
+        }
+
+        DownloadProgressIsIndeterminate = false;
+        DownloadProgressValue = progressValue;
+        DownloadPercentText = $"{progressValue}%";
     }
 
     private void OpenDownloadFolder()
@@ -419,7 +411,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    private void ProcessDownloadResult()
+    private void ProcessDownloadResult(ICollection<DownloadedItemInfo> downloadedItemsInfo)
     {
         DownloadLog = Environment.NewLine;
         DownloadLog = Environment.NewLine;
@@ -427,42 +419,71 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadProgressIsIndeterminate = false;
         DownloadProgressValue = DownloadProgressMax;
 
-        switch (_lastDownloadStatus)
+        var lastDownloadStatus = DownloadStatus.Success;
+        var hasSuccessfulDownloads = false;
+        foreach (var info in downloadedItemsInfo)
+        {
+            switch (info.Status)
+            {
+                case DownloadStatus.Success:
+                    hasSuccessfulDownloads = true;
+                    DownloadLog = $"{Resources.MessageItemDownloadComplete} {info.Name}";
+                    DownloadLog = Environment.NewLine;
+                    break;
+                case DownloadStatus.Fail:
+                    DownloadLog = $"{Resources.MessageItemDownloadFailed} {info.Name}";
+                    DownloadLog = Environment.NewLine;
+                    lastDownloadStatus = info.Status;
+                    break;
+                case DownloadStatus.Cancel:
+                    DownloadLog = $"{Resources.MessageItemDownloadCanceled} {info.Name}";
+                    DownloadLog = Environment.NewLine;
+                    lastDownloadStatus = info.Status;
+                    break;
+            }
+
+            _storage.AddOrUpdateHistoryRecord(info.Name, info.Path, info.Url, (int)info.Status,
+                (int)SelectedDownloadOption.FormatType);
+        }
+
+        DownloadHistory.View.Refresh();
+
+        switch (lastDownloadStatus)
         {
             case DownloadStatus.Success:
                 DownloadProgressColor = Brushes.DeepSkyBlue;
-                DownloadMessage = string.Format(Resources.MessageDownloadComplete, LastDownloadedItem.Name);
-
+                DownloadMessage = Resources.MessageDownloadComplete;
                 DownloadLog = Resources.LogMessageDownloadSuccess;
-                DownloadLog = Environment.NewLine;
-                DownloadLog = _isMultipleFiles
-                    ? string.Format(Resources.LogMessageLocationOfFiles, LastDownloadedItem.Path)
-                    : string.Format(Resources.LogMessageLocationOfFile, LastDownloadedItem.Path);
                 break;
             case DownloadStatus.Fail:
-                DownloadProgressColor = Brushes.OrangeRed;
-                DownloadMessage = string.Format(Resources.MessageDownloadFailed, LastDownloadedItem.Name);
-
-                DownloadLog = Resources.LogMessageDownloadFail;
+                DownloadProgressColor = Brushes.DarkOrange;
+                DownloadMessage = Resources.MessageDownloadFailed;
                 break;
             case DownloadStatus.Cancel:
                 DownloadProgressColor = Brushes.Gainsboro;
-                DownloadMessage = string.Format(Resources.MessageDownloadCancelled, LastDownloadedItem.Name);
-
+                DownloadMessage = Resources.MessageDownloadCancelled;
                 DownloadLog = Resources.LogMessageDownloadCancel;
                 break;
         }
 
-        DownloadButtonIsEnabled = false;
+        if (hasSuccessfulDownloads)
+        {
+            var downloadPath = downloadedItemsInfo.FirstOrDefault(x => x.Status == DownloadStatus.Success)?.Path;
+            if (!string.IsNullOrEmpty(downloadPath))
+            {
+                DownloadLog = Environment.NewLine;
+                DownloadLog = downloadedItemsInfo.Count > 1
+                    ? $"{Resources.LogMessageLocationOfFiles} {Path.GetDirectoryName(downloadPath)}"
+                    : $"{Resources.LogMessageLocationOfFile} {downloadPath}";
+            }
+        }
+
         DownloadButtonIcon = IconHelper.GetDownloadIcon(false);
         DownloadButtonText = Resources.StartDownloadButtonText;
         DownloadButtonClick = DownloadCommand;
         DownloadButtonIsEnabled = true;
-
         ShowDownloadedItemsButtonIsEnabled = true;
-
         GeneralInterfaceIsEnabled = true;
-
         DownloadHistoryIsEnabled = true;
     }
 
@@ -502,6 +523,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
 
         _downloader = new Downloader(Configuration["DownloaderPath"], Configuration["ConverterPath"]);
+        _downloadManager = new DownloadManager(_downloader);
 
         var dataFolderPath = Path.Combine(userDataFolderPath, Resources.DataFolderName);
         Directory.CreateDirectory(dataFolderPath);
@@ -569,199 +591,5 @@ public sealed class MainWindowViewModel : BaseViewModel
         };
 
         ValidateDownload();
-    }
-
-    private async Task DownloadItemAsync(IDownloader downloader, CancellationToken cancellationToken)
-    {
-        try
-        {
-            _lastDownloadStatus = DownloadStatus.Fail;
-
-            lock (_logWritingLock)
-            {
-                _downloadLog.Clear();
-            }
-
-            DownloadPercentText = string.Empty;
-
-            DownloadLog = string.Empty;
-
-            DownloadMessage = Resources.MessageDownloadPreparing;
-
-            var retryCounter = 0;
-
-            DownloadItem item = null;
-            while (item is null && retryCounter < DownloadRetriesNumber)
-            {
-                item = await GetItemAsync(downloader, cancellationToken);
-                retryCounter++;
-            }
-
-            if (item is null)
-            {
-                _lastDownloadStatus = DownloadStatus.Fail;
-                return;
-            }
-
-            DownloadProgressMin = 0;
-            DownloadProgressMax = DownloadProgressSectionStep * item.Entries.Count;
-            DownloadProgressValue = DownloadProgressMin;
-
-            _downloadProgressSectionMin = 0;
-
-            LastDownloadedItem.Path = SelectedDownloadFolder.Path;
-
-            _isMultipleFiles = item.Entries.Count > 1;
-
-            if (_isMultipleFiles)
-            {
-                LastDownloadedItem.Path = Path.Combine(LastDownloadedItem.Path, item.Name);
-                Directory.CreateDirectory(LastDownloadedItem.Path);
-            }
-
-            foreach (var entry in item.Entries)
-            {
-                LastDownloadedItem.Name = entry.Name;
-                LastDownloadedItem.Url = entry.Url;
-
-                DownloadMessage = string.Format(Resources.MessageDownloading, LastDownloadedItem.Name);
-
-                Log.Information("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
-
-                _currentDownloadedItem = new DownloadedItemInfo
-                {
-                    Url = LastDownloadedItem.Url,
-                    Name = LastDownloadedItem.Name,
-                    Path = Path.Combine(LastDownloadedItem.Path, LastDownloadedItem.Name)
-                };
-
-                DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-                DownloadLog = string.Format(Resources.LogMessageDownloadingFile, _currentDownloadedItem,
-                    LastDownloadedItem.Url);
-                DownloadLog = $"{Environment.NewLine}{Environment.NewLine}";
-
-                var success = false;
-                retryCounter = 0;
-                while (!success && retryCounter < DownloadRetriesNumber)
-                {
-                    success = await DownloadItemAsync(downloader, LastDownloadedItem.Name, LastDownloadedItem.Url,
-                        _currentDownloadedItem.Path, cancellationToken);
-                    retryCounter++;
-                }
-
-                _lastDownloadStatus = success ? DownloadStatus.Success : DownloadStatus.Fail;
-
-                _downloadProgressSectionMin += DownloadProgressSectionStep;
-
-                LastDownloadedItem.Name = _currentDownloadedItem.Name;
-                LastDownloadedItem.Path = _isMultipleFiles ? LastDownloadedItem.Path : _currentDownloadedItem.Path;
-            }
-        }
-        catch (OperationCanceledException e)
-        {
-            _lastDownloadStatus = DownloadStatus.Cancel;
-            DownloadLog = Environment.NewLine;
-            DownloadLog = e.Message;
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, "Failed to download item");
-            _lastDownloadStatus = DownloadStatus.Fail;
-            DownloadLog = Environment.NewLine;
-            DownloadLog = e.Message;
-        }
-    }
-
-    private async Task<DownloadItem> GetItemAsync(IDownloader downloader, CancellationToken cancellationToken)
-    {
-        return await downloader.GetItemsAsync(YouTubeLink, SelectedDownloadOption.FormatType, ProcessDownloaderError,
-            cancellationToken);
-    }
-
-    private async Task<bool> DownloadItemAsync(IDownloader downloader, string fileName, string downloadUrl,
-        string downloadPath, CancellationToken cancellationToken)
-    {
-        var status = DownloadStatus.Fail;
-
-        try
-        {
-            _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-            var success = await downloader.DownloadItemAsync(downloadPath, downloadUrl,
-                SelectedDownloadOption.FormatType, ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
-
-            status = success ? DownloadStatus.Success : DownloadStatus.Fail;
-
-            return success;
-        }
-        catch (OperationCanceledException)
-        {
-            status = DownloadStatus.Cancel;
-            throw;
-        }
-        finally
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                _storage.AddOrUpdateHistoryRecord(fileName, downloadPath, downloadUrl, (int)status,
-                    (int)SelectedDownloadOption.FormatType);
-                DownloadHistory.View.Refresh();
-            });
-        }
-    }
-
-    private void ProcessDownloaderOutput(object sender, DataReceivedEventArgs e)
-    {
-        try
-        {
-            var record = e.Data;
-            if (string.IsNullOrEmpty(record))
-            {
-                return;
-            }
-
-            DownloadLog = record;
-            DownloadLog = Environment.NewLine;
-
-            if (DownloadOutputParser.TryParseDownloadProgress(record, out var progress))
-            {
-                DownloadProgressIsIndeterminate = false;
-                var newValue = _downloadProgressSectionMin + (int)Math.Round(progress);
-                DownloadProgressValue = newValue > DownloadProgressValue ? newValue : DownloadProgressValue;
-
-                DownloadPercentText =
-                    $"{Utilities.Utilities.CalculateAbsolutePercent(DownloadProgressValue, DownloadProgressMax)}%";
-            }
-            else if (DownloadOutputParser.TryParseResultFilePath(record, out var path))
-            {
-                _currentDownloadedItem.Name = Path.GetFileName(path);
-                _currentDownloadedItem.Path = path;
-            }
-
-            Log.Information("{Record}", record);
-        }
-        catch (Exception exception)
-        {
-            Log.Error(exception, "Failed to process download output");
-        }
-    }
-
-    private void ProcessDownloaderError(object sender, DataReceivedEventArgs e)
-    {
-        try
-        {
-            var record = e.Data;
-            if (string.IsNullOrEmpty(record))
-            {
-                return;
-            }
-
-            DownloadLog = record;
-            DownloadLog = Environment.NewLine;
-            Log.Information("{Record}", record);
-        }
-        catch (Exception exception)
-        {
-            Log.Error(exception, "Failed to process download error");
-        }
     }
 }

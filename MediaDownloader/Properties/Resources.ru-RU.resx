@@ -147,11 +147,11 @@
     <value>Поздравляем! Загрузка успешно завершена!</value>
   </data>
 	<data name="LogMessageLocationOfFile" xml:space="preserve">
-    <value>Найти ваш файл можно здесь: {0}</value>
-  </data>
+		<value>Найти ваш файл можно здесь:</value>
+	</data>
 	<data name="LogMessageLocationOfFiles" xml:space="preserve">
-    <value>Найти ваши файлы можно здесь: {0}</value>
-  </data>
+		<value>Найти ваши файлы можно здесь:</value>
+	</data>
 	<data name="LogMessageDownloadFail" xml:space="preserve">
     <value>Загрузка не удалась.</value>
   </data>
@@ -168,15 +168,15 @@
 	<data name="MessageDownloading" xml:space="preserve">
     <value>Загрузка: {0}</value>
   </data>
-	<data name="MessageDownloadComplete" xml:space="preserve">
-    <value>Загрузка завершена! {0}</value>
-  </data>
-	<data name="MessageDownloadFailed" xml:space="preserve">
-    <value>Загрузка не удалась! {0}</value>
-  </data>
+	<data name="MessageItemDownloadComplete" xml:space="preserve">
+		<value>Успешно загружено:</value>
+	</data>
+	<data name="MessageItemDownloadFailed" xml:space="preserve">
+		<value>Не удалось загрузить:</value>
+	</data>
 	<data name="MessageDownloadCancelled" xml:space="preserve">
-    <value>Вы отменили загрузку! {0}</value>
-  </data>
+		<value>Вы отменили загрузку!</value>
+	</data>
 	<data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Подготовка к загрузке...</value>
   </data>
@@ -210,4 +210,13 @@
 	<data name="MessageUpdatingDownloader" xml:space="preserve">
     <value>Обновляем загрузчик...</value>
   </data>
+	<data name="MessageDownloadComplete" xml:space="preserve">
+		<value>Загрузка успешно завершена!</value>
+	</data>
+	<data name="MessageDownloadFailed" xml:space="preserve">
+		<value>Загружка завершена с ошибками!</value>
+	</data>
+	<data name="MessageItemDownloadCanceled" xml:space="preserve">
+		<value>Загрузка отменена:</value>
+	</data>
 </root>

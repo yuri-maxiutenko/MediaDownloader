@@ -95,13 +95,26 @@ public class Downloader : IDownloader
 
             var result = new DownloadItem
             {
-                Name = DownloadHelper.SanitizeFileName(info.Title)
+                Name = DownloadHelper.SanitizeFileName(info.Title),
+                Entries = new List<DownloadItem>()
             };
-            result.Entries = info.Entries.Select(item => new DownloadItem
+
+            if (info.Entries is not null)
             {
-                Name = Path.ChangeExtension(DownloadHelper.SanitizeFileName(item.Title), item.Ext),
-                Url = item.WebpageUrl
-            }).ToList();
+                result.Entries.AddRange(info.Entries.Select(item => new DownloadItem
+                {
+                    Name = Path.ChangeExtension(DownloadHelper.SanitizeFileName(item.Title), item.Ext),
+                    Url = item.WebpageUrl
+                }));
+            }
+            else
+            {
+                result.Entries.Add(new DownloadItem
+                {
+                    Name = Path.ChangeExtension(DownloadHelper.SanitizeFileName(info.Title), info.Ext),
+                    Url = info.WebpageUrl
+                });
+            }
 
             return result;
         }

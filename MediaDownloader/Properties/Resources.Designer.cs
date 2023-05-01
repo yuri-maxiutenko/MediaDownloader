@@ -340,7 +340,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You may find your file here: {0}.
+        ///   Looks up a localized string similar to You may find your file here:.
         /// </summary>
         public static string LogMessageLocationOfFile {
             get {
@@ -349,7 +349,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You may find your files here: {0}.
+        ///   Looks up a localized string similar to You may find your files here:.
         /// </summary>
         public static string LogMessageLocationOfFiles {
             get {
@@ -367,7 +367,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download cancelled! {0}.
+        ///   Looks up a localized string similar to Download cancelled!.
         /// </summary>
         public static string MessageDownloadCancelled {
             get {
@@ -376,7 +376,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download complete! {0}.
+        ///   Looks up a localized string similar to Download complete!.
         /// </summary>
         public static string MessageDownloadComplete {
             get {
@@ -385,7 +385,7 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Download Failed! {0}.
+        ///   Looks up a localized string similar to Download completed with errors!.
         /// </summary>
         public static string MessageDownloadFailed {
             get {
@@ -408,6 +408,33 @@ namespace MediaDownloader.Properties {
         public static string MessageDownloadPreparing {
             get {
                 return ResourceManager.GetString("MessageDownloadPreparing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download canceled:.
+        /// </summary>
+        public static string MessageItemDownloadCanceled {
+            get {
+                return ResourceManager.GetString("MessageItemDownloadCanceled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully downloaded:.
+        /// </summary>
+        public static string MessageItemDownloadComplete {
+            get {
+                return ResourceManager.GetString("MessageItemDownloadComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to download:.
+        /// </summary>
+        public static string MessageItemDownloadFailed {
+            get {
+                return ResourceManager.GetString("MessageItemDownloadFailed", resourceCulture);
             }
         }
         

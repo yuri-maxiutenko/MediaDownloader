@@ -172,10 +172,10 @@
     <value>Congratulations! Your download successfully completed!</value>
   </data>
   <data name="LogMessageLocationOfFile" xml:space="preserve">
-    <value>You may find your file here: {0}</value>
+    <value>You may find your file here:</value>
   </data>
   <data name="LogMessageLocationOfFiles" xml:space="preserve">
-    <value>You may find your files here: {0}</value>
+    <value>You may find your files here:</value>
   </data>
   <data name="LogMessageDownloadFail" xml:space="preserve">
     <value>Download failed.</value>
@@ -196,14 +196,14 @@ Url: {1}</value>
   <data name="MessageDownloading" xml:space="preserve">
     <value>Downloading:</value>
   </data>
-  <data name="MessageDownloadComplete" xml:space="preserve">
-    <value>Download complete! {0}</value>
+  <data name="MessageItemDownloadComplete" xml:space="preserve">
+    <value>Successfully downloaded:</value>
   </data>
-  <data name="MessageDownloadFailed" xml:space="preserve">
-    <value>Download Failed! {0}</value>
+  <data name="MessageItemDownloadFailed" xml:space="preserve">
+    <value>Failed to download:</value>
   </data>
   <data name="MessageDownloadCancelled" xml:space="preserve">
-    <value>Download cancelled! {0}</value>
+    <value>Download cancelled!</value>
   </data>
   <data name="MessageDownloadPreparing" xml:space="preserve">
     <value>Preparing to download...</value>
@@ -252,5 +252,14 @@ Url: {1}</value>
   </data>
   <data name="DataFolderName" xml:space="preserve">
     <value>Data</value>
+  </data>
+  <data name="MessageDownloadComplete" xml:space="preserve">
+    <value>Download complete!</value>
+  </data>
+  <data name="MessageDownloadFailed" xml:space="preserve">
+    <value>Download completed with errors!</value>
+  </data>
+  <data name="MessageItemDownloadCanceled" xml:space="preserve">
+    <value>Download canceled:</value>
   </data>
 </root>

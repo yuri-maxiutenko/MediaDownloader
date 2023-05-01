@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
 
-using MediaDownloader.Models;
+using MediaDownloader.Download.Models;
 using MediaDownloader.Properties;
 
 namespace MediaDownloader.UI.Converters;

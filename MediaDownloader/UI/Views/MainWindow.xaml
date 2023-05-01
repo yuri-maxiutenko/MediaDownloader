@@ -139,7 +139,6 @@
                 Foreground="{Binding DownloadProgressColor}"
                 IsIndeterminate="{Binding DownloadProgressIsIndeterminate}"
                 Visibility="{Binding DownloadProgressVisibility}"
-                Minimum="{Binding DownloadProgressMin}" Maximum="{Binding DownloadProgressMax}"
                 Value="{Binding DownloadProgressValue}" />
             <Grid Margin="20,0,20,0" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
