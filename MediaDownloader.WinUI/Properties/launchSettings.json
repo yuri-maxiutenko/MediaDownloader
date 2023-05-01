@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MediaDownloader.WinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MediaDownloader.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

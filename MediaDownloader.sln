@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MediaDownloader.Data", "MediaDownloader.Data\MediaDownloader.Data.csproj", "{645D945D-4D8B-4632-ADF1-7F7B5ED89E20}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MediaDownloaderSetup", "Installers\MediaDownloaderSetup\MediaDownloaderSetup.wixproj", "{5AD17196-207B-4403-81CD-8F95AA74A1E1}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "MediaDownloaderInstaller", "Installers\MediaDownloaderInstaller\MediaDownloaderInstaller.wixproj", "{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaDownloader.WinUI", "MediaDownloader.WinUI\MediaDownloader.WinUI.csproj", "{B0066EA8-423E-4876-AC30-25767CFC39E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,12 @@ Global
 		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Debug|x64.Build.0 = Debug|x64
 		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Release|x64.ActiveCfg = Release|x64
 		{1EFE5CCB-F49F-41EB-9A2E-3700B8B27404}.Release|x64.Build.0 = Release|x64
+		{B0066EA8-423E-4876-AC30-25767CFC39E1}.Debug|x64.ActiveCfg = Debug|x64
+		{B0066EA8-423E-4876-AC30-25767CFC39E1}.Debug|x64.Build.0 = Debug|x64
+		{B0066EA8-423E-4876-AC30-25767CFC39E1}.Debug|x64.Deploy.0 = Debug|x64
+		{B0066EA8-423E-4876-AC30-25767CFC39E1}.Release|x64.ActiveCfg = Release|x64
+		{B0066EA8-423E-4876-AC30-25767CFC39E1}.Release|x64.Build.0 = Release|x64
+		{B0066EA8-423E-4876-AC30-25767CFC39E1}.Release|x64.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
