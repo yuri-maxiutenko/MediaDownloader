@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace MediaDownloader.Utilities;
 
@@ -10,13 +8,6 @@ internal static class Utilities
     {
         return Uri.TryCreate(url, UriKind.Absolute, out var uriResult) &&
                (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-    }
-
-    public static string SanitizeFileName(string fileName)
-    {
-        var regexSearch = new string(Path.GetInvalidFileNameChars());
-        var regex = new Regex($"[{Regex.Escape(regexSearch)}]");
-        return regex.Replace(fileName, "_");
     }
 
     public static int CalculateAbsolutePercent(int value, int maximum)

@@ -15,6 +15,7 @@ using System.Windows.Media;
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
 using MediaDownloader.Download;
+using MediaDownloader.Download.Models;
 using MediaDownloader.Models;
 using MediaDownloader.Properties;
 using MediaDownloader.Utilities;
@@ -546,27 +547,23 @@ public sealed class MainWindowViewModel : BaseViewModel
         {
             new()
             {
-                Format = DownloadFormat.Best,
-                Name = Resources.DownloaderFormatBestName,
-                Option = Resources.DownloaderOptionFormatBest
+                FormatType = DownloadFormatType.Best,
+                Name = Resources.DownloaderFormatBestName
             },
             new()
             {
-                Format = DownloadFormat.BestMp4,
-                Name = Resources.DownloaderFormatBestMp4Name,
-                Option = Resources.DownloaderOptionFormatBestMp4
+                FormatType = DownloadFormatType.BestMp4,
+                Name = Resources.DownloaderFormatBestMp4Name
             },
             new()
             {
-                Format = DownloadFormat.BestDirectLink,
-                Name = Resources.DownloaderFormatBestDirectLinkName,
-                Option = Resources.DownloaderOptionFormatBestDirectLink
+                FormatType = DownloadFormatType.BestDirectLink,
+                Name = Resources.DownloaderFormatBestDirectLinkName
             },
             new()
             {
-                Format = DownloadFormat.AudioOnly,
-                Name = Resources.DownloaderFormatAudioOnlyName,
-                Option = Resources.DownloaderOptionFormatAudioOnly
+                FormatType = DownloadFormatType.AudioOnly,
+                Name = Resources.DownloaderFormatAudioOnlyName
             }
         };
 
@@ -676,7 +673,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     private async Task<DownloadItem> GetItemAsync(IDownloader downloader, CancellationToken cancellationToken)
     {
-        return await downloader.GetItemsAsync(YouTubeLink, SelectedDownloadOption.Option, ProcessDownloaderError,
+        return await downloader.GetItemsAsync(YouTubeLink, SelectedDownloadOption.FormatType, ProcessDownloaderError,
             cancellationToken);
     }
 
@@ -688,8 +685,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         try
         {
             _cancellationTokenSource.Token.ThrowIfCancellationRequested();
-            var success = await downloader.DownloadItemAsync(downloadPath, downloadUrl, SelectedDownloadOption.Option,
-                ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
+            var success = await downloader.DownloadItemAsync(downloadPath, downloadUrl,
+                SelectedDownloadOption.FormatType, ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
 
             status = success ? DownloadStatus.Success : DownloadStatus.Fail;
 
@@ -705,7 +702,7 @@ public sealed class MainWindowViewModel : BaseViewModel
             Application.Current.Dispatcher.Invoke(() =>
             {
                 _storage.AddOrUpdateHistoryRecord(fileName, downloadPath, downloadUrl, (int)status,
-                    (int)SelectedDownloadOption.Format);
+                    (int)SelectedDownloadOption.FormatType);
                 DownloadHistory.View.Refresh();
             });
         }

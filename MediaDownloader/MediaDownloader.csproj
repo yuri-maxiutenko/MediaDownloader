@@ -50,6 +50,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\MediaDownloader.Data\MediaDownloader.Data.csproj" />
+		<ProjectReference Include="..\MediaDownloader.Download\MediaDownloader.Download.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

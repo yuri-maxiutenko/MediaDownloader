@@ -159,45 +159,6 @@
   <data name="DownloaderFormatAudioOnlyName" xml:space="preserve">
     <value>Audio only</value>
   </data>
-  <data name="DownloaderOptionFormatBest" xml:space="preserve">
-    <value>bestvideo+bestaudio/best</value>
-  </data>
-  <data name="DownloaderOptionFormatBestMp4" xml:space="preserve">
-    <value>bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best</value>
-  </data>
-  <data name="DownloaderOptionFormatBestDirectLink" xml:space="preserve">
-    <value>(bestvideo+bestaudio/best)[protocol^=http]</value>
-  </data>
-  <data name="DownloaderOptionFormatAudioOnly" xml:space="preserve">
-    <value>mp3/ogg/m4a/aac</value>
-  </data>
-  <data name="DownloaderOptionEncodingUtf8" xml:space="preserve">
-    <value>--encoding utf-8</value>
-  </data>
-  <data name="DownloaderOptionGetFilename" xml:space="preserve">
-    <value>--get-filename</value>
-  </data>
-  <data name="DownloaderItemTitleTemplate" xml:space="preserve">
-    <value>%(title)s.%(ext)s</value>
-  </data>
-  <data name="DownloaderOptionConverterLocation" xml:space="preserve">
-    <value>--ffmpeg-location</value>
-  </data>
-  <data name="DownloaderOptionNoOriginalDateTime" xml:space="preserve">
-    <value>--no-mtime</value>
-  </data>
-  <data name="DownloaderOptionNoPlaylist" xml:space="preserve">
-    <value>--no-playlist</value>
-  </data>
-  <data name="DownloaderOptionSocketTimeout" xml:space="preserve">
-    <value>--socket-timeout</value>
-  </data>
-  <data name="DownloaderOptionRetries" xml:space="preserve">
-    <value>--retries</value>
-  </data>
-  <data name="DownloaderOptionUpdate" xml:space="preserve">
-    <value>-U</value>
-  </data>
   <data name="ExplorerFileName" xml:space="preserve">
     <value>explorer.exe</value>
   </data>

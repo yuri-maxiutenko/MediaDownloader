@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-using MediaDownloader.Models;
-using MediaDownloader.Properties;
+using MediaDownloader.Download.Models;
+using MediaDownloader.Download.Properties;
 
 using Newtonsoft.Json;
 
@@ -19,6 +13,23 @@ public class Downloader : IDownloader
     private const int DownloadTimeoutSec = 60;
 
     private readonly string _converterPath;
+
+    private readonly Dictionary<DownloadFormatType, string> _downloadFormats = new()
+    {
+        {
+            DownloadFormatType.Best, Resources.DownloaderOptionFormatBest
+        },
+        {
+            DownloadFormatType.BestMp4, Resources.DownloaderOptionFormatBestMp4
+        },
+        {
+            DownloadFormatType.BestDirectLink, Resources.DownloaderOptionFormatBestDirectLink
+        },
+        {
+            DownloadFormatType.AudioOnly, Resources.DownloaderOptionFormatAudioOnly
+        }
+    };
+
     private readonly ProcessStartInfo _processStartInfo;
 
     public Downloader(string downloaderPath, string converterPath)
@@ -36,7 +47,7 @@ public class Downloader : IDownloader
         };
     }
 
-    public async Task<DownloadItem> GetItemsAsync(string link, string downloadOption,
+    public async Task<DownloadItem> GetItemsAsync(string link, DownloadFormatType downloadFormatType,
         DataReceivedEventHandler onErrorDataReceived, CancellationToken cancellationToken)
     {
         var arguments = new StringBuilder();
@@ -44,7 +55,7 @@ public class Downloader : IDownloader
         arguments.Append(' ');
         arguments.Append($"{Resources.DownloaderOptionSocketTimeout} {DownloadTimeoutSec}");
         arguments.Append(' ');
-        arguments.Append($"-f \"{downloadOption}\"");
+        arguments.Append($"-f \"{_downloadFormats[downloadFormatType]}\"");
         arguments.Append(' ');
         arguments.Append("-J");
         arguments.Append(' ');
@@ -83,27 +94,13 @@ public class Downloader : IDownloader
 
             var result = new DownloadItem
             {
-                Name = Utilities.Utilities.SanitizeFileName(info.Title)
+                Name = Utilities.SanitizeFileName(info.Title)
             };
-            if (info.Entries != null)
+            result.Entries = info.Entries.Select(item => new DownloadItem
             {
-                result.Entries = info.Entries.Select(item => new DownloadItem
-                {
-                    Name = Path.ChangeExtension(Utilities.Utilities.SanitizeFileName(item.Title), item.Ext),
-                    Url = item.WebpageUrl
-                }).ToList();
-            }
-            else
-            {
-                result.Entries = new List<DownloadItem>
-                {
-                    new()
-                    {
-                        Name = Path.ChangeExtension(Utilities.Utilities.SanitizeFileName(info.Title), info.Ext),
-                        Url = info.WebpageUrl
-                    }
-                };
-            }
+                Name = Path.ChangeExtension(Utilities.SanitizeFileName(item.Title), item.Ext),
+                Url = item.WebpageUrl
+            }).ToList();
 
             return result;
         }
@@ -123,9 +120,9 @@ public class Downloader : IDownloader
         }
     }
 
-    public async Task<bool> DownloadItemAsync(string downloadFilePath, string link, string downloadOption,
-        DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
-        CancellationToken cancellationToken)
+    public async Task<bool> DownloadItemAsync(string downloadFilePath, string link,
+        DownloadFormatType downloadFormatType, DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived, CancellationToken cancellationToken)
     {
         var arguments = new StringBuilder();
         arguments.Append(Resources.DownloaderOptionEncodingUtf8);
@@ -136,7 +133,7 @@ public class Downloader : IDownloader
         arguments.Append(' ');
         arguments.Append(Resources.DownloaderOptionNoPlaylist);
         arguments.Append(' ');
-        arguments.Append($"-f \"{downloadOption}\"");
+        arguments.Append($"-f \"{_downloadFormats[downloadFormatType]}\"");
         arguments.Append(' ');
         arguments.Append($"-o \"{downloadFilePath}\"");
         arguments.Append(' ');

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MediaDownloader.Models;
+namespace MediaDownloader.Download.Models;
 
 public class DownloadItemJson
 {
