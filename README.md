@@ -1,4 +1,5 @@
 The Media Downloader Project
+![Media Downloader logo](MediaDownloader/Images/icon.png)
 ====================
 Just a small user-friendly UI wrapper (C#/WPF, .NET) over the great video downloading command-line utility [yt-dlp](https://github.com/yt-dlp/yt-dlp) which allows to download videos in different quality from various internet resources (YouTube, Vimeo, Facebook, you name it). Downloading playlists is supported too.
 
