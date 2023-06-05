@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize"
         DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
-        Loaded="MainWindow_OnLoaded">
+        Loaded="MainWindow_OnLoaded" Unloaded="MainWindow_OnUnloaded">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -96,7 +96,8 @@
                      TextChanged="YouTubeLink_OnTextChanged" MouseDoubleClick="YouTubeLink_OnMouseDoubleClick"
                      GotKeyboardFocus="YouTubeLink_OnGotKeyboardFocus"
                      PreviewMouseLeftButtonDown="YouTubeLink_OnPreviewMouseLeftButtonDown"
-                     DataObject.Pasting="YouTubeLink_OnPasting" />
+                     DataObject.Pasting="YouTubeLink_OnPasting"
+                     VerticalContentAlignment="Center" />
             <Button Grid.Column="1" Grid.Row="5" Width="100" Height="25" HorizontalAlignment="Left"
                     Content="{x:Static properties:Resources.ClearButtonText}" Margin="5,5,0,0"
                     Command="{Binding ClearButtonClick}" />

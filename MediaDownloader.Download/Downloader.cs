@@ -160,7 +160,8 @@ public class Downloader : IDownloader
             StartInfo = _processStartInfo
         };
 
-        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
+        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     public async Task<bool> UpdateAsync(DataReceivedEventHandler onOutputReceived,
@@ -172,7 +173,8 @@ public class Downloader : IDownloader
             StartInfo = _processStartInfo
         };
 
-        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken);
+        return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private static async Task<bool> ExecuteDownloaderAsync(Process downloaderProcess,
@@ -189,7 +191,7 @@ public class Downloader : IDownloader
             downloaderProcess.BeginErrorReadLine();
             downloaderProcess.BeginOutputReadLine();
 
-            await downloaderProcess.WaitForExitAsync(cancellationToken);
+            await downloaderProcess.WaitForExitAsync(cancellationToken).ConfigureAwait(false);
 
             return downloaderProcess.ExitCode == 0;
         }

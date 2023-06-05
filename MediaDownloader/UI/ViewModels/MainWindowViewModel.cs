@@ -211,7 +211,7 @@ public sealed class MainWindowViewModel : BaseViewModel
                 }
 
                 YouTubeLink = DownloadHistorySelectedItem?.Url;
-                await DownloadAsync();
+                await DownloadAsync().ConfigureAwait(false);
             });
         }
     }
@@ -308,6 +308,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadProgressVisibility, value);
     }
 
+    public event EventHandler DownloadCompleted;
+
     public async Task UpdateDownloaderAsync()
     {
         try
@@ -324,7 +326,8 @@ public sealed class MainWindowViewModel : BaseViewModel
             _cancellationTokenSource = new CancellationTokenSource();
 
             var progress = new Progress<ProgressReportModel>(HandleProgress);
-            await _downloadManager.UpdateDownloaderAsync(progress, _cancellationTokenSource.Token);
+            await _downloadManager.UpdateDownloaderAsync(progress, _cancellationTokenSource.Token)
+                .ConfigureAwait(false);
 
             GeneralInterfaceIsEnabled = true;
             DownloadButtonIsEnabled = true;
@@ -358,7 +361,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadProgressVisibility = Visibility.Visible;
         DownloadProgressColor = Brushes.LimeGreen;
 
-        await DownloadItemsAsync();
+        await DownloadItemsAsync().ConfigureAwait(false);
     }
 
     private async Task DownloadItemsAsync()
@@ -368,27 +371,30 @@ public sealed class MainWindowViewModel : BaseViewModel
         var progress = new Progress<ProgressReportModel>(HandleProgress);
 
         var downloadedItemsInfo = await _downloadManager.DownloadItemAsync(YouTubeLink, SelectedDownloadFolder.Path,
-            SelectedDownloadOption.FormatType, progress, _cancellationTokenSource.Token);
+            SelectedDownloadOption.FormatType, progress, _cancellationTokenSource.Token).ConfigureAwait(false);
 
         ProcessDownloadResult(downloadedItemsInfo);
     }
 
     private void HandleProgress(ProgressReportModel reportModel)
     {
-        if (!string.IsNullOrEmpty(reportModel.Message))
+        Task.Run(() =>
         {
-            DownloadLog = reportModel.Message;
-            DownloadLog = Environment.NewLine;
-        }
+            if (!string.IsNullOrEmpty(reportModel.Message))
+            {
+                DownloadLog = reportModel.Message;
+                DownloadLog = Environment.NewLine;
+            }
 
-        if (reportModel.Value is not { } progressValue)
-        {
-            return;
-        }
+            if (reportModel.Value is not { } progressValue)
+            {
+                return;
+            }
 
-        DownloadProgressIsIndeterminate = false;
-        DownloadProgressValue = progressValue;
-        DownloadPercentText = $"{progressValue}%";
+            DownloadProgressIsIndeterminate = false;
+            DownloadProgressValue = progressValue;
+            DownloadPercentText = $"{progressValue}%";
+        });
     }
 
     private void OpenDownloadFolder()
@@ -446,7 +452,7 @@ public sealed class MainWindowViewModel : BaseViewModel
                 (int)SelectedDownloadOption.FormatType);
         }
 
-        DownloadHistory.View.Refresh();
+        OnDownloadCompleted();
 
         switch (lastDownloadStatus)
         {
@@ -591,5 +597,10 @@ public sealed class MainWindowViewModel : BaseViewModel
         };
 
         ValidateDownload();
+    }
+
+    private void OnDownloadCompleted()
+    {
+        DownloadCompleted?.Invoke(this, EventArgs.Empty);
     }
 }

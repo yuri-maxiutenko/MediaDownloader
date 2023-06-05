@@ -41,7 +41,7 @@ public class DownloadManager : IDownloadManager
         DownloadItem item = null;
         while (item is null && retryCounter < DownloadRetriesNumber)
         {
-            item = await GetItemAsync(downloadUrl, formatType, cancellationToken);
+            item = await GetItemAsync(downloadUrl, formatType, cancellationToken).ConfigureAwait(false);
             retryCounter++;
         }
 
@@ -85,7 +85,8 @@ public class DownloadManager : IDownloadManager
                 retryCounter = 0;
                 while (!success && retryCounter < DownloadRetriesNumber)
                 {
-                    success = await DownloadItemAsync(entry.Url, downloadPath, formatType, cancellationToken);
+                    success = await DownloadItemAsync(entry.Url, downloadPath, formatType, cancellationToken)
+                        .ConfigureAwait(false);
                     retryCounter++;
                 }
 
@@ -124,13 +125,15 @@ public class DownloadManager : IDownloadManager
         CancellationToken cancellationToken)
     {
         _progress = progress;
-        return await _downloader.UpdateAsync(ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
+        return await _downloader.UpdateAsync(ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private async Task<DownloadItem> GetItemAsync(string downloadUrl, DownloadFormatType formatType,
         CancellationToken cancellationToken)
     {
-        return await _downloader.GetItemsAsync(downloadUrl, formatType, ProcessDownloaderError, cancellationToken);
+        return await _downloader.GetItemsAsync(downloadUrl, formatType, ProcessDownloaderError, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private async Task<bool> DownloadItemAsync(string downloadUrl, string downloadPath, DownloadFormatType formatType,
@@ -138,7 +141,7 @@ public class DownloadManager : IDownloadManager
     {
         cancellationToken.ThrowIfCancellationRequested();
         var success = await _downloader.DownloadItemAsync(downloadPath, downloadUrl, formatType,
-            ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken);
+            ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken).ConfigureAwait(false);
 
         return success;
     }
