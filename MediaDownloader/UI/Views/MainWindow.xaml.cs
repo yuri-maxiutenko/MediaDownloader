@@ -125,19 +125,8 @@ public partial class MainWindow
         }
     }
 
-    private void OnDownloadCompleted(object sender, EventArgs e)
-    {
-        Dispatcher.Invoke(() => ViewModel.DownloadHistory.View.Refresh());
-    }
-
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.DownloadCompleted += OnDownloadCompleted;
         _ = ViewModel.UpdateDownloaderAsync();
-    }
-
-    private void MainWindow_OnUnloaded(object sender, RoutedEventArgs e)
-    {
-        ViewModel.DownloadCompleted -= OnDownloadCompleted;
     }
 }

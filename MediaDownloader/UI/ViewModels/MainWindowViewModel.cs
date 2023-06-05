@@ -33,6 +33,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private const double DownloadProgressMax = 100.0;
 
     private readonly StringBuilder _downloadLog = new();
+    private readonly object _lock = new();
 
     private CancellationTokenSource _cancellationTokenSource;
     private ICommand _clearButtonClick;
@@ -308,8 +309,6 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadProgressVisibility, value);
     }
 
-    public event EventHandler DownloadCompleted;
-
     public async Task UpdateDownloaderAsync()
     {
         try
@@ -371,30 +370,35 @@ public sealed class MainWindowViewModel : BaseViewModel
         var progress = new Progress<ProgressReportModel>(HandleProgress);
 
         var downloadedItemsInfo = await _downloadManager.DownloadItemAsync(MediaUrl, SelectedDownloadFolder.Path,
-            SelectedDownloadOption.FormatType, progress, _cancellationTokenSource.Token).ConfigureAwait(false);
+            SelectedDownloadOption.FormatType, progress, _cancellationTokenSource.Token);
 
         ProcessDownloadResult(downloadedItemsInfo);
     }
 
     private void HandleProgress(ProgressReportModel reportModel)
     {
-        Task.Run(() =>
+        Task.Run(() => HandleProgressAsync(reportModel.Message, reportModel.Value));
+    }
+
+    private void HandleProgressAsync(string message, double? value)
+    {
+        if (!string.IsNullOrEmpty(message))
         {
-            if (!string.IsNullOrEmpty(reportModel.Message))
+            lock (_lock)
             {
-                DownloadLog = reportModel.Message;
+                DownloadLog = message;
                 DownloadLog = Environment.NewLine;
             }
+        }
 
-            if (reportModel.Value is not { } progressValue)
-            {
-                return;
-            }
+        if (value is not { } progressValue)
+        {
+            return;
+        }
 
-            DownloadProgressIsIndeterminate = false;
-            DownloadProgressValue = progressValue;
-            DownloadPercentText = $"{progressValue}%";
-        });
+        DownloadProgressIsIndeterminate = false;
+        DownloadProgressValue = progressValue;
+        DownloadPercentText = $"{progressValue}%";
     }
 
     private void OpenDownloadFolder()
@@ -452,7 +456,7 @@ public sealed class MainWindowViewModel : BaseViewModel
                 (int)SelectedDownloadOption.FormatType);
         }
 
-        OnDownloadCompleted();
+        DownloadHistory.View.Refresh();
 
         switch (lastDownloadStatus)
         {
@@ -597,10 +601,5 @@ public sealed class MainWindowViewModel : BaseViewModel
         };
 
         ValidateDownload();
-    }
-
-    private void OnDownloadCompleted()
-    {
-        DownloadCompleted?.Invoke(this, EventArgs.Empty);
     }
 }

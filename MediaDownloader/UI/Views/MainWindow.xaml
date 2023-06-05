@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="{x:Static properties:Resources.AppName}" Width="500" SizeToContent="Height" ResizeMode="NoResize"
         DataContext="{Binding ViewModel, RelativeSource={RelativeSource Self}}"
-        Loaded="MainWindow_OnLoaded" Unloaded="MainWindow_OnUnloaded">
+        Loaded="MainWindow_OnLoaded">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
