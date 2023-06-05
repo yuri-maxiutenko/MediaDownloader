@@ -162,7 +162,7 @@
   <data name="DownloadFolderCaption" xml:space="preserve">
     <value>Select the download folder:</value>
   </data>
-  <data name="DownloadLinkCaption" xml:space="preserve">
+  <data name="MediaUrlCaption" xml:space="preserve">
     <value>Put link to a video here:</value>
   </data>
   <data name="LogMessageDownloadStart" xml:space="preserve">

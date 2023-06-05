@@ -168,15 +168,6 @@ namespace MediaDownloader.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Put link to a video here:.
-        /// </summary>
-        public static string DownloadLinkCaption {
-            get {
-                return ResourceManager.GetString("DownloadLinkCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string DownloadStatusCancel {
@@ -363,6 +354,15 @@ namespace MediaDownloader.Properties {
         public static string ManufacturerFolderName {
             get {
                 return ResourceManager.GetString("ManufacturerFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Put link to a video here:.
+        /// </summary>
+        public static string MediaUrlCaption {
+            get {
+                return ResourceManager.GetString("MediaUrlCaption", resourceCulture);
             }
         }
         

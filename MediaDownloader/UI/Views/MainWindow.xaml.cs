@@ -45,12 +45,12 @@ public partial class MainWindow
         }
     }
 
-    private void YouTubeLink_OnTextChanged(object sender, TextChangedEventArgs e)
+    private void MediaUrl_OnTextChanged(object sender, TextChangedEventArgs e)
     {
         ViewModel.ValidateDownload();
     }
 
-    private void YouTubeLink_OnPasting(object sender, DataObjectPastingEventArgs e)
+    private void MediaUrl_OnPasting(object sender, DataObjectPastingEventArgs e)
     {
         if (e.DataObject.GetDataPresent(typeof(string)))
         {
@@ -75,17 +75,17 @@ public partial class MainWindow
         downloadLog.ScrollToEnd();
     }
 
-    private void YouTubeLink_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void MediaUrl_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
         SelectText(sender);
     }
 
-    private void YouTubeLink_OnGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+    private void MediaUrl_OnGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
     {
         SelectText(sender);
     }
 
-    private void YouTubeLink_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void MediaUrl_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (sender is not TextBox textBox)
         {

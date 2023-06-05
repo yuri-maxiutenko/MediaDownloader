@@ -56,6 +56,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private ICommand _historyMenuItemOpenFolder;
     private IAsyncRelayCommand _historyMenuItemReDownload;
     private ICommand _historyMenuItemRemoveFromHistory;
+    private string _mediaUrl;
     private DownloadFolder _selectedDownloadFolder;
     private DownloadOption _selectedDownloadOption;
     private ICommand _showDownloadedItemsButtonClick;
@@ -63,7 +64,6 @@ public sealed class MainWindowViewModel : BaseViewModel
     private ICommand _stopDownloadCommand;
     private Storage _storage;
     private string _userVideosFolder;
-    private string _youTubeLink;
 
     public MainWindowViewModel()
     {
@@ -144,7 +144,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
     public ICommand ClearButtonClick
     {
-        get { return _clearButtonClick ??= new RelayCommand(() => { YouTubeLink = string.Empty; }, () => true); }
+        get { return _clearButtonClick ??= new RelayCommand(() => { MediaUrl = string.Empty; }, () => true); }
     }
 
     public ICommand DownloadButtonClick
@@ -210,7 +210,7 @@ public sealed class MainWindowViewModel : BaseViewModel
                     return;
                 }
 
-                YouTubeLink = DownloadHistorySelectedItem?.Url;
+                MediaUrl = DownloadHistorySelectedItem?.Url;
                 await DownloadAsync().ConfigureAwait(false);
             });
         }
@@ -268,10 +268,10 @@ public sealed class MainWindowViewModel : BaseViewModel
     public string UserVideosFolder =>
         _userVideosFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
 
-    public string YouTubeLink
+    public string MediaUrl
     {
-        get => _youTubeLink;
-        set => SetField(ref _youTubeLink, value);
+        get => _mediaUrl;
+        set => SetField(ref _mediaUrl, value);
     }
 
     public string DownloadLog
@@ -370,7 +370,7 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         var progress = new Progress<ProgressReportModel>(HandleProgress);
 
-        var downloadedItemsInfo = await _downloadManager.DownloadItemAsync(YouTubeLink, SelectedDownloadFolder.Path,
+        var downloadedItemsInfo = await _downloadManager.DownloadItemAsync(MediaUrl, SelectedDownloadFolder.Path,
             SelectedDownloadOption.FormatType, progress, _cancellationTokenSource.Token).ConfigureAwait(false);
 
         ProcessDownloadResult(downloadedItemsInfo);
@@ -498,7 +498,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         try
         {
             var downloadDirectoryExists = Directory.Exists(SelectedDownloadFolder?.Path);
-            DownloadButtonIsEnabled = Utilities.Utilities.IsValidUrl(YouTubeLink) && downloadDirectoryExists;
+            DownloadButtonIsEnabled = Utilities.Utilities.IsValidUrl(MediaUrl) && downloadDirectoryExists;
             ShowDownloadedItemsButtonIsEnabled = downloadDirectoryExists;
         }
         catch (Exception e)

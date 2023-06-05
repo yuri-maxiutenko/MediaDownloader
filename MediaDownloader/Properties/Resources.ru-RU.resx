@@ -137,7 +137,7 @@
 	<data name="DownloadFolderCaption" xml:space="preserve">
     <value>Выберите папку для загрузок:</value>
   </data>
-	<data name="DownloadLinkCaption" xml:space="preserve">
+	<data name="MediaUrlCaption" xml:space="preserve">
     <value>Сюда вставьте ссылку на видео:</value>
   </data>
 	<data name="LogMessageDownloadStart" xml:space="preserve">

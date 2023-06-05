@@ -89,14 +89,14 @@
                     Content="{x:Static properties:Resources.BrowseButtonText}" Margin="5,5,0,0"
                     Click="BrowseButton_OnClick" />
 
-            <TextBlock Grid.Column="0" Grid.Row="4" Text="{x:Static properties:Resources.DownloadLinkCaption}"
+            <TextBlock Grid.Column="0" Grid.Row="4" Text="{x:Static properties:Resources.MediaUrlCaption}"
                        Margin="0,10,0,0" />
             <TextBox Grid.Column="0" Grid.Row="5" Margin="0,5,0,0" Height="25"
-                     Text="{Binding YouTubeLink, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     TextChanged="YouTubeLink_OnTextChanged" MouseDoubleClick="YouTubeLink_OnMouseDoubleClick"
-                     GotKeyboardFocus="YouTubeLink_OnGotKeyboardFocus"
-                     PreviewMouseLeftButtonDown="YouTubeLink_OnPreviewMouseLeftButtonDown"
-                     DataObject.Pasting="YouTubeLink_OnPasting"
+                     Text="{Binding MediaUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     TextChanged="MediaUrl_OnTextChanged" MouseDoubleClick="MediaUrl_OnMouseDoubleClick"
+                     GotKeyboardFocus="MediaUrl_OnGotKeyboardFocus"
+                     PreviewMouseLeftButtonDown="MediaUrl_OnPreviewMouseLeftButtonDown"
+                     DataObject.Pasting="MediaUrl_OnPasting"
                      VerticalContentAlignment="Center" />
             <Button Grid.Column="1" Grid.Row="5" Width="100" Height="25" HorizontalAlignment="Left"
                     Content="{x:Static properties:Resources.ClearButtonText}" Margin="5,5,0,0"
