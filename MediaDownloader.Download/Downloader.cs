@@ -48,8 +48,11 @@ public class Downloader : IDownloader
         };
     }
 
-    public async Task<DownloadItem> GetItemsAsync(string link, DownloadFormatType downloadFormatType,
-        DataReceivedEventHandler onErrorDataReceived, CancellationToken cancellationToken)
+    public async Task<DownloadItem> GetItemsAsync(
+        string? link,
+        DownloadFormatType downloadFormatType,
+        DataReceivedEventHandler onErrorDataReceived,
+        CancellationToken cancellationToken)
     {
         var arguments = new StringBuilder();
         arguments.Append(Resources.DownloaderOptionEncodingUtf8);
@@ -134,9 +137,13 @@ public class Downloader : IDownloader
         }
     }
 
-    public async Task<bool> DownloadItemAsync(string downloadFilePath, string link,
-        DownloadFormatType downloadFormatType, DataReceivedEventHandler onOutputReceived,
-        DataReceivedEventHandler onErrorReceived, CancellationToken cancellationToken)
+    public async Task<bool> DownloadItemAsync(
+        string downloadFilePath,
+        string link,
+        DownloadFormatType downloadFormatType,
+        DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived,
+        CancellationToken cancellationToken)
     {
         var arguments = new StringBuilder();
         arguments.Append(Resources.DownloaderOptionEncodingUtf8);
@@ -164,8 +171,10 @@ public class Downloader : IDownloader
             .ConfigureAwait(false);
     }
 
-    public async Task<bool> UpdateAsync(DataReceivedEventHandler onOutputReceived,
-        DataReceivedEventHandler onErrorReceived, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(
+        DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived,
+        CancellationToken cancellationToken)
     {
         _processStartInfo.Arguments = Resources.DownloaderOptionUpdate;
         var downloaderProcess = new Process
@@ -177,8 +186,10 @@ public class Downloader : IDownloader
             .ConfigureAwait(false);
     }
 
-    private static async Task<bool> ExecuteDownloaderAsync(Process downloaderProcess,
-        DataReceivedEventHandler onOutputReceived, DataReceivedEventHandler onErrorReceived,
+    private static async Task<bool> ExecuteDownloaderAsync(
+        Process downloaderProcess,
+        DataReceivedEventHandler onOutputReceived,
+        DataReceivedEventHandler onErrorReceived,
         CancellationToken cancellationToken)
     {
         try

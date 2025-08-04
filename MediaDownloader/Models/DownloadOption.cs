@@ -4,8 +4,8 @@ namespace MediaDownloader.Models;
 
 public class DownloadOption
 {
-    public DownloadFormatType FormatType { get; set; }
-    public string Name { get; set; }
+    public DownloadFormatType FormatType { get; init; }
+    public required string Name { get; init; }
 
     public override string ToString()
     {

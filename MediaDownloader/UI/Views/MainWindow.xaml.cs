@@ -1,15 +1,12 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 using MediaDownloader.UI.ViewModels;
 
-using Serilog;
-
+using Log = Serilog.Log;
 using TextBox = System.Windows.Controls.TextBox;
 
 namespace MediaDownloader.UI.Views;
@@ -117,7 +114,10 @@ public partial class MainWindow
             }
 
             var destination = hyperlink.NavigateUri;
-            Process.Start(new ProcessStartInfo(destination.ToString()) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo(destination.ToString())
+            {
+                UseShellExecute = true
+            });
         }
         catch (Exception exception)
         {

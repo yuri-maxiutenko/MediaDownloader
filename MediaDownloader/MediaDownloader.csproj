@@ -1,111 +1,113 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<Authors>Yuri Maxiutenko</Authors>
-		<Product>Media Downloader</Product>
-		<Copyright>Yuri Maxiutenko, 2023</Copyright>
-		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net7.0-windows</TargetFramework>
-		<UseWPF>true</UseWPF>
-		<UseWindowsForms>true</UseWindowsForms>
-		<ApplicationIcon>Images\icon.ico</ApplicationIcon>
-		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <Platforms>x64</Platforms>
-        <LangVersion>latest</LangVersion>
-        <Configurations>Debug;Release</Configurations>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Authors>Yuri Maxiutenko</Authors>
+    <Product>Media Downloader</Product>
+    <Copyright>Yuri Maxiutenko, 2023</Copyright>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Images\icon.ico</ApplicationIcon>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release</Configurations>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="Images\icon128.png" />
-		<None Remove="Images\icon16.png" />
-		<None Remove="Images\icon256.png" />
-		<None Remove="Images\icon32.png" />
-		<None Remove="Images\icon48.png" />
-		<None Remove="Images\icon512.png" />
-		<None Remove="Images\icon64.png" />
-		<None Remove="Images\icon_download.png" />
-		<None Remove="Images\icon_show.png" />
-		<None Remove="Images\icon_stop.png" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="Images\icon128.png"/>
+    <None Remove="Images\icon16.png"/>
+    <None Remove="Images\icon256.png"/>
+    <None Remove="Images\icon32.png"/>
+    <None Remove="Images\icon48.png"/>
+    <None Remove="Images\icon512.png"/>
+    <None Remove="Images\icon64.png"/>
+    <None Remove="Images\icon_download.png"/>
+    <None Remove="Images\icon_show.png"/>
+    <None Remove="Images\icon_stop.png"/>
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Humanizer.Core" Version="2.14.1" />
-		<PackageReference Include="Humanizer.Core.ru" Version="2.14.1" />
-		<PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
-		<PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Serilog" Version="2.12.0" />
-		<PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-		<PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="WiX" Version="3.14.0" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="3.0.1" />
+    <PackageReference Include="Humanizer.Core.ru" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2"/>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0"/>
+    <PackageReference Include="Serilog.Exceptions" Version="8.4.0"/>
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\MediaDownloader.Data\MediaDownloader.Data.csproj" />
-		<ProjectReference Include="..\MediaDownloader.Download\MediaDownloader.Download.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MediaDownloader.Data\MediaDownloader.Data.csproj"/>
+    <ProjectReference Include="..\MediaDownloader.Download\MediaDownloader.Download.csproj"/>
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Remove="Fonts\Segoe Fluent Icons.ttf" />
-		<Resource Include="Fonts\Segoe Fluent Icons.ttf" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="Fonts\Segoe Fluent Icons.ttf"/>
+    <Resource Include="Fonts\Segoe Fluent Icons.ttf"/>
+  </ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="Properties\Resources.Designer.cs">
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		  <DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
-		<Compile Update="Properties\Settings.Designer.cs">
-			<DesignTimeSharedInput>True</DesignTimeSharedInput>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Settings.settings</DependentUpon>
-		</Compile>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Properties\Resources.ru-RU.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	</ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.ru-RU.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Update="appsettings.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Properties\Settings.settings">
-			<Generator>SettingsSingleFileGenerator</Generator>
-			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
-		</None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Page Update="UI\Views\MainWindow.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	    <XamlRuntime>Wpf</XamlRuntime>
-	    <SubType>Designer</SubType>
-	  </Page>
-	</ItemGroup>
+  <ItemGroup>
+    <Page Update="UI\Views\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Content Include="..\version.json">
-	    <Link>version.json</Link>
-	  </Content>
-	</ItemGroup>
+  <ItemGroup>
+    <Content Include="..\version.json">
+      <Link>version.json</Link>
+    </Content>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="UI\Themes\" />
-	</ItemGroup>
+  <ItemGroup>
+    <Folder Include="UI\Themes\"/>
+  </ItemGroup>
 </Project>

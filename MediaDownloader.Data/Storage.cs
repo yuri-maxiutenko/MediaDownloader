@@ -18,7 +18,7 @@ public class Storage
     public Storage(string connectionString)
     {
         var factory = new DataContextFactory();
-        _context = factory.CreateDbContext(new[] { connectionString });
+        _context = factory.CreateDbContext([connectionString]);
         _context.Database.Migrate();
         _context.DownloadFolders.Load();
         _context.History.Load();
@@ -74,7 +74,12 @@ public class Storage
         _context.SaveChanges();
     }
 
-    public void AddHistoryRecord(string fileName, string path, string url, int downloadStatus, int downloadFormat)
+    public void AddHistoryRecord(
+        string fileName,
+        string path,
+        string url,
+        int downloadStatus,
+        int downloadFormat)
     {
         if (_context.History.Count() >= HistoryRecordsMax)
         {
@@ -98,7 +103,11 @@ public class Storage
         _context.SaveChanges();
     }
 
-    public void AddOrUpdateHistoryRecord(string fileName, string path, string url, int downloadStatus,
+    public void AddOrUpdateHistoryRecord(
+        string fileName,
+        string path,
+        string url,
+        int downloadStatus,
         int downloadFormat)
     {
         var entry = _context.History.FirstOrDefault(item => item.Url.ToLower() == url.ToLower());
@@ -119,9 +128,9 @@ public class Storage
         _context.SaveChanges();
     }
 
-    public void RemoveHistoryRecord(HistoryRecord record)
+    public void RemoveHistoryRecord(HistoryRecord? record)
     {
-        if (record == null)
+        if (record is null)
         {
             return;
         }

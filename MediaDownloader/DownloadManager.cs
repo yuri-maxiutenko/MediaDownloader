@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 using MediaDownloader.Download;
 using MediaDownloader.Download.Models;
@@ -20,25 +16,31 @@ public class DownloadManager : IDownloadManager
     private const int DownloadRetriesNumber = 2;
     private const double ProgressValueMax = 100.0;
 
-    private readonly IDownloader _downloader;
+    private readonly IDownloader? _downloader;
+    private readonly ILogger _logger;
     private double _downloadProgressSectionMin;
     private double _downloadProgressSectionStep;
 
-    private IProgress<ProgressReportModel> _progress;
+    private IProgress<ProgressReportModel>? _progress;
 
-    public DownloadManager(IDownloader downloader)
+    public DownloadManager(IDownloader? downloader, ILogger logger)
     {
         _downloader = downloader;
+        _logger = logger;
     }
 
-    public async Task<ICollection<DownloadedItemInfo>> DownloadItemAsync(string downloadUrl, string downloadFolderPath,
-        DownloadFormatType formatType, IProgress<ProgressReportModel> progress, CancellationToken cancellationToken)
+    public async Task<ICollection<DownloadedItemInfo>> DownloadItemAsync(
+        string? downloadUrl,
+        string downloadFolderPath,
+        DownloadFormatType formatType,
+        IProgress<ProgressReportModel> progress,
+        CancellationToken cancellationToken)
     {
         _progress = progress;
 
         var retryCounter = 0;
 
-        DownloadItem item = null;
+        DownloadItem? item = null;
         while (item is null && retryCounter < DownloadRetriesNumber)
         {
             item = await GetItemAsync(downloadUrl, formatType, cancellationToken).ConfigureAwait(false);
@@ -47,7 +49,7 @@ public class DownloadManager : IDownloadManager
 
         if (item is null)
         {
-            return null;
+            return [];
         }
 
         _downloadProgressSectionMin = 0;
@@ -65,7 +67,10 @@ public class DownloadManager : IDownloadManager
             var downloadPath = Path.Combine(downloadFolderPath, entry.Name);
             var downloadedItemInfo = new DownloadedItemInfo
             {
-                Status = DownloadStatus.Unknown, Name = entry.Name, Url = entry.Url, Path = downloadPath
+                Status = DownloadStatus.Unknown,
+                Name = entry.Name,
+                Url = entry.Url,
+                Path = downloadPath
             };
             try
             {
@@ -74,7 +79,7 @@ public class DownloadManager : IDownloadManager
                     Message = $"{Resources.MessageDownloading} {entry.Name}"
                 });
 
-                Log.Information("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
+                _logger.Information("{DownloadingMessage} {Entry}", Resources.MessageDownloading, entry);
 
                 _progress.Report(new ProgressReportModel
                 {
@@ -90,11 +95,13 @@ public class DownloadManager : IDownloadManager
                     retryCounter++;
                 }
 
-                downloadedItemInfo.Status = success ? DownloadStatus.Success : DownloadStatus.Fail;
+                downloadedItemInfo.Status = success
+                    ? DownloadStatus.Success
+                    : DownloadStatus.Fail;
             }
             catch (OperationCanceledException e)
             {
-                Log.Warning(e, "Download cancelled");
+                _logger.Warning(e, "Download cancelled");
                 _progress.Report(new ProgressReportModel
                 {
                     Message = e.Message
@@ -104,7 +111,7 @@ public class DownloadManager : IDownloadManager
             }
             catch (Exception e)
             {
-                Log.Error(e, "Failed to download item");
+                _logger.Error(e, "Failed to download item");
                 _progress.Report(new ProgressReportModel
                 {
                     Message = e.Message
@@ -121,7 +128,8 @@ public class DownloadManager : IDownloadManager
         return result;
     }
 
-    public async Task<bool> UpdateDownloaderAsync(IProgress<ProgressReportModel> progress,
+    public async Task<bool> UpdateDownloaderAsync(
+        IProgress<ProgressReportModel> progress,
         CancellationToken cancellationToken)
     {
         _progress = progress;
@@ -129,19 +137,25 @@ public class DownloadManager : IDownloadManager
             .ConfigureAwait(false);
     }
 
-    private async Task<DownloadItem> GetItemAsync(string downloadUrl, DownloadFormatType formatType,
+    private async Task<DownloadItem> GetItemAsync(
+        string? downloadUrl,
+        DownloadFormatType formatType,
         CancellationToken cancellationToken)
     {
         return await _downloader.GetItemsAsync(downloadUrl, formatType, ProcessDownloaderError, cancellationToken)
             .ConfigureAwait(false);
     }
 
-    private async Task<bool> DownloadItemAsync(string downloadUrl, string downloadPath, DownloadFormatType formatType,
+    private async Task<bool> DownloadItemAsync(
+        string downloadUrl,
+        string downloadPath,
+        DownloadFormatType formatType,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var success = await _downloader.DownloadItemAsync(downloadPath, downloadUrl, formatType,
-            ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken).ConfigureAwait(false);
+                ProcessDownloaderOutput, ProcessDownloaderError, cancellationToken)
+            .ConfigureAwait(false);
 
         return success;
     }
@@ -167,12 +181,12 @@ public class DownloadManager : IDownloadManager
                 reportModel.Value = newValue;
             }
 
-            Log.Information("{Record}", record);
-            _progress.Report(reportModel);
+            _logger.Information("{Record}", record);
+            _progress?.Report(reportModel);
         }
         catch (Exception exception)
         {
-            Log.Error(exception, "Failed to process download output");
+            _logger.Error(exception, "Failed to process download output");
         }
     }
 
@@ -186,15 +200,15 @@ public class DownloadManager : IDownloadManager
                 return;
             }
 
-            _progress.Report(new ProgressReportModel
+            _progress?.Report(new ProgressReportModel
             {
                 Message = record
             });
-            Log.Information("{Record}", record);
+            _logger.Information("{Record}", record);
         }
         catch (Exception exception)
         {
-            Log.Error(exception, "Failed to process download error");
+            _logger.Error(exception, "Failed to process download error");
         }
     }
 }

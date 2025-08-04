@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 
 using MediaDownloader.Data;
 using MediaDownloader.Data.Models;
@@ -23,7 +17,11 @@ using MediaDownloader.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Toolkit.Mvvm.Input;
 
-using Serilog;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Clipboard = System.Windows.Clipboard;
+using DateTime = System.DateTime;
+using Log = Serilog.Log;
 
 namespace MediaDownloader.UI.ViewModels;
 
@@ -33,38 +31,38 @@ public sealed class MainWindowViewModel : BaseViewModel
     private const double DownloadProgressMax = 100.0;
 
     private readonly StringBuilder _downloadLog = new();
-    private readonly object _lock = new();
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
-    private CancellationTokenSource _cancellationTokenSource;
-    private ICommand _clearButtonClick;
-    private ICommand _downloadButtonClick;
-    private string _downloadButtonIcon;
+    private CancellationTokenSource? _cancellationTokenSource;
+    private ICommand? _clearButtonClick;
+    private ICommand? _downloadButtonClick;
+    private string? _downloadButtonIcon;
     private bool _downloadButtonIsEnabled;
-    private string _downloadButtonText;
-    private IAsyncRelayCommand _downloadCommand;
-    private IDownloader _downloader;
+    private string? _downloadButtonText;
+    private IAsyncRelayCommand? _downloadCommand;
+    private IDownloader? _downloader;
     private bool _downloadHistoryIsEnabled;
-    private IDownloadManager _downloadManager;
-    private string _downloadMessage;
-    private string _downloadPercentText;
-    private Brush _downloadProgressColor;
+    private IDownloadManager? _downloadManager;
+    private string? _downloadMessage;
+    private string? _downloadPercentText;
+    private Brush? _downloadProgressColor;
     private bool _downloadProgressIsIndeterminate;
     private double _downloadProgressValue;
     private Visibility _downloadProgressVisibility;
     private bool _generalInterfaceIsEnabled;
-    private ICommand _historyMenuItemClearHistory;
-    private ICommand _historyMenuItemCopyLink;
-    private ICommand _historyMenuItemOpenFolder;
-    private IAsyncRelayCommand _historyMenuItemReDownload;
-    private ICommand _historyMenuItemRemoveFromHistory;
-    private string _mediaUrl;
-    private DownloadFolder _selectedDownloadFolder;
-    private DownloadOption _selectedDownloadOption;
-    private ICommand _showDownloadedItemsButtonClick;
+    private ICommand? _historyMenuItemClearHistory;
+    private ICommand? _historyMenuItemCopyLink;
+    private ICommand? _historyMenuItemOpenFolder;
+    private IAsyncRelayCommand? _historyMenuItemReDownload;
+    private ICommand? _historyMenuItemRemoveFromHistory;
+    private string? _mediaUrl;
+    private DownloadFolder? _selectedDownloadFolder;
+    private DownloadOption? _selectedDownloadOption;
+    private ICommand? _showDownloadedItemsButtonClick;
     private bool _showDownloadedItemsButtonIsEnabled;
-    private ICommand _stopDownloadCommand;
-    private Storage _storage;
-    private string _userVideosFolder;
+    private ICommand? _stopDownloadCommand;
+    private Storage? _storage;
+    private string? _userVideosFolder;
 
     public MainWindowViewModel()
     {
@@ -75,9 +73,9 @@ public sealed class MainWindowViewModel : BaseViewModel
         Initialize(userDataFolderPath);
     }
 
-    public IConfiguration Configuration { get; set; }
+    public IConfiguration? Configuration { get; set; }
 
-    public string DownloadButtonIcon
+    public string? DownloadButtonIcon
     {
         get => _downloadButtonIcon;
         set => SetField(ref _downloadButtonIcon, value);
@@ -113,19 +111,19 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadHistoryIsEnabled, value);
     }
 
-    public Brush DownloadProgressColor
+    public Brush? DownloadProgressColor
     {
         get => _downloadProgressColor;
         set => SetField(ref _downloadProgressColor, value);
     }
 
-    public CollectionViewSource DownloadFolders { get; private set; }
+    public CollectionViewSource? DownloadFolders { get; private set; }
 
-    public CollectionViewSource DownloadHistory { get; private set; }
+    public CollectionViewSource? DownloadHistory { get; private set; }
 
-    public DownloadedItemInfo LastDownloadedItem { get; set; }
+    public DownloadedItemInfo? LastDownloadedItem { get; set; }
 
-    public DownloadFolder SelectedDownloadFolder
+    public DownloadFolder? SelectedDownloadFolder
     {
         get => _selectedDownloadFolder;
         set
@@ -135,31 +133,31 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    public DownloadOption SelectedDownloadOption
+    public DownloadOption? SelectedDownloadOption
     {
         get => _selectedDownloadOption;
         set => SetField(ref _selectedDownloadOption, value);
     }
 
-    public HistoryRecord DownloadHistorySelectedItem { get; set; }
+    public HistoryRecord? DownloadHistorySelectedItem { get; set; }
 
     public ICommand ClearButtonClick
     {
         get { return _clearButtonClick ??= new RelayCommand(() => { MediaUrl = string.Empty; }, () => true); }
     }
 
-    public ICommand DownloadButtonClick
+    public ICommand? DownloadButtonClick
     {
         get => _downloadButtonClick;
         set => SetField(ref _downloadButtonClick, value);
     }
 
-    public IAsyncRelayCommand DownloadCommand
+    public IAsyncRelayCommand? DownloadCommand
     {
         get { return _downloadCommand ??= new AsyncRelayCommand(DownloadAsync); }
     }
 
-    public ICommand StopDownloadCommand
+    public ICommand? StopDownloadCommand
     {
         get
         {
@@ -264,12 +262,12 @@ public sealed class MainWindowViewModel : BaseViewModel
         set => SetField(ref _downloadProgressValue, value);
     }
 
-    public List<DownloadOption> DownloadOptions { get; private set; }
+    public List<DownloadOption>? DownloadOptions { get; private set; }
 
     public string UserVideosFolder =>
         _userVideosFolder ??= Environment.GetFolderPath(Environment.SpecialFolder.MyVideos);
 
-    public string MediaUrl
+    public string? MediaUrl
     {
         get => _mediaUrl;
         set => SetField(ref _mediaUrl, value);
@@ -285,19 +283,19 @@ public sealed class MainWindowViewModel : BaseViewModel
         }
     }
 
-    public string DownloadButtonText
+    public string? DownloadButtonText
     {
         get => _downloadButtonText;
         set => SetField(ref _downloadButtonText, value);
     }
 
-    public string DownloadMessage
+    public string? DownloadMessage
     {
         get => _downloadMessage;
         set => SetField(ref _downloadMessage, value);
     }
 
-    public string DownloadPercentText
+    public string? DownloadPercentText
     {
         get => _downloadPercentText;
         set => SetField(ref _downloadPercentText, value);
@@ -380,14 +378,19 @@ public sealed class MainWindowViewModel : BaseViewModel
         Task.Run(() => HandleProgressAsync(reportModel.Message, reportModel.Value));
     }
 
-    private void HandleProgressAsync(string message, double? value)
+    private async Task HandleProgressAsync(string message, double? value)
     {
         if (!string.IsNullOrEmpty(message))
         {
-            lock (_lock)
+            try
             {
+                await _lock.WaitAsync();
                 DownloadLog = message;
                 DownloadLog = Environment.NewLine;
+            }
+            finally
+            {
+                _lock.Release();
             }
         }
 
@@ -533,7 +536,7 @@ public sealed class MainWindowViewModel : BaseViewModel
         Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
 
         _downloader = new Downloader(Configuration["DownloaderPath"], Configuration["ConverterPath"]);
-        _downloadManager = new DownloadManager(_downloader);
+        _downloadManager = new DownloadManager(_downloader, Log.Logger);
 
         var dataFolderPath = Path.Combine(userDataFolderPath, Resources.DataFolderName);
         Directory.CreateDirectory(dataFolderPath);
@@ -576,29 +579,32 @@ public sealed class MainWindowViewModel : BaseViewModel
 
         DownloadHistoryIsEnabled = true;
 
-        DownloadOptions = new List<DownloadOption>
-        {
-            new()
+        DownloadOptions =
+        [
+            new DownloadOption
             {
                 FormatType = DownloadFormatType.Best,
                 Name = Resources.DownloaderFormatBestName
             },
-            new()
+
+            new DownloadOption
             {
                 FormatType = DownloadFormatType.BestMp4,
                 Name = Resources.DownloaderFormatBestMp4Name
             },
-            new()
+
+            new DownloadOption
             {
                 FormatType = DownloadFormatType.BestDirectLink,
                 Name = Resources.DownloaderFormatBestDirectLinkName
             },
-            new()
+
+            new DownloadOption
             {
                 FormatType = DownloadFormatType.AudioOnly,
                 Name = Resources.DownloaderFormatAudioOnlyName
             }
-        };
+        ];
 
         ValidateDownload();
     }
