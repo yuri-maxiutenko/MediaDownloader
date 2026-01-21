@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=yuri-maxiutenko&project=MediaDownloader&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 The Media Downloader Project
 ![Media Downloader logo](MediaDownloader/Images/icon.png)
 ====================
