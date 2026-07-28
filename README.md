@@ -55,6 +55,7 @@ The installer redistributes the following tools from the `third-party` folder:
 
 * [yt-dlp](https://github.com/yt-dlp/yt-dlp) — released into the public domain under [The Unlicense](https://github.com/yt-dlp/yt-dlp/blob/master/LICENSE)
 * [FFmpeg](https://ffmpeg.org/) — licensed under the [GNU GPL/LGPL](https://ffmpeg.org/legal.html); see `third-party/ffmpeg/LICENSE.txt` for the license of the bundled build
+* [QuickJS-ng](https://github.com/quickjs-ng/quickjs) — MIT licensed; see `third-party/quickjs/LICENSE.txt`. yt-dlp needs a JavaScript runtime to solve YouTube's challenges, so one is bundled. If you already have [Deno](https://deno.com/) or Node.js 22+ installed, yt-dlp will prefer it automatically.
 
 ## License
 

@@ -9,7 +9,8 @@ WPF desktop front-end for the yt-dlp CLI (Windows, x64 only). Self-contained .NE
 - `MediaDownloader.Data/` — EF Core 10 + SQLite: `DataContext`, `Storage` (async API, `InitializeAsync` migrates + loads), `Migrations/`.
 - `MediaDownloader.Tests/` — xUnit v3; fixtures with real yt-dlp `-J` shapes in `TestData/`.
 - `Installers/MediaDownloaderSetup/` — SDK-style WiX 5 project (`Files` wildcard harvesting; a BeforeBuild target publishes the app into `publish/<Configuration>/`).
-- `third-party/` — vendored `yt-dlp.exe` and `ffmpeg`, copied to build output by the app csproj; yt-dlp self-updates at app start.
+- `third-party/` — vendored `yt-dlp.exe`, `ffmpeg` and `quickjs/qjs.exe`, copied to build output by the app csproj (a recursive glob, so anything added here flows into the build output, publish, MSI and portable ZIP automatically); yt-dlp self-updates at app start.
+  - yt-dlp needs an external JavaScript runtime for YouTube; only `deno` is enabled by default, so `Downloader` passes `--js-runtimes node` plus `--js-runtimes quickjs:<bundled path>`. Priority is deno > node > quickjs, so a user's own install wins and the bundled QuickJS is the fallback. Do not pass `--no-js-runtimes` — that would disable that preference.
 
 ## Commands
 

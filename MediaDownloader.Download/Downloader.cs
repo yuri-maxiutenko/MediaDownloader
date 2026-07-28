@@ -32,12 +32,17 @@ public class Downloader : IDownloader
 
     private readonly string _downloaderPath;
 
-    public Downloader(string downloaderPath, string converterPath)
+    private readonly string? _jsRuntimePath;
+
+    public Downloader(string downloaderPath, string converterPath, string? jsRuntimePath = null)
     {
         // Relative tool paths must resolve against the install directory, never the
         // process working directory, which is attacker-influenced (e.g. "Open with").
         _downloaderPath = Path.GetFullPath(downloaderPath, AppContext.BaseDirectory);
         _converterPath = Path.GetFullPath(converterPath, AppContext.BaseDirectory);
+        _jsRuntimePath = string.IsNullOrWhiteSpace(jsRuntimePath)
+            ? null
+            : Path.GetFullPath(jsRuntimePath, AppContext.BaseDirectory);
     }
 
     public async Task<DownloadItem?> GetItemsAsync(
@@ -52,7 +57,7 @@ public class Downloader : IDownloader
         }
 
         var downloaderProcess = CreateDownloaderProcess(
-            BuildGetItemsArguments(link!, _downloadFormats[downloadFormatType]));
+            BuildGetItemsArguments(link!, _downloadFormats[downloadFormatType], _jsRuntimePath));
 
         var outputReader = new StringBuilder();
 
@@ -110,7 +115,8 @@ public class Downloader : IDownloader
         }
 
         var downloaderProcess = CreateDownloaderProcess(
-            BuildDownloadArguments(downloadFilePath, link, _downloadFormats[downloadFormatType], _converterPath));
+            BuildDownloadArguments(downloadFilePath, link, _downloadFormats[downloadFormatType], _converterPath,
+                _jsRuntimePath));
 
         return await ExecuteDownloaderAsync(downloaderProcess, onOutputReceived, onErrorReceived, cancellationToken)
             .ConfigureAwait(false);
@@ -127,9 +133,9 @@ public class Downloader : IDownloader
             .ConfigureAwait(false);
     }
 
-    internal static List<string> BuildGetItemsArguments(string link, string format) =>
+    internal static List<string> BuildGetItemsArguments(string link, string format, string? jsRuntimePath = null) =>
     [
-        .. BuildCommonArguments(),
+        .. BuildCommonArguments(jsRuntimePath),
         "-f", format,
         "-J",
         "--",
@@ -140,9 +146,10 @@ public class Downloader : IDownloader
         string downloadFilePath,
         string link,
         string format,
-        string converterPath) =>
+        string converterPath,
+        string? jsRuntimePath = null) =>
     [
-        .. BuildCommonArguments(),
+        .. BuildCommonArguments(jsRuntimePath),
         "--no-mtime",
         "--no-playlist",
         "-f", format,
@@ -152,13 +159,30 @@ public class Downloader : IDownloader
         link
     ];
 
+    // Self-updating needs no JavaScript runtime.
     internal static List<string> BuildUpdateArguments() => ["-U"];
 
-    private static List<string> BuildCommonArguments() =>
-    [
-        "--encoding", "utf-8",
-        "--socket-timeout", DownloadTimeoutSec.ToString(CultureInfo.InvariantCulture)
-    ];
+    private static List<string> BuildCommonArguments(string? jsRuntimePath)
+    {
+        List<string> arguments =
+        [
+            "--encoding", "utf-8",
+            "--socket-timeout", DownloadTimeoutSec.ToString(CultureInfo.InvariantCulture)
+        ];
+
+        // YouTube extraction needs a JavaScript runtime, otherwise formats are missing.
+        // Only "deno" is enabled by default, so additionally enable "node" and the bundled
+        // QuickJS. yt-dlp picks the highest priority available runtime (deno > node >
+        // quickjs), so a user's own deno/node installation wins over the bundled fallback.
+        arguments.AddRange(["--js-runtimes", "node"]);
+
+        if (!string.IsNullOrWhiteSpace(jsRuntimePath))
+        {
+            arguments.AddRange(["--js-runtimes", $"quickjs:{jsRuntimePath}"]);
+        }
+
+        return arguments;
+    }
 
     private Process CreateDownloaderProcess(IEnumerable<string> arguments)
     {

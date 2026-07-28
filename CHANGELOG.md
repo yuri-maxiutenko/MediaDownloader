@@ -9,6 +9,7 @@ Versions before 2026 used Semantic Versioning.
 ## [Unreleased]
 
 ### Added
+- Bundled QuickJS JavaScript runtime (~0.7 MB in the installer). yt-dlp requires one to solve YouTube's JavaScript challenges; without it YouTube extraction is deprecated and some formats are missing. A Deno or Node.js 22+ installation already on the machine is preferred automatically, with the bundled runtime as the guaranteed fallback.
 - Unit test project (`MediaDownloader.Tests`) covering the yt-dlp output parser, JSON mapping, file-name sanitization, argument construction, and storage.
 - CI workflow running build + tests on every push and pull request.
 - Release workflow that publishes the MSI, a portable ZIP and auto-generated notes as soon as the `dev` -> `master` release PR is merged.
@@ -26,6 +27,7 @@ Versions before 2026 used Semantic Versioning.
 - Migrated the installer from WiX 3 (heat.exe harvesting) to SDK-style WiX 5 — the MSI now builds with plain `dotnet build` on any machine.
 - Regexes are now compile-time source-generated instead of being rebuilt for every yt-dlp output line.
 - Updated the bundled yt-dlp (2023.03.04 → 2026.07.04) and FFmpeg (2023-04-19 essentials build → 8.1.2 essentials build, gyan.dev).
+- yt-dlp `WARNING:`/`ERROR:` output is now logged at the matching Serilog level instead of all being recorded as information.
 
 ### Fixed
 - The MSI installed to `C:\Program Files\...` and required elevation; per-user redirection to `%LOCALAPPDATA%\Programs` needs the `ALLUSERS`/`MSIINSTALLPERUSER` MSI properties, which were dropped during the WiX 5 migration.
