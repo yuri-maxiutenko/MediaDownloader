@@ -113,7 +113,15 @@ public partial class MainWindow
                 return;
             }
 
+            // The URI comes from the history database, which is user-writable on disk;
+            // only http(s) links may be handed to the shell.
             var destination = hyperlink.NavigateUri;
+            if (!Utilities.Utilities.IsValidUrl(destination.ToString()))
+            {
+                Log.Warning("Blocked attempt to open non-http(s) URI {Uri}", destination);
+                return;
+            }
+
             Process.Start(new ProcessStartInfo(destination.ToString())
             {
                 UseShellExecute = true

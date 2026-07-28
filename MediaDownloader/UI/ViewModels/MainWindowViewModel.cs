@@ -27,7 +27,7 @@ namespace MediaDownloader.UI.ViewModels;
 
 public sealed class MainWindowViewModel : BaseViewModel
 {
-    private const string AppSettingsFilePath = @".\appsettings.json";
+    private static readonly string AppSettingsFilePath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
     private const double DownloadProgressMax = 100.0;
 
     private readonly StringBuilder _downloadLog = new();
@@ -190,9 +190,9 @@ public sealed class MainWindowViewModel : BaseViewModel
                 {
                     Process.Start(Resources.ExplorerFileName, $"{Resources.ExplorerOptionSelect}, \"{path}\"");
                 }
-                else if (Directory.Exists(SelectedDownloadFolder.Path))
+                else if (SelectedDownloadFolder is { } folder && Directory.Exists(folder.Path))
                 {
-                    Process.Start(SelectedDownloadFolder.Path);
+                    Process.Start(Resources.ExplorerFileName, folder.Path);
                 }
             }, () => true);
         }
