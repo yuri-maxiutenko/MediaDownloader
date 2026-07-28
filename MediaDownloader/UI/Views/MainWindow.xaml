@@ -93,14 +93,14 @@
                        Margin="0,10,0,0" />
             <TextBox Grid.Column="0" Grid.Row="5" Margin="0,5,0,0" Height="25"
                      Text="{Binding MediaUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     TextChanged="MediaUrl_OnTextChanged" MouseDoubleClick="MediaUrl_OnMouseDoubleClick"
+                     MouseDoubleClick="MediaUrl_OnMouseDoubleClick"
                      GotKeyboardFocus="MediaUrl_OnGotKeyboardFocus"
                      PreviewMouseLeftButtonDown="MediaUrl_OnPreviewMouseLeftButtonDown"
                      DataObject.Pasting="MediaUrl_OnPasting"
                      VerticalContentAlignment="Center" />
             <Button Grid.Column="1" Grid.Row="5" Width="100" Height="25" HorizontalAlignment="Left"
                     Content="{x:Static properties:Resources.ClearButtonText}" Margin="5,5,0,0"
-                    Command="{Binding ClearButtonClick}" />
+                    Command="{Binding ClearCommand}" />
         </Grid>
 
         <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,10,0,0">
@@ -112,7 +112,7 @@
                 <RowDefinition Height="50" />
             </Grid.RowDefinitions>
             <Button Grid.Column="0" Grid.Row="0" Margin="0,0,5,0"
-                    Command="{Binding DownloadButtonClick}" IsEnabled="{Binding DownloadButtonIsEnabled}">
+                    Command="{Binding DownloadOrStopCommand}" IsEnabled="{Binding DownloadButtonIsEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding DownloadButtonIcon}" FontFamily="{StaticResource SegoeFluentIcons}"
                                FontSize="24" />
@@ -120,7 +120,7 @@
                 </StackPanel>
             </Button>
             <Button Grid.Column="1" Grid.Row="0" Margin="5,0,0,0"
-                    Command="{Binding ShowDownloadedItemsButtonClick}"
+                    Command="{Binding ShowDownloadedItemsCommand}"
                     IsEnabled="{Binding ShowDownloadedItemsButtonIsEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="&#xEA69;" FontFamily="{StaticResource SegoeFluentIcons}"
@@ -159,7 +159,7 @@
         <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Background="Tan"
                   Header="{x:Static properties:Resources.ShowLogExpanderText}" ExpandDirection="Down" IsExpanded="True"
                   Margin="0,10,0,0">
-            <TextBox Text="{Binding DownloadLog}" Height="150"
+            <TextBox Text="{Binding DownloadLog, Mode=OneWay}" Height="150"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      IsReadOnly="True" TextWrapping="Wrap"
@@ -181,17 +181,17 @@
                 <DataGrid.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemOpenFolder}"
-                                  Command="{Binding HistoryMenuItemOpenFolder}" />
+                                  Command="{Binding OpenHistoryItemFolderCommand}" />
                         <Separator />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemReDownload}"
-                                  Command="{Binding HistoryMenuItemReDownload}" />
+                                  Command="{Binding ReDownloadCommand}" />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemCopyLink}"
-                                  Command="{Binding HistoryMenuItemCopyLink}" />
+                                  Command="{Binding CopyHistoryItemLinkCommand}" />
                         <Separator />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemRemoveFromHistory}"
-                                  Command="{Binding HistoryMenuItemRemoveFromHistory}" />
+                                  Command="{Binding RemoveFromHistoryCommand}" />
                         <MenuItem Header="{x:Static properties:Resources.HistoryMenuItemClearHistory}"
-                                  Command="{Binding HistoryMenuItemClearHistory}" />
+                                  Command="{Binding ClearHistoryCommand}" />
                     </ContextMenu>
                 </DataGrid.ContextMenu>
             </DataGrid>

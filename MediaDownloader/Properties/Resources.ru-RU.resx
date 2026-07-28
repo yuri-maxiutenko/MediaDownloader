@@ -161,13 +161,6 @@
 	<data name="LogMessageFileNameRetrieved" xml:space="preserve">
     <value>Имя файла успешно получено: {0}</value>
   </data>
-	<data name="LogMessageDownloadingFile" xml:space="preserve">
-    <value>Качаем файл: {0}
-Ссылка: {1}</value>
-  </data>
-	<data name="MessageDownloading" xml:space="preserve">
-    <value>Загрузка: {0}</value>
-  </data>
 	<data name="MessageItemDownloadComplete" xml:space="preserve">
 		<value>Успешно загружено:</value>
 	</data>

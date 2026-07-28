@@ -343,3 +343,6 @@ healthchecksdb
 /MediaDownloader/Data.db-shm
 /MediaDownloader/Data.db
 /out
+
+# WiX installer publish staging
+Installers/MediaDownloaderSetup/publish/

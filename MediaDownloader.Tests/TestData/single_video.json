@@ -1,0 +1,20 @@
+{
+  "id": "dQw4w9WgXcQ",
+  "ext": "mp4",
+  "title": "Sample Video: The \"Best\" One",
+  "webpage_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "requested_formats": [
+    {
+      "format": "137 - 1920x1080 (1080p)",
+      "ext": "mp4",
+      "vcodec": "avc1.640028",
+      "acodec": "none"
+    },
+    {
+      "format": "140 - audio only (medium)",
+      "ext": "m4a",
+      "vcodec": "none",
+      "acodec": "mp4a.40.2"
+    }
+  ]
+}

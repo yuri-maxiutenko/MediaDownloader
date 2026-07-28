@@ -186,15 +186,8 @@
   <data name="LogMessageFileNameRetrieved" xml:space="preserve">
     <value>File name successfully retrieved: {0}</value>
   </data>
-  <data name="LogMessageDownloadingFile" xml:space="preserve">
-    <value>Downloading the file: {0}
-Url: {1}</value>
-  </data>
   <data name="MessageUpdatingDownloader" xml:space="preserve">
     <value>Updating the downloader...</value>
-  </data>
-  <data name="MessageDownloading" xml:space="preserve">
-    <value>Downloading:</value>
   </data>
   <data name="MessageItemDownloadComplete" xml:space="preserve">
     <value>Successfully downloaded:</value>
