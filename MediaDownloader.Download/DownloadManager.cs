@@ -180,7 +180,7 @@ public class DownloadManager : IDownloadManager
                 reportModel.Value = newValue;
             }
 
-            _logger.Information("{Record}", record);
+            LogRecord(record);
             _progress?.Report(reportModel);
         }
         catch (Exception exception)
@@ -203,11 +203,28 @@ public class DownloadManager : IDownloadManager
             {
                 Message = record
             });
-            _logger.Information("{Record}", record);
+            LogRecord(record);
         }
         catch (Exception exception)
         {
             _logger.Error(exception, "Failed to process download error");
+        }
+    }
+
+    /// <summary>Logs a yt-dlp output line at the level matching its own WARNING/ERROR marker.</summary>
+    private void LogRecord(string record)
+    {
+        switch (DownloadOutputParser.GetSeverity(record))
+        {
+            case DownloadLogSeverity.Error:
+                _logger.Error("{Record}", record);
+                break;
+            case DownloadLogSeverity.Warning:
+                _logger.Warning("{Record}", record);
+                break;
+            default:
+                _logger.Information("{Record}", record);
+                break;
         }
     }
 }

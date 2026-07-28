@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
+using MediaDownloader.Download.Models;
+
 namespace MediaDownloader.Download.Utilities;
 
 public static partial class DownloadOutputParser
@@ -16,6 +18,25 @@ public static partial class DownloadOutputParser
 
     [GeneratedRegex(@"(\[download\]\s*)(\S*)(\s*)% of", RegexOptions.IgnoreCase)]
     private static partial Regex DownloadProgressRegex();
+
+    // yt-dlp marks diagnostics as "WARNING:" / "ERROR:", optionally preceded by an
+    // extractor tag such as "[youtube] ".
+    [GeneratedRegex(@"^\s*(?:\[[^\]]+\]\s*)?(WARNING|ERROR)\s*:", RegexOptions.IgnoreCase)]
+    private static partial Regex SeverityRegex();
+
+    /// <summary>Classifies a yt-dlp output line so it can be logged at a matching level.</summary>
+    public static DownloadLogSeverity GetSeverity(string record)
+    {
+        var match = SeverityRegex().Match(record);
+        if (!match.Success)
+        {
+            return DownloadLogSeverity.Info;
+        }
+
+        return match.Groups[1].Value.Equals("ERROR", StringComparison.OrdinalIgnoreCase)
+            ? DownloadLogSeverity.Error
+            : DownloadLogSeverity.Warning;
+    }
 
     public static bool TryParseDownloadProgress(string record, out double percent)
     {
