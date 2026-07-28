@@ -21,7 +21,7 @@ using Log = Serilog.Log;
 
 namespace MediaDownloader.UI.ViewModels;
 
-public sealed partial class MainWindowViewModel : ObservableObject
+public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
 {
     private const double DownloadProgressMax = 100.0;
 
@@ -449,5 +449,10 @@ public sealed partial class MainWindowViewModel : ObservableObject
     {
         _downloadLog.Append(text);
         OnPropertyChanged(nameof(DownloadLog));
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Dispose();
     }
 }

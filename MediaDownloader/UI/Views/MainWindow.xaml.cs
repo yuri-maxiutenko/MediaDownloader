@@ -92,7 +92,7 @@ public partial class MainWindow
         textBox.Focus();
     }
 
-    private void SelectText(object sender)
+    private static void SelectText(object sender)
     {
         var textBox = sender as TextBox;
         textBox?.SelectAll();

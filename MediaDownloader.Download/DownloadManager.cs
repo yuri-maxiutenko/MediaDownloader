@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 
 using MediaDownloader.Download.Models;
 using MediaDownloader.Download.Properties;
@@ -80,7 +81,8 @@ public class DownloadManager : IDownloadManager
 
                 _progress.Report(new ProgressReportModel
                 {
-                    Message = string.Format(Resources.LogMessageDownloadingFile, downloadPath, entry.Url)
+                    Message = string.Format(CultureInfo.InvariantCulture, Resources.LogMessageDownloadingFile,
+                        downloadPath, entry.Url)
                 });
 
                 var success = false;

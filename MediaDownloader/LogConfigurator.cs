@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Reflection;
 
 using MediaDownloader.Properties;
@@ -27,7 +28,8 @@ public static class LogConfigurator
 
         Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
             .WriteTo.Logger(lc => lc
-                .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate)
+                .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate,
+                    formatProvider: CultureInfo.InvariantCulture)
                 .Enrich
                 .WithThreadId()
                 .Enrich.WithExceptionDetails()

@@ -23,20 +23,20 @@ public class DownloadOutputParserTests
         Assert.False(DownloadOutputParser.TryParseDownloadProgress(line, out _));
     }
 
-    [Fact]
-    public void TryParseResultFilePath_MergeLine_ReturnsPath()
+    [Theory]
+    [InlineData("[ffmpeg] Merging formats into \"C:\\Videos\\My Clip.mp4\"")]
+    [InlineData("[Merger] Merging formats into \"C:\\Videos\\My Clip.mp4\"")]
+    public void TryParseResultFilePath_MergeLine_ReturnsPath(string line)
     {
-        var line = "[ffmpeg] Merging formats into \"C:\\Videos\\My Clip.mp4\"";
-
         Assert.True(DownloadOutputParser.TryParseResultFilePath(line, out var path));
         Assert.Equal("C:\\Videos\\My Clip.mp4", path);
     }
 
-    [Fact]
-    public void TryParseResultFilePath_AlreadyDownloadedLine_ReturnsPath()
+    [Theory]
+    [InlineData("[download] C:\\Videos\\My Clip.mp4 has already been downloaded and merged")]
+    [InlineData("[download] C:\\Videos\\My Clip.mp4 has already been downloaded")]
+    public void TryParseResultFilePath_AlreadyDownloadedLine_ReturnsPath(string line)
     {
-        var line = "[download] C:\\Videos\\My Clip.mp4 has already been downloaded and merged";
-
         Assert.True(DownloadOutputParser.TryParseResultFilePath(line, out var path));
         Assert.Equal("C:\\Videos\\My Clip.mp4", path);
     }

@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -29,42 +29,6 @@
   </data>
     <data name="DownloaderOptionFormatAudioOnly" xml:space="preserve">
     <value>mp3/ogg/m4a/aac</value>
-  </data>
-    <data name="DownloaderOptionEncodingUtf8" xml:space="preserve">
-    <value>--encoding utf-8</value>
-  </data>
-    <data name="DownloaderOptionGetFilename" xml:space="preserve">
-    <value>--get-filename</value>
-  </data>
-    <data name="DownloaderItemTitleTemplate" xml:space="preserve">
-    <value>%(title)s.%(ext)s</value>
-  </data>
-    <data name="DownloaderOptionConverterLocation" xml:space="preserve">
-    <value>--ffmpeg-location</value>
-  </data>
-    <data name="DownloaderOptionNoOriginalDateTime" xml:space="preserve">
-    <value>--no-mtime</value>
-  </data>
-    <data name="DownloaderOptionNoPlaylist" xml:space="preserve">
-    <value>--no-playlist</value>
-  </data>
-    <data name="DownloaderOptionSocketTimeout" xml:space="preserve">
-    <value>--socket-timeout</value>
-  </data>
-    <data name="DownloaderOptionRetries" xml:space="preserve">
-    <value>--retries</value>
-  </data>
-    <data name="DownloaderOptionUpdate" xml:space="preserve">
-    <value>-U</value>
-  </data>
-    <data name="SearchPatternDownloadProgress" xml:space="preserve">
-    <value>(\[download\]\s*)(\S*)(\s*)% of</value>
-  </data>
-    <data name="SearchPatternResultFilePath" xml:space="preserve">
-    <value>\[ffmpeg\]\s*Merging formats into\s*"(.*)"</value>
-  </data>
-    <data name="SearchPatternAlreadyDownloadedFilePath" xml:space="preserve">
-    <value>\[download\]\s* (.*?)\s*has already been downloaded and merged</value>
   </data>
     <data name="LogMessageDownloadingFile" xml:space="preserve">
     <value>Downloading the file: {0}

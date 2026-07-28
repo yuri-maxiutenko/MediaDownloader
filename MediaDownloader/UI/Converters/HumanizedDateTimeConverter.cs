@@ -7,7 +7,7 @@ using Humanizer;
 namespace MediaDownloader.UI.Converters;
 
 [ValueConversion(typeof(DateTime), typeof(string))]
-public class HumanizedDateTimeConverter : IValueConverter
+public sealed class HumanizedDateTimeConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

@@ -21,6 +21,10 @@ end_of_line = crlf
 dotnet_sort_system_directives_first = true
 dotnet_separate_import_directive_groups = true
 
+# CA1863 (cache CompositeFormat) is not worth the ceremony for localized
+# resource strings formatted a handful of times per download.
+dotnet_diagnostic.CA1863.severity = none
+
 # Language rules
 csharp_style_namespace_declarations = file_scoped:warning
 csharp_style_var_for_built_in_types = true:suggestion
