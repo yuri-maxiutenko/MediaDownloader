@@ -1,67 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<!-- WiX 5 is the newest SDK that does not require accepting the Open Source
+     Maintenance Fee EULA (introduced in WiX 6). To upgrade to WiX 6/7 later,
+     bump the SDK version and follow https://wixtoolset.org/osmf/. -->
+<Project Sdk="WixToolset.Sdk/5.0.2">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.10</ProductVersion>
-    <ProjectGuid>5ad17196-207b-4403-81cd-8f95aa74a1e1</ProjectGuid>
-    <SchemaVersion>2.0</SchemaVersion>
     <OutputName>MediaDownloaderSetup</OutputName>
-    <OutputType>Package</OutputType>
-    <Name>MediaDownloaderSetup</Name>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DefineConstants>Debug;SourceDir=$(SolutionDir)MediaDownloader\bin\Debug\net10.0-windows\win-x64\publish</DefineConstants>
+    <Platforms>x64</Platforms>
+    <InstallerPlatform>x64</InstallerPlatform>
     <OutputPath>..\..\out\</OutputPath>
-    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
+    <SuppressSpecificWarnings>1147</SuppressSpecificWarnings>
+    <AppProjectPath>$(MSBuildThisFileDirectory)..\..\MediaDownloader\MediaDownloader.csproj</AppProjectPath>
+    <AppPublishDir>$(MSBuildThisFileDirectory)publish\$(Configuration)\</AppPublishDir>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DefineConstants>SourceDir=$(SolutionDir)MediaDownloader\bin\Release\net10.0-windows\win-x64\publish</DefineConstants>
-    <OutputPath>..\..\out\</OutputPath>
-    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\</IntermediateOutputPath>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="Components.wxs" />
-    <Compile Include="Product.wxs" />
+    <BindPath Include="$(AppPublishDir)" BindName="publish" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="HeatFilters.xslt" />
-    <Content Include="publish.cmd" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\MediaDownloader.Data\MediaDownloader.Data.csproj">
-      <Name>MediaDownloader.Data</Name>
-      <Project>{645d945d-4d8b-4632-adf1-7f7b5ed89e20}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-    <ProjectReference Include="..\..\MediaDownloader\MediaDownloader.csproj">
-      <Name>MediaDownloader</Name>
-      <Project>{fe591d20-6291-42c1-89bb-e6aa6e298eb2}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
-  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
-    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
+
+  <!-- Publish the self-contained application (including the bundled yt-dlp/ffmpeg,
+       copied to output by the app project) before harvesting it into the MSI. -->
+  <Target Name="PublishApplication" BeforeTargets="BeforeBuild">
+    <Exec Command="dotnet publish &quot;$(AppProjectPath)&quot; -c $(Configuration) -r win-x64 --self-contained true -p:Platform=x64 -p:PublishReadyToRun=true -o &quot;$(AppPublishDir.TrimEnd('\'))&quot;" />
   </Target>
-  <PropertyGroup>
-    <PreBuildEvent>$(ProjectDir)publish.cmd "$(SolutionDir)" "$(ProjectDir)" $(ConfigurationName) $(PlatformName)</PreBuildEvent>
-  </PropertyGroup>
-  <!--
-	To modify your build process, add your task inside one of the targets below and uncomment it.
-	Other similar extension points exist, see Wix.targets.
-	<Target Name="BeforeBuild">
-	</Target>
-	<Target Name="AfterBuild">
-	</Target>
-	-->
+
 </Project>

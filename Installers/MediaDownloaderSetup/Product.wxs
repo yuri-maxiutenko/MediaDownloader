@@ -1,66 +1,50 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?ifndef ProductName ?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <?define ProductName = "Media Downloader"?>
-  <?endif?>
-
-  <?ifndef ProductVersion ?>
-  <?define ProductVersion="!(bind.FileVersion.MediaDownloader.exe)"?>
-  <?endif?>
-
-  <?ifndef Manufacturer ?>
   <?define Manufacturer = "Wolfcub"?>
-  <?endif?>
-
-  <?ifndef UpgradeCode ?>
+  <!-- The UpgradeCode must never change: it is what lets new MSIs upgrade
+       installations produced by the old WiX 3 installer. -->
   <?define UpgradeCode = "006c680b-7607-4170-9f90-53d7a69866ec"?>
-  <?endif?>
 
-  <?if $(var.Platform) = "x64" ?>
-  <?define ProgramFilesFolder = "ProgramFiles64Folder"?>
-  <?else?>
-  <?define ProgramFilesFolder = "ProgramFilesFolder"?>
-  <?endif?>
-
-  <Product Id="*"
-           Name="$(var.ProductName)"
+  <Package Name="$(var.ProductName)"
            Language="1033"
-           Version="$(var.ProductVersion)"
+           Version="!(bind.FileVersion.MediaDownloader.exe)"
            Manufacturer="$(var.Manufacturer)"
-           UpgradeCode="$(var.UpgradeCode)">
-    <Package InstallerVersion="200" Compressed="yes" InstallScope="perUser" InstallPrivileges="limited"/>
+           UpgradeCode="$(var.UpgradeCode)"
+           Scope="perUser"
+           Compressed="yes">
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-                  AllowSameVersionUpgrades="yes"/>
+                  AllowSameVersionUpgrades="yes" />
 
-    <Media Id="1" Cabinet="_494C9D65561241F4803B47835AD70ADC" EmbedCab="yes"/>
+    <MediaTemplate EmbedCab="yes" />
 
-    <Property Id="ALLUSERS" Secure="yes" Value="2"/>
-    <Property Id="MSIINSTALLPERUSER" Secure="yes" Value="1"/>
-    <Property Id="ARPPRODUCTICON" Value="APPICON"/>
-    <Icon Id="APPICON" SourceFile="..\Common\Images\icon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="APPICON" />
+    <Icon Id="APPICON" SourceFile="..\Common\Images\icon.ico" />
 
     <Feature Id="ProductFeature" Title="[ProductName]" Level="1">
-      <ComponentGroupRef Id="ProductComponents"/>
-      <ComponentGroupRef Id="MediaDownloaderComponents"/>
-      <ComponentGroupRef Id="ShortcutComponents"/>
+      <ComponentGroupRef Id="MediaDownloaderComponents" />
+      <ComponentGroupRef Id="ShortcutComponents" />
+      <!-- Harvest the publish output; the main exe has its own component above
+           so its stable file id can anchor shortcuts and version binding. -->
+      <Files Directory="INSTALLDIR" Include="!(bindpath.publish)\**">
+        <Exclude Files="!(bindpath.publish)\MediaDownloader.exe" />
+        <Exclude Files="!(bindpath.publish)\**\*.pdb" />
+      </Files>
     </Feature>
-  </Product>
+  </Package>
 
   <Fragment>
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="DesktopFolder"/>
-      <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)"/>
+    <StandardDirectory Id="DesktopFolder" />
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="$(var.ProductName)" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="AppRootDirectory" Name="$(var.Manufacturer)">
+        <Directory Id="INSTALLDIR" Name="$(var.ProductName)" />
       </Directory>
-      <Directory Id="$(var.ProgramFilesFolder)">
-        <Directory Id="AppRootDirectory" Name="$(var.Manufacturer)">
-          <Directory Id="INSTALLDIR" Name="$(var.ProductName)">
-          </Directory>
-        </Directory>
-      </Directory>
-    </Directory>
+    </StandardDirectory>
   </Fragment>
 
   <Fragment>
@@ -68,7 +52,7 @@
       <Component Id="MediaDownloaderComponent" Directory="INSTALLDIR"
                  Guid="{66CF73EA-F47C-4617-88D9-3D03204DDD95}">
         <File Name="MediaDownloader.exe" Id="MediaDownloader.exe" KeyPath="yes"
-              Source="$(var.SourceDir)\MediaDownloader.exe"/>
+              Source="!(bindpath.publish)\MediaDownloader.exe" />
       </Component>
     </ComponentGroup>
 
@@ -79,22 +63,22 @@
                   Directory="DesktopFolder"
                   Target="[#MediaDownloader.exe]"
                   WorkingDirectory="INSTALLDIR"
-                  Icon="APPICON"/>
-        <!--Remove desktop shortcut on uninstall-->
-        <RemoveFolder Id="DesktopFolder" On="uninstall"/>
+                  Icon="APPICON" />
+        <!-- Remove desktop shortcut on uninstall -->
+        <RemoveFolder Id="DesktopFolder" On="uninstall" />
         <RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="installed"
-                       Type="integer" Value="1" KeyPath="yes"/>
+                       Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
       <Component Id="ApplicationShortcut" Guid="*" Directory="ApplicationProgramsFolder">
         <Shortcut Id="ApplicationStartMenuShortcut" Name="$(var.ProductName)"
-                  Icon="APPICON" Target="[#MediaDownloader.exe]" WorkingDirectory="INSTALLDIR"/>
-        <!--Remove application shortcut from Program Menu on uninstall-->
-        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
-        <!--Create application registry entry-->
+                  Icon="APPICON" Target="[#MediaDownloader.exe]" WorkingDirectory="INSTALLDIR" />
+        <!-- Remove application shortcut from Program Menu on uninstall -->
+        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+        <!-- Create application registry entry -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\$(var.Manufacturer)\$(var.ProductName)"
                        Name="installed"
-                       Type="integer" Value="1" KeyPath="yes"/>
+                       Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
