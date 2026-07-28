@@ -9,19 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\icon128.png"/>
-    <None Remove="Images\icon16.png"/>
-    <None Remove="Images\icon256.png"/>
-    <None Remove="Images\icon32.png"/>
-    <None Remove="Images\icon48.png"/>
-    <None Remove="Images\icon512.png"/>
-    <None Remove="Images\icon64.png"/>
-    <None Remove="Images\icon_download.png"/>
-    <None Remove="Images\icon_show.png"/>
-    <None Remove="Images\icon_stop.png"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Humanizer.Core" Version="3.0.10" />
     <PackageReference Include="Humanizer.Core.ru" Version="3.0.10" />
