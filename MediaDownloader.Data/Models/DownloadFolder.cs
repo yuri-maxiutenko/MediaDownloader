@@ -6,9 +6,9 @@ namespace MediaDownloader.Data.Models;
 public class DownloadFolder
 {
     [Key]
-    public int DownloadFolderId { get; set; }
+    public int DownloadFolderId { get; init; }
 
-    public string Path { get; set; }
+    public required string Path { get; set; }
     public DateTime LastSelectionDate { get; set; }
 
     public override string ToString()

@@ -1,10 +1,13 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Reflection;
 
 using MediaDownloader.Properties;
 
 using Serilog;
 using Serilog.Exceptions;
+
+using Log = Serilog.Log;
 
 namespace MediaDownloader;
 
@@ -23,9 +26,15 @@ public static class LogConfigurator
         var logFileName = $"{Resources.AppName}-.log";
         var logFilePath = Path.Combine(logDirectoryPath, logFileName);
 
-        Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Logger(lc => lc
-            .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate).Enrich
-            .WithThreadId().Enrich.WithExceptionDetails().Enrich.FromLogContext()).CreateLogger();
+        Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+            .WriteTo.Logger(lc => lc
+                .WriteTo.File(logFilePath, rollingInterval: RollingInterval.Day, outputTemplate: outputTemplate,
+                    formatProvider: CultureInfo.InvariantCulture)
+                .Enrich
+                .WithThreadId()
+                .Enrich.WithExceptionDetails()
+                .Enrich.FromLogContext())
+            .CreateLogger();
 
         Log.Information("{AppName} v{AppVersion} successfully started", Resources.AppName,
             assemblyName.Version?.ToString(3));

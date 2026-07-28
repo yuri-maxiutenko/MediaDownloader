@@ -9,7 +9,7 @@ using MediaDownloader.Properties;
 namespace MediaDownloader.UI.Converters;
 
 [ValueConversion(typeof(DownloadStatus), typeof(string))]
-internal class DownloadStatusConverter : IValueConverter
+internal sealed class DownloadStatusConverter : IValueConverter
 {
     private readonly Dictionary<string, DownloadStatus> _downloadStatusKeys = new()
     {

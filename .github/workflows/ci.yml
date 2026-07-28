@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build application
+        run: dotnet build MediaDownloader/MediaDownloader.csproj -c Release -p:Platform=x64
+
+      - name: Run tests
+        run: dotnet test MediaDownloader.Tests/MediaDownloader.Tests.csproj -c Release -p:Platform=x64

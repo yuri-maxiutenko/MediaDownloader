@@ -1,0 +1,19 @@
+<Project>
+
+  <!-- Shared properties for the .NET projects; the WiX installer project must not inherit these. -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <Authors>Yuri Maxiutenko</Authors>
+    <Product>Media Downloader</Product>
+    <Copyright>Yuri Maxiutenko, 2026</Copyright>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NeutralLanguage>en</NeutralLanguage>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- CalVer (YYYY.MM.DD, UTC). CI passes an explicit -p:Version (with a .N
+         suffix for repeated same-day releases); local builds default to today. -->
+    <Version Condition="'$(Version)' == ''">$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd'))</Version>
+  </PropertyGroup>
+
+</Project>

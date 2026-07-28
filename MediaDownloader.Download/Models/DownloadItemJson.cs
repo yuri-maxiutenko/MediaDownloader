@@ -1,39 +1,39 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MediaDownloader.Download.Models;
 
 public class DownloadItemJson
 {
-    [JsonProperty(PropertyName = "id")]
-    public string Id { get; set; }
+    [JsonPropertyName("id")]
+    public string? Id { get; init; }
 
-    [JsonProperty(PropertyName = "ext")]
-    public string Ext { get; set; }
+    [JsonPropertyName("ext")]
+    public string? Ext { get; init; }
 
-    [JsonProperty(PropertyName = "title")]
-    public string Title { get; set; }
+    [JsonPropertyName("title")]
+    public string? Title { get; init; }
 
-    [JsonProperty(PropertyName = "webpage_url")]
-    public string WebpageUrl { get; set; }
+    [JsonPropertyName("webpage_url")]
+    public string? WebpageUrl { get; init; }
 
-    [JsonProperty(PropertyName = "entries")]
-    public DownloadItemJson[] Entries { get; set; }
+    [JsonPropertyName("entries")]
+    public DownloadItemJson[]? Entries { get; init; }
 
-    [JsonProperty(PropertyName = "requested_formats")]
-    public DownloadItemFormatJson[] RequestedFormats { get; set; }
+    [JsonPropertyName("requested_formats")]
+    public DownloadItemFormatJson[]? RequestedFormats { get; init; }
 }
 
 public class DownloadItemFormatJson
 {
-    [JsonProperty(PropertyName = "format")]
-    public string Format { get; set; }
+    [JsonPropertyName("format")]
+    public string? Format { get; set; }
 
-    [JsonProperty(PropertyName = "ext")]
-    public string Ext { get; set; }
+    [JsonPropertyName("ext")]
+    public string? Ext { get; set; }
 
-    [JsonProperty(PropertyName = "vcodec")]
-    public string VideoCodec { get; set; }
+    [JsonPropertyName("vcodec")]
+    public string? VideoCodec { get; set; }
 
-    [JsonProperty(PropertyName = "acodec")]
-    public string AudioCodec { get; set; }
+    [JsonPropertyName("acodec")]
+    public string? AudioCodec { get; set; }
 }

@@ -1,16 +1,14 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 using MediaDownloader.UI.ViewModels;
 
-using Serilog;
+using Microsoft.Win32;
 
-using TextBox = System.Windows.Controls.TextBox;
+using Log = Serilog.Log;
 
 namespace MediaDownloader.UI.Views;
 
@@ -19,35 +17,28 @@ namespace MediaDownloader.UI.Views;
 /// </summary>
 public partial class MainWindow
 {
-    public MainWindow()
+    public MainWindow(MainWindowViewModel viewModel)
     {
-        ViewModel = new MainWindowViewModel();
+        ViewModel = viewModel;
 
         InitializeComponent();
     }
 
     public MainWindowViewModel ViewModel { get; }
 
-    private void BrowseButton_OnClick(object sender, RoutedEventArgs e)
+    private async void BrowseButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var selectFolderDialog = new FolderBrowserDialog
+        var selectFolderDialog = new OpenFolderDialog
         {
-            ShowNewFolderButton = true,
-            SelectedPath = string.IsNullOrEmpty(ViewModel.SelectedDownloadFolder?.Path)
+            InitialDirectory = string.IsNullOrEmpty(ViewModel.SelectedDownloadFolder?.Path)
                 ? ViewModel.UserVideosFolder
                 : ViewModel.SelectedDownloadFolder.Path
         };
 
-        var result = selectFolderDialog.ShowDialog();
-        if (result == System.Windows.Forms.DialogResult.OK)
+        if (selectFolderDialog.ShowDialog(this) == true)
         {
-            ViewModel.AddOrUpdateDownloadFolder(selectFolderDialog.SelectedPath, DateTime.Now);
+            await ViewModel.AddOrUpdateDownloadFolderAsync(selectFolderDialog.FolderName, DateTime.Now);
         }
-    }
-
-    private void MediaUrl_OnTextChanged(object sender, TextChangedEventArgs e)
-    {
-        ViewModel.ValidateDownload();
     }
 
     private void MediaUrl_OnPasting(object sender, DataObjectPastingEventArgs e)
@@ -101,7 +92,7 @@ public partial class MainWindow
         textBox.Focus();
     }
 
-    private void SelectText(object sender)
+    private static void SelectText(object sender)
     {
         var textBox = sender as TextBox;
         textBox?.SelectAll();
@@ -116,8 +107,19 @@ public partial class MainWindow
                 return;
             }
 
+            // The URI comes from the history database, which is user-writable on disk;
+            // only http(s) links may be handed to the shell.
             var destination = hyperlink.NavigateUri;
-            Process.Start(new ProcessStartInfo(destination.ToString()) { UseShellExecute = true });
+            if (!Utilities.Utilities.IsValidUrl(destination.ToString()))
+            {
+                Log.Warning("Blocked attempt to open non-http(s) URI {Uri}", destination);
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo(destination.ToString())
+            {
+                UseShellExecute = true
+            });
         }
         catch (Exception exception)
         {
@@ -125,8 +127,9 @@ public partial class MainWindow
         }
     }
 
-    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        _ = ViewModel.UpdateDownloaderAsync();
+        // Exceptions are handled and logged inside the view model.
+        await ViewModel.UpdateDownloaderAsync();
     }
 }

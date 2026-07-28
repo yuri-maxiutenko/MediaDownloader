@@ -1,0 +1,20 @@
+{
+  "id": "PL1234567890",
+  "_type": "playlist",
+  "title": "My Playlist",
+  "webpage_url": "https://www.youtube.com/playlist?list=PL1234567890",
+  "entries": [
+    {
+      "id": "vid1",
+      "ext": "mp4",
+      "title": "First Video",
+      "webpage_url": "https://www.youtube.com/watch?v=vid1"
+    },
+    {
+      "id": "vid2",
+      "ext": "webm",
+      "title": "Second Video",
+      "webpage_url": "https://www.youtube.com/watch?v=vid2"
+    }
+  ]
+}

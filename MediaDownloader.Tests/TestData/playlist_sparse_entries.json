@@ -1,0 +1,23 @@
+{
+  "id": "PL0987654321",
+  "_type": "playlist",
+  "title": "Sparse Playlist",
+  "webpage_url": "https://www.youtube.com/playlist?list=PL0987654321",
+  "entries": [
+    {
+      "id": "vid1",
+      "title": "No Extension",
+      "webpage_url": "https://example.com/v/1"
+    },
+    {
+      "id": "vid2",
+      "ext": "mp4",
+      "title": "Unavailable Video"
+    },
+    {
+      "id": "vid3",
+      "ext": "mp4",
+      "webpage_url": "https://example.com/v/3"
+    }
+  ]
+}

@@ -1,13 +1,12 @@
-﻿using System;
+﻿using MediaDownloader.Download.Utilities;
 
 namespace MediaDownloader.Utilities;
 
 internal static class Utilities
 {
-    public static bool IsValidUrl(string url)
+    public static bool IsValidUrl(string? url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult) &&
-               (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return UrlValidator.IsValidHttpUrl(url);
     }
 
     public static int CalculateAbsolutePercent(int value, int maximum)
