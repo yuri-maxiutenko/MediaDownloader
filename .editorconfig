@@ -82,6 +82,11 @@ dotnet_naming_style.prefix_interface_with_i.required_prefix = I
 dotnet_naming_style.underscore_camel_case.capitalization = camel_case
 dotnet_naming_style.underscore_camel_case.required_prefix = _
 
+# Test projects use the Method_Scenario_Expectation naming convention, which CA1707
+# (no underscores in member names) is not meant to police.
+[MediaDownloader.Tests/**.cs]
+dotnet_diagnostic.CA1707.severity = none
+
 # Generated code
 [**/Migrations/*.cs]
 generated_code = true

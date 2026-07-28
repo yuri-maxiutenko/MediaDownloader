@@ -48,7 +48,7 @@ public partial class App
         builder.Services.AddSingleton<IDownloader>(provider =>
         {
             var options = provider.GetRequiredService<IOptions<DownloaderOptions>>().Value;
-            return new Downloader(options.DownloaderPath, options.ConverterPath);
+            return new Downloader(options.DownloaderPath, options.ConverterPath, options.JsRuntimePath);
         });
         builder.Services.AddSingleton<IDownloadManager, DownloadManager>();
 

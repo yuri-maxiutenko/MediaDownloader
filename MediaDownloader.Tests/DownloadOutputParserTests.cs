@@ -1,3 +1,4 @@
+using MediaDownloader.Download.Models;
 using MediaDownloader.Download.Utilities;
 
 namespace MediaDownloader.Tests;
@@ -47,5 +48,33 @@ public class DownloadOutputParserTests
     public void TryParseResultFilePath_NonMatchingLine_ReturnsFalse(string line)
     {
         Assert.False(DownloadOutputParser.TryParseResultFilePath(line, out _));
+    }
+
+    [Theory]
+    [InlineData("WARNING: [youtube] No supported JavaScript runtime could be found.")]
+    [InlineData("WARNING: Falling back to generic extractor")]
+    [InlineData("  warning: lowercase is still a warning")]
+    public void GetSeverity_WarningLines_ReturnWarning(string line)
+    {
+        Assert.Equal(DownloadLogSeverity.Warning, DownloadOutputParser.GetSeverity(line));
+    }
+
+    [Theory]
+    [InlineData("ERROR: unable to download video data: HTTP Error 403")]
+    [InlineData("[youtube] ERROR: Video unavailable")]
+    public void GetSeverity_ErrorLines_ReturnError(string line)
+    {
+        Assert.Equal(DownloadLogSeverity.Error, DownloadOutputParser.GetSeverity(line));
+    }
+
+    [Theory]
+    [InlineData("[download]  42.7% of 10.00MiB at 5.00MiB/s ETA 00:01")]
+    [InlineData("[youtube] jNQXAC9IVRw: Downloading webpage")]
+    [InlineData("")]
+    // A mention of the word later in the line is not a severity marker.
+    [InlineData("[download] Destination: WARNING misleading name.mp4")]
+    public void GetSeverity_OrdinaryLines_ReturnInfo(string line)
+    {
+        Assert.Equal(DownloadLogSeverity.Info, DownloadOutputParser.GetSeverity(line));
     }
 }
