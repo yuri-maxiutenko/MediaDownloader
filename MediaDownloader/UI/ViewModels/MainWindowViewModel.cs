@@ -15,7 +15,7 @@ using MediaDownloader.Properties;
 using MediaDownloader.Utilities;
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Toolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;

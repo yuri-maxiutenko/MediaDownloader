@@ -6,8 +6,9 @@ using System.Windows.Input;
 
 using MediaDownloader.UI.ViewModels;
 
+using Microsoft.Win32;
+
 using Log = Serilog.Log;
-using TextBox = System.Windows.Controls.TextBox;
 
 namespace MediaDownloader.UI.Views;
 
@@ -27,18 +28,16 @@ public partial class MainWindow
 
     private void BrowseButton_OnClick(object sender, RoutedEventArgs e)
     {
-        var selectFolderDialog = new FolderBrowserDialog
+        var selectFolderDialog = new OpenFolderDialog
         {
-            ShowNewFolderButton = true,
-            SelectedPath = string.IsNullOrEmpty(ViewModel.SelectedDownloadFolder?.Path)
+            InitialDirectory = string.IsNullOrEmpty(ViewModel.SelectedDownloadFolder?.Path)
                 ? ViewModel.UserVideosFolder
                 : ViewModel.SelectedDownloadFolder.Path
         };
 
-        var result = selectFolderDialog.ShowDialog();
-        if (result == System.Windows.Forms.DialogResult.OK)
+        if (selectFolderDialog.ShowDialog(this) == true)
         {
-            ViewModel.AddOrUpdateDownloadFolder(selectFolderDialog.SelectedPath, DateTime.Now);
+            ViewModel.AddOrUpdateDownloadFolder(selectFolderDialog.FolderName, DateTime.Now);
         }
     }
 
