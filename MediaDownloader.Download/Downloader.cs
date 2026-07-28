@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using System.Text.Json;
 
 using MediaDownloader.Download.Models;
 using MediaDownloader.Download.Properties;
@@ -11,8 +10,6 @@ namespace MediaDownloader.Download;
 public class Downloader : IDownloader
 {
     private const int DownloadTimeoutSec = 60;
-
-    private const string UnknownItemName = "unknown";
 
     private readonly string _converterPath;
 
@@ -95,41 +92,7 @@ public class Downloader : IDownloader
                 return null;
             }
 
-            var info = JsonSerializer.Deserialize<DownloadItemJson>(outputReader.ToString());
-            if (info is null)
-            {
-                return null;
-            }
-
-            var name = info.Title ?? info.Id ?? UnknownItemName;
-            var result = new DownloadItem
-            {
-                Name = DownloadHelper.SanitizeFileName(name),
-                Entries = [],
-                Url = string.Empty
-            };
-
-            if (info.Entries is { Length: > 0 })
-            {
-                result.Entries.AddRange(info.Entries
-                    .Where(item => !string.IsNullOrEmpty(item.WebpageUrl))
-                    .Select(item => new DownloadItem
-                    {
-                        Name = Path.ChangeExtension(
-                            DownloadHelper.SanitizeFileName(item.Title ?? item.Id ?? UnknownItemName), item.Ext),
-                        Url = item.WebpageUrl!
-                    }));
-            }
-            else
-            {
-                result.Entries.Add(new DownloadItem
-                {
-                    Name = Path.ChangeExtension(DownloadHelper.SanitizeFileName(name), info.Ext),
-                    Url = info.WebpageUrl ?? link ?? string.Empty
-                });
-            }
-
-            return result;
+            return DownloadItemMapper.Map(outputReader.ToString(), link);
         }
         catch (OperationCanceledException)
         {
