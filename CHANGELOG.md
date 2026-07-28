@@ -11,7 +11,7 @@ Versions before 2026 used Semantic Versioning.
 ### Added
 - Unit test project (`MediaDownloader.Tests`) covering the yt-dlp output parser, JSON mapping, file-name sanitization, argument construction, and storage.
 - CI workflow running build + tests on every push and pull request.
-- Release workflow producing the MSI and a portable ZIP as a draft GitHub release on `v*` tags.
+- Release workflow that publishes the MSI, a portable ZIP and auto-generated notes as soon as the `dev` -> `master` release PR is merged.
 - Dependabot configuration for NuGet packages and GitHub Actions.
 - `.editorconfig` and `Directory.Build.props` for consistent code style and shared build settings.
 
@@ -25,8 +25,10 @@ Versions before 2026 used Semantic Versioning.
 - Replaced the WinForms folder browser with the native WPF `OpenFolderDialog` (drops the WinForms dependency).
 - Migrated the installer from WiX 3 (heat.exe harvesting) to SDK-style WiX 5 — the MSI now builds with plain `dotnet build` on any machine.
 - Regexes are now compile-time source-generated instead of being rebuilt for every yt-dlp output line.
+- Updated the bundled yt-dlp (2023.03.04 → 2026.07.04) and FFmpeg (2023-04-19 essentials build → 8.1.2 essentials build, gyan.dev).
 
 ### Fixed
+- The MSI installed to `C:\Program Files\...` and required elevation; per-user redirection to `%LOCALAPPDATA%\Programs` needs the `ALLUSERS`/`MSIINSTALLPERUSER` MSI properties, which were dropped during the WiX 5 migration.
 - Argument injection into yt-dlp: command lines are now built with `ArgumentList` and the URL is passed after `--` and validated as http(s).
 - Tool paths (`yt-dlp`, `ffmpeg`) and `appsettings.json` resolve against the install directory instead of the process working directory.
 - Concurrent downloader invocations no longer race on a shared `ProcessStartInfo`.
