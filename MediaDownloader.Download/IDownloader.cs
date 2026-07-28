@@ -6,7 +6,7 @@ namespace MediaDownloader.Download;
 
 public interface IDownloader
 {
-    public Task<DownloadItem> GetItemsAsync(
+    public Task<DownloadItem?> GetItemsAsync(
         string? link,
         DownloadFormatType downloadFormatType,
         DataReceivedEventHandler onErrorDataReceived,

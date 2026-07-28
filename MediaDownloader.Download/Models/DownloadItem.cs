@@ -2,9 +2,9 @@
 
 public class DownloadItem
 {
-    public string Name { get; set; }
-    public string Url { get; set; }
-    public List<DownloadItem> Entries { get; set; }
+    public required string Name { get; init; }
+    public required string Url { get; init; }
+    public List<DownloadItem> Entries { get; init; } = [];
 
     public override string ToString()
     {

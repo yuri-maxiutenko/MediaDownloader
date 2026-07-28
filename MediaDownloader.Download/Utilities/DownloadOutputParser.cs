@@ -14,7 +14,7 @@ public static class DownloadOutputParser
         var regex = new Regex(Resources.SearchPatternDownloadProgress, RegexOptions.Compiled | RegexOptions.IgnoreCase);
         var matches = regex.Match(record);
 
-        if (matches.Success && matches.Groups.Count >= 3)
+        if (matches is { Success: true, Groups.Count: >= 3 })
         {
             return double.TryParse(matches.Groups[2].ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
                 out percent);
@@ -23,7 +23,7 @@ public static class DownloadOutputParser
         return false;
     }
 
-    public static bool TryParseResultFilePath(string record, out string path)
+    public static bool TryParseResultFilePath(string record, out string? path)
     {
         path = null;
 

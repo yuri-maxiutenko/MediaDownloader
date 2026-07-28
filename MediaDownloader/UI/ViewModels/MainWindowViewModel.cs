@@ -535,14 +535,27 @@ public sealed class MainWindowViewModel : BaseViewModel
         LogConfigurator.SetupLogs(userDataFolderPath);
         Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
 
-        _downloader = new Downloader(Configuration["DownloaderPath"], Configuration["ConverterPath"]);
+        var downloaderPath = Configuration["DownloaderPath"];
+        var converterPath = Configuration["ConverterPath"];
+        if (string.IsNullOrEmpty(downloaderPath) || string.IsNullOrEmpty(converterPath))
+        {
+            throw new InvalidOperationException(
+                $"Configuration file '{AppSettingsFilePath}' must define 'DownloaderPath' and 'ConverterPath'.");
+        }
+
+        _downloader = new Downloader(downloaderPath, converterPath);
         _downloadManager = new DownloadManager(_downloader, Log.Logger);
 
         var dataFolderPath = Path.Combine(userDataFolderPath, Resources.DataFolderName);
         Directory.CreateDirectory(dataFolderPath);
         _storage = new Storage($"Data Source={Path.Combine(dataFolderPath, Resources.DatabaseName)}");
 
-        LastDownloadedItem = new DownloadedItemInfo();
+        LastDownloadedItem = new DownloadedItemInfo
+        {
+            Name = string.Empty,
+            Url = string.Empty,
+            Path = string.Empty
+        };
 
         GeneralInterfaceIsEnabled = true;
 

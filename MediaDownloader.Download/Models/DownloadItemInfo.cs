@@ -3,7 +3,7 @@
 public class DownloadedItemInfo
 {
     public DownloadStatus Status { get; set; }
-    public string Name { get; set; }
-    public string Url { get; set; }
-    public string Path { get; set; }
+    public required string Name { get; init; }
+    public required string Url { get; init; }
+    public required string Path { get; init; }
 }
