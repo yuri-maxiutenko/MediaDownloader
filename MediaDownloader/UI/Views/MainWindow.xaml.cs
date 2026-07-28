@@ -26,7 +26,7 @@ public partial class MainWindow
 
     public MainWindowViewModel ViewModel { get; }
 
-    private void BrowseButton_OnClick(object sender, RoutedEventArgs e)
+    private async void BrowseButton_OnClick(object sender, RoutedEventArgs e)
     {
         var selectFolderDialog = new OpenFolderDialog
         {
@@ -37,7 +37,7 @@ public partial class MainWindow
 
         if (selectFolderDialog.ShowDialog(this) == true)
         {
-            ViewModel.AddOrUpdateDownloadFolder(selectFolderDialog.FolderName, DateTime.Now);
+            await ViewModel.AddOrUpdateDownloadFolderAsync(selectFolderDialog.FolderName, DateTime.Now);
         }
     }
 
@@ -127,8 +127,9 @@ public partial class MainWindow
         }
     }
 
-    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
     {
-        _ = ViewModel.UpdateDownloaderAsync();
+        // Exceptions are handled and logged inside the view model.
+        await ViewModel.UpdateDownloaderAsync();
     }
 }

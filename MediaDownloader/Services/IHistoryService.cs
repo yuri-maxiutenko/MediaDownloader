@@ -8,9 +8,9 @@ public interface IHistoryService
 {
     CollectionViewSource HistoryView { get; }
 
-    void AddOrUpdate(string fileName, string path, string url, int downloadStatus, int downloadFormat);
+    Task AddOrUpdateAsync(string fileName, string path, string url, int downloadStatus, int downloadFormat);
 
-    void Remove(HistoryRecord record);
+    Task RemoveAsync(HistoryRecord record);
 
-    void Clear();
+    Task ClearAsync();
 }

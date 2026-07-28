@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 using MediaDownloader.Data.Models;
 
@@ -8,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediaDownloader.Data;
 
-public class Storage
+public sealed class Storage : IDisposable
 {
     private const int HistoryRecordsMax = 20;
     private const int DownloadFoldersMax = 10;
@@ -18,9 +20,6 @@ public class Storage
     public Storage(DbContextOptions<DataContext> options)
     {
         _context = new DataContext(options);
-        _context.Database.Migrate();
-        _context.DownloadFolders.Load();
-        _context.History.Load();
     }
 
     public ObservableCollection<DownloadFolder> DownloadFolders =>
@@ -28,24 +27,37 @@ public class Storage
 
     public ObservableCollection<HistoryRecord> History => _context.History.Local.ToObservableCollection();
 
-    public void AddOrUpdateDownloadFolder(string path, DateTime lastSelectionDate)
+    public void Dispose()
     {
-        var entry = _context.DownloadFolders.FirstOrDefault(item => item.Path == path);
+        _context.Dispose();
+    }
+
+    /// <summary>Applies pending migrations and loads both tables into the local views.</summary>
+    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    {
+        await _context.Database.MigrateAsync(cancellationToken);
+        await _context.DownloadFolders.LoadAsync(cancellationToken);
+        await _context.History.LoadAsync(cancellationToken);
+    }
+
+    public async Task AddOrUpdateDownloadFolderAsync(string path, DateTime lastSelectionDate)
+    {
+        var entry = _context.DownloadFolders.Local.FirstOrDefault(item => item.Path == path);
         if (entry != null)
         {
-            UpdateDownloadFolder(entry.DownloadFolderId, path, lastSelectionDate);
+            await UpdateDownloadFolderAsync(entry.DownloadFolderId, path, lastSelectionDate);
         }
         else
         {
-            AddDownloadFolder(path, lastSelectionDate);
+            await AddDownloadFolderAsync(path, lastSelectionDate);
         }
     }
 
-    public void AddDownloadFolder(string path, DateTime lastSelectionDate)
+    public async Task AddDownloadFolderAsync(string path, DateTime lastSelectionDate)
     {
-        if (_context.DownloadFolders.Count() >= DownloadFoldersMax)
+        if (_context.DownloadFolders.Local.Count >= DownloadFoldersMax)
         {
-            var oldestEntry = _context.DownloadFolders.OrderBy(item => item.LastSelectionDate).FirstOrDefault();
+            var oldestEntry = _context.DownloadFolders.Local.OrderBy(item => item.LastSelectionDate).FirstOrDefault();
             if (oldestEntry != null)
             {
                 _context.DownloadFolders.Remove(oldestEntry);
@@ -57,12 +69,12 @@ public class Storage
             Path = path,
             LastSelectionDate = lastSelectionDate
         });
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void UpdateDownloadFolder(int id, string path, DateTime lastSelectionDate)
+    public async Task UpdateDownloadFolderAsync(int id, string path, DateTime lastSelectionDate)
     {
-        var entry = _context.DownloadFolders.FirstOrDefault(item => item.DownloadFolderId == id);
+        var entry = _context.DownloadFolders.Local.FirstOrDefault(item => item.DownloadFolderId == id);
         if (entry == null)
         {
             return;
@@ -70,19 +82,19 @@ public class Storage
 
         entry.LastSelectionDate = lastSelectionDate;
         entry.Path = path;
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void AddHistoryRecord(
+    public async Task AddHistoryRecordAsync(
         string fileName,
         string path,
         string url,
         int downloadStatus,
         int downloadFormat)
     {
-        if (_context.History.Count() >= HistoryRecordsMax)
+        if (_context.History.Local.Count >= HistoryRecordsMax)
         {
-            var oldestEntry = _context.History.OrderBy(item => item.DownloadDate).FirstOrDefault();
+            var oldestEntry = _context.History.Local.OrderBy(item => item.DownloadDate).FirstOrDefault();
             if (oldestEntry != null)
             {
                 _context.History.Remove(oldestEntry);
@@ -99,20 +111,21 @@ public class Storage
             DownloadDate = DateTime.Now
         });
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void AddOrUpdateHistoryRecord(
+    public async Task AddOrUpdateHistoryRecordAsync(
         string fileName,
         string path,
         string url,
         int downloadStatus,
         int downloadFormat)
     {
-        var entry = _context.History.FirstOrDefault(item => item.Url.ToLower() == url.ToLower());
+        var entry = _context.History.Local.FirstOrDefault(
+            item => string.Equals(item.Url, url, StringComparison.OrdinalIgnoreCase));
         if (entry == null)
         {
-            AddHistoryRecord(fileName, path, url, downloadStatus, downloadFormat);
+            await AddHistoryRecordAsync(fileName, path, url, downloadStatus, downloadFormat);
         }
         else
         {
@@ -122,12 +135,11 @@ public class Storage
             entry.DownloadStatus = downloadStatus;
             entry.DownloadFormat = downloadFormat;
             entry.DownloadDate = DateTime.Now;
+            await _context.SaveChangesAsync();
         }
-
-        _context.SaveChanges();
     }
 
-    public void RemoveHistoryRecord(HistoryRecord? record)
+    public async Task RemoveHistoryRecordAsync(HistoryRecord? record)
     {
         if (record is null)
         {
@@ -135,16 +147,12 @@ public class Storage
         }
 
         _context.History.Remove(record);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void ClearHistory()
+    public async Task ClearHistoryAsync()
     {
-        foreach (var item in _context.History)
-        {
-            _context.History.Remove(item);
-        }
-
-        _context.SaveChanges();
+        _context.History.RemoveRange(_context.History.Local.ToList());
+        await _context.SaveChangesAsync();
     }
 }

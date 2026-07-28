@@ -197,9 +197,9 @@ public sealed partial class MainWindowViewModel : ObservableObject
         }
     }
 
-    public void AddOrUpdateDownloadFolder(string path, DateTime lastSelectionDate)
+    public async Task AddOrUpdateDownloadFolderAsync(string path, DateTime lastSelectionDate)
     {
-        _folderService.AddOrUpdate(path, lastSelectionDate);
+        await _folderService.AddOrUpdateAsync(path, lastSelectionDate);
     }
 
     partial void OnMediaUrlChanged(string? value)
@@ -285,18 +285,18 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void RemoveFromHistory()
+    private async Task RemoveFromHistoryAsync()
     {
         if (DownloadHistorySelectedItem is { } record)
         {
-            _historyService.Remove(record);
+            await _historyService.RemoveAsync(record);
         }
     }
 
     [RelayCommand]
-    private void ClearHistory()
+    private async Task ClearHistoryAsync()
     {
-        _historyService.Clear();
+        await _historyService.ClearAsync();
     }
 
     private async Task DownloadAsync()
@@ -314,7 +314,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
             if (DownloadFolders.View.CurrentItem is DownloadFolder currentFolder)
             {
-                _folderService.Touch(currentFolder, DateTime.Now);
+                await _folderService.TouchAsync(currentFolder, DateTime.Now);
             }
 
             DownloadButtonIcon = IconHelper.GetDownloadIcon(true);
@@ -332,7 +332,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             var downloadedItemsInfo = await _downloadManager.DownloadItemAsync(MediaUrl, downloadFolder.Path,
                 downloadOption.FormatType, progress, _cancellationTokenSource.Token);
 
-            ProcessDownloadResult(downloadedItemsInfo, downloadOption);
+            await ProcessDownloadResultAsync(downloadedItemsInfo, downloadOption);
         }
         catch (OperationCanceledException)
         {
@@ -369,7 +369,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
         DownloadPercentText = $"{progressValue}%";
     }
 
-    private void ProcessDownloadResult(ICollection<DownloadedItemInfo> downloadedItemsInfo, DownloadOption option)
+    private async Task ProcessDownloadResultAsync(ICollection<DownloadedItemInfo> downloadedItemsInfo,
+        DownloadOption option)
     {
         AppendLog(Environment.NewLine);
         AppendLog(Environment.NewLine);
@@ -397,7 +398,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
                     break;
             }
 
-            _historyService.AddOrUpdate(info.Name, info.Path, info.Url, (int)info.Status, (int)option.FormatType);
+            await _historyService.AddOrUpdateAsync(info.Name, info.Path, info.Url, (int)info.Status,
+                (int)option.FormatType);
         }
 
         CompleteDownloadUi(lastDownloadStatus);

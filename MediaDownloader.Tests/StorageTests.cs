@@ -10,8 +10,13 @@ public sealed class StorageTests : IDisposable
     private readonly string _dbPath =
         Path.Combine(Path.GetTempPath(), $"media-downloader-test-{Guid.NewGuid():N}.db");
 
-    private Storage CreateStorage() =>
-        new(new DbContextOptionsBuilder<DataContext>().UseSqlite($"Data Source={_dbPath}").Options);
+    private async Task<Storage> CreateStorageAsync()
+    {
+        var storage = new Storage(
+            new DbContextOptionsBuilder<DataContext>().UseSqlite($"Data Source={_dbPath}").Options);
+        await storage.InitializeAsync();
+        return storage;
+    }
 
     public void Dispose()
     {
@@ -26,23 +31,23 @@ public sealed class StorageTests : IDisposable
     }
 
     [Fact]
-    public void NewDatabase_MigratesAndStartsEmpty()
+    public async Task NewDatabase_MigratesAndStartsEmpty()
     {
-        var storage = CreateStorage();
+        using var storage = await CreateStorageAsync();
 
         Assert.Empty(storage.History);
         Assert.Empty(storage.DownloadFolders);
     }
 
     [Fact]
-    public void AddDownloadFolder_EvictsOldest_WhenAtCapacity()
+    public async Task AddDownloadFolder_EvictsOldest_WhenAtCapacity()
     {
-        var storage = CreateStorage();
+        using var storage = await CreateStorageAsync();
         var baseDate = new DateTime(2026, 1, 1);
 
         for (var i = 0; i < 11; i++)
         {
-            storage.AddDownloadFolder($@"C:\folders\{i}", baseDate.AddDays(i));
+            await storage.AddDownloadFolderAsync($@"C:\folders\{i}", baseDate.AddDays(i));
         }
 
         Assert.Equal(10, storage.DownloadFolders.Count);
@@ -51,26 +56,26 @@ public sealed class StorageTests : IDisposable
     }
 
     [Fact]
-    public void AddOrUpdateDownloadFolder_UpdatesExistingEntry()
+    public async Task AddOrUpdateDownloadFolder_UpdatesExistingEntry()
     {
-        var storage = CreateStorage();
+        using var storage = await CreateStorageAsync();
         var firstDate = new DateTime(2026, 1, 1);
         var secondDate = new DateTime(2026, 2, 2);
 
-        storage.AddOrUpdateDownloadFolder(@"C:\folders\same", firstDate);
-        storage.AddOrUpdateDownloadFolder(@"C:\folders\same", secondDate);
+        await storage.AddOrUpdateDownloadFolderAsync(@"C:\folders\same", firstDate);
+        await storage.AddOrUpdateDownloadFolderAsync(@"C:\folders\same", secondDate);
 
         var folder = Assert.Single(storage.DownloadFolders);
         Assert.Equal(secondDate, folder.LastSelectionDate);
     }
 
     [Fact]
-    public void AddOrUpdateHistoryRecord_MatchesUrlCaseInsensitively()
+    public async Task AddOrUpdateHistoryRecord_MatchesUrlCaseInsensitively()
     {
-        var storage = CreateStorage();
+        using var storage = await CreateStorageAsync();
 
-        storage.AddOrUpdateHistoryRecord("a.mp4", @"C:\out\a.mp4", "https://EXAMPLE.com/Video", 0, 0);
-        storage.AddOrUpdateHistoryRecord("b.mp4", @"C:\out\b.mp4", "https://example.com/video", 1, 2);
+        await storage.AddOrUpdateHistoryRecordAsync("a.mp4", @"C:\out\a.mp4", "https://EXAMPLE.com/Video", 0, 0);
+        await storage.AddOrUpdateHistoryRecordAsync("b.mp4", @"C:\out\b.mp4", "https://example.com/video", 1, 2);
 
         var record = Assert.Single(storage.History);
         Assert.Equal("b.mp4", record.FileName);
@@ -79,49 +84,53 @@ public sealed class StorageTests : IDisposable
     }
 
     [Fact]
-    public void AddHistoryRecord_CapsHistoryAtTwenty()
+    public async Task AddHistoryRecord_CapsHistoryAtTwenty()
     {
-        var storage = CreateStorage();
+        using var storage = await CreateStorageAsync();
 
         for (var i = 0; i < 25; i++)
         {
-            storage.AddHistoryRecord($"file{i}.mp4", $@"C:\out\file{i}.mp4", $"https://example.com/{i}", 0, 0);
+            await storage.AddHistoryRecordAsync($"file{i}.mp4", $@"C:\out\file{i}.mp4", $"https://example.com/{i}",
+                0, 0);
         }
 
         Assert.Equal(20, storage.History.Count);
     }
 
     [Fact]
-    public void RemoveHistoryRecord_RemovesEntry()
+    public async Task RemoveHistoryRecord_RemovesEntry()
     {
-        var storage = CreateStorage();
-        storage.AddHistoryRecord("file.mp4", @"C:\out\file.mp4", "https://example.com/1", 0, 0);
+        using var storage = await CreateStorageAsync();
+        await storage.AddHistoryRecordAsync("file.mp4", @"C:\out\file.mp4", "https://example.com/1", 0, 0);
 
-        storage.RemoveHistoryRecord(storage.History.Single());
+        await storage.RemoveHistoryRecordAsync(storage.History.Single());
 
         Assert.Empty(storage.History);
     }
 
     [Fact]
-    public void ClearHistory_RemovesAllEntries()
+    public async Task ClearHistory_RemovesAllEntries()
     {
-        var storage = CreateStorage();
-        storage.AddHistoryRecord("a.mp4", @"C:\out\a.mp4", "https://example.com/1", 0, 0);
-        storage.AddHistoryRecord("b.mp4", @"C:\out\b.mp4", "https://example.com/2", 0, 0);
+        using var storage = await CreateStorageAsync();
+        await storage.AddHistoryRecordAsync("a.mp4", @"C:\out\a.mp4", "https://example.com/1", 0, 0);
+        await storage.AddHistoryRecordAsync("b.mp4", @"C:\out\b.mp4", "https://example.com/2", 0, 0);
 
-        storage.ClearHistory();
+        await storage.ClearHistoryAsync();
 
         Assert.Empty(storage.History);
     }
 
     [Fact]
-    public void ExistingData_SurvivesReopen()
+    public async Task ExistingData_SurvivesReopen()
     {
-        var storage = CreateStorage();
-        storage.AddHistoryRecord("file.mp4", @"C:\out\file.mp4", "https://example.com/1", 0, 0);
+        using (var storage = await CreateStorageAsync())
+        {
+            await storage.AddHistoryRecordAsync("file.mp4", @"C:\out\file.mp4", "https://example.com/1", 0, 0);
+        }
+
         SqliteConnection.ClearAllPools();
 
-        var reopened = CreateStorage();
+        using var reopened = await CreateStorageAsync();
 
         var record = Assert.Single(reopened.History);
         Assert.Equal("file.mp4", record.FileName);

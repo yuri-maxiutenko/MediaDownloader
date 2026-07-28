@@ -26,21 +26,22 @@ public sealed class HistoryService : IHistoryService
 
     public CollectionViewSource HistoryView { get; }
 
-    public void AddOrUpdate(string fileName, string path, string url, int downloadStatus, int downloadFormat)
+    public async Task AddOrUpdateAsync(string fileName, string path, string url, int downloadStatus,
+        int downloadFormat)
     {
-        _storage.AddOrUpdateHistoryRecord(fileName, path, url, downloadStatus, downloadFormat);
+        await _storage.AddOrUpdateHistoryRecordAsync(fileName, path, url, downloadStatus, downloadFormat);
         HistoryView.View.Refresh();
     }
 
-    public void Remove(HistoryRecord record)
+    public async Task RemoveAsync(HistoryRecord record)
     {
-        _storage.RemoveHistoryRecord(record);
+        await _storage.RemoveHistoryRecordAsync(record);
         HistoryView.View.Refresh();
     }
 
-    public void Clear()
+    public async Task ClearAsync()
     {
-        _storage.ClearHistory();
+        await _storage.ClearHistoryAsync();
         HistoryView.View.Refresh();
     }
 }

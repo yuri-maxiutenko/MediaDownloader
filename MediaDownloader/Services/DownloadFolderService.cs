@@ -14,11 +14,6 @@ public sealed class DownloadFolderService : IDownloadFolderService
     {
         _storage = storage;
 
-        if (!storage.DownloadFolders.Any())
-        {
-            storage.AddDownloadFolder(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos), DateTime.Now);
-        }
-
         FoldersView = new CollectionViewSource
         {
             Source = storage.DownloadFolders
@@ -30,15 +25,15 @@ public sealed class DownloadFolderService : IDownloadFolderService
 
     public CollectionViewSource FoldersView { get; }
 
-    public void AddOrUpdate(string path, DateTime lastSelectionDate)
+    public async Task AddOrUpdateAsync(string path, DateTime lastSelectionDate)
     {
-        _storage.AddOrUpdateDownloadFolder(path, lastSelectionDate);
+        await _storage.AddOrUpdateDownloadFolderAsync(path, lastSelectionDate);
         RefreshAndMoveCurrentToFirst();
     }
 
-    public void Touch(DownloadFolder folder, DateTime lastSelectionDate)
+    public async Task TouchAsync(DownloadFolder folder, DateTime lastSelectionDate)
     {
-        _storage.UpdateDownloadFolder(folder.DownloadFolderId, folder.Path, lastSelectionDate);
+        await _storage.UpdateDownloadFolderAsync(folder.DownloadFolderId, folder.Path, lastSelectionDate);
         RefreshAndMoveCurrentToFirst();
     }
 

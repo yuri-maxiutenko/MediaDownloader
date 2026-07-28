@@ -8,7 +8,7 @@ public interface IDownloadFolderService
 {
     CollectionViewSource FoldersView { get; }
 
-    void AddOrUpdate(string path, DateTime lastSelectionDate);
+    Task AddOrUpdateAsync(string path, DateTime lastSelectionDate);
 
-    void Touch(DownloadFolder folder, DateTime lastSelectionDate);
+    Task TouchAsync(DownloadFolder folder, DateTime lastSelectionDate);
 }
