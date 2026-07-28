@@ -83,12 +83,6 @@
     </Page>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\version.json">
-      <Link>version.json</Link>
-    </Content>
-  </ItemGroup>
-
   <!-- Bundle yt-dlp and ffmpeg next to the executable so appsettings.json's
        relative tool paths work in dev runs, publish output, and the installer. -->
   <ItemGroup>

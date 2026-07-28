@@ -7,9 +7,11 @@
        installations produced by the old WiX 3 installer. -->
   <?define UpgradeCode = "006c680b-7607-4170-9f90-53d7a69866ec"?>
 
+  <!-- MSI product versions cap the major at 255, so the MSI uses a YY.M.D
+       version derived from the public CalVer YYYY.MM.DD (see the wixproj). -->
   <Package Name="$(var.ProductName)"
            Language="1033"
-           Version="!(bind.FileVersion.MediaDownloader.exe)"
+           Version="$(var.MsiVersion)"
            Manufacturer="$(var.Manufacturer)"
            UpgradeCode="$(var.UpgradeCode)"
            Scope="perUser"

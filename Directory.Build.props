@@ -11,10 +11,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <NeutralLanguage>en</NeutralLanguage>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <!-- CalVer (YYYY.MM.DD, UTC). CI passes an explicit -p:Version (with a .N
+         suffix for repeated same-day releases); local builds default to today. -->
+    <Version Condition="'$(Version)' == ''">$([System.DateTime]::UtcNow.ToString('yyyy.MM.dd'))</Version>
   </PropertyGroup>
-
-  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.10.91" PrivateAssets="all" />
-  </ItemGroup>
 
 </Project>

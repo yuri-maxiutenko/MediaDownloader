@@ -1,8 +1,12 @@
 name: Release
 
+# Merging the dev -> master release PR publishes a release automatically:
+# the version is the UTC release date (CalVer YYYY.MM.DD, with a .N suffix
+# for repeated same-day releases), and the tag, GitHub release and release
+# notes are all created by this workflow.
 on:
   push:
-    tags: ['v*']
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -18,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # Nerdbank.GitVersioning needs the full history to compute the version height.
+          # Full history so existing tags are visible to the version check.
           fetch-depth: 0
 
       - name: Set up .NET SDK
@@ -26,35 +30,43 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Compute CalVer version
+        id: calver
+        shell: pwsh
+        run: |
+          $now = (Get-Date).ToUniversalTime()
+          $base = $now.ToString('yyyy.MM.dd')
+          $version = $base
+          $n = 1
+          while ((git tag --list "v$version") -ne $null) {
+            $n++
+            $version = "$base.$n"
+          }
+          # MSI product versions cap the major at 255, so the MSI gets YY.M.D.
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "msiVersion=$($now.ToString('yy.M.d'))" >> $env:GITHUB_OUTPUT
+          "Releasing as v$version"
+
       - name: Run tests
         run: dotnet test MediaDownloader.Tests/MediaDownloader.Tests.csproj -c Release -p:Platform=x64
 
       - name: Build installer
-        run: dotnet build Installers/MediaDownloaderSetup/MediaDownloaderSetup.wixproj -c Release -p:Platform=x64
-
-      - name: Resolve version
-        id: nbgv
-        shell: pwsh
-        run: |
-          dotnet tool restore
-          $version = dotnet nbgv get-version -v SemVer2
-          "version=$version" >> $env:GITHUB_OUTPUT
+        run: dotnet build Installers/MediaDownloaderSetup/MediaDownloaderSetup.wixproj -c Release -p:Platform=x64 -p:Version=${{ steps.calver.outputs.version }} -p:MsiVersion=${{ steps.calver.outputs.msiVersion }}
 
       - name: Archive portable build
         shell: pwsh
-        run: Compress-Archive -Path "Installers/MediaDownloaderSetup/publish/Release/*" -DestinationPath "out/MediaDownloader-${{ steps.nbgv.outputs.version }}-win-x64.zip"
+        run: Compress-Archive -Path "Installers/MediaDownloaderSetup/publish/Release/*" -DestinationPath "out/MediaDownloader-${{ steps.calver.outputs.version }}-win-x64.zip"
 
       - name: Create GitHub release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $version = "${{ steps.nbgv.outputs.version }}"
-          $tag = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}" } else { "v$version" }
+          $version = "${{ steps.calver.outputs.version }}"
           Rename-Item "out/MediaDownloaderSetup.msi" "MediaDownloaderSetup-$version.msi"
-          gh release create $tag `
+          gh release create "v$version" `
             "out/MediaDownloaderSetup-$version.msi" `
             "out/MediaDownloader-$version-win-x64.zip" `
+            --target $env:GITHUB_SHA `
             --title "Media Downloader $version" `
-            --generate-notes `
-            --draft
+            --generate-notes

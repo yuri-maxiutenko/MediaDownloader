@@ -11,6 +11,15 @@
     <SuppressSpecificWarnings>1147</SuppressSpecificWarnings>
     <AppProjectPath>$(MSBuildThisFileDirectory)..\..\MediaDownloader\MediaDownloader.csproj</AppProjectPath>
     <AppPublishDir>$(MSBuildThisFileDirectory)publish\$(Configuration)\</AppPublishDir>
+    <!-- Global properties do not flow through Exec; forward the CalVer version
+         passed by the release workflow into the inner publish explicitly. -->
+    <AppPublishVersionArg Condition="'$(Version)' != ''">-p:Version=$(Version)</AppPublishVersionArg>
+    <!-- MSI ProductVersion majors must be < 256, so the full CalVer year cannot
+         be used there. The MSI gets a derived YY.M.D version (still increasing,
+         still above the legacy 2.x installs); same-day rebuilds are covered by
+         AllowSameVersionUpgrades in Product.wxs. -->
+    <MsiVersion Condition="'$(MsiVersion)' == ''">$([System.DateTime]::UtcNow.ToString('yy.M.d'))</MsiVersion>
+    <DefineConstants>$(DefineConstants);MsiVersion=$(MsiVersion)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +29,7 @@
   <!-- Publish the self-contained application (including the bundled yt-dlp/ffmpeg,
        copied to output by the app project) before harvesting it into the MSI. -->
   <Target Name="PublishApplication" BeforeTargets="BeforeBuild">
-    <Exec Command="dotnet publish &quot;$(AppProjectPath)&quot; -c $(Configuration) -r win-x64 --self-contained true -p:Platform=x64 -p:PublishReadyToRun=true -o &quot;$(AppPublishDir.TrimEnd('\'))&quot;" />
+    <Exec Command="dotnet publish &quot;$(AppProjectPath)&quot; -c $(Configuration) -r win-x64 --self-contained true -p:Platform=x64 -p:PublishReadyToRun=true $(AppPublishVersionArg) -o &quot;$(AppPublishDir.TrimEnd('\'))&quot;" />
   </Target>
 
 </Project>
