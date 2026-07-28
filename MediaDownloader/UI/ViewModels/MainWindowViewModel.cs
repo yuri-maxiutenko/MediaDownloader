@@ -14,7 +14,6 @@ using MediaDownloader.Models;
 using MediaDownloader.Properties;
 using MediaDownloader.Utilities;
 
-using Microsoft.Extensions.Configuration;
 using CommunityToolkit.Mvvm.Input;
 
 using Brush = System.Windows.Media.Brush;
@@ -27,11 +26,12 @@ namespace MediaDownloader.UI.ViewModels;
 
 public sealed class MainWindowViewModel : BaseViewModel
 {
-    private static readonly string AppSettingsFilePath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
     private const double DownloadProgressMax = 100.0;
 
     private readonly StringBuilder _downloadLog = new();
     private readonly SemaphoreSlim _lock = new(1, 1);
+    private readonly IDownloadManager _downloadManager;
+    private readonly Storage _storage;
 
     private CancellationTokenSource? _cancellationTokenSource;
     private ICommand? _clearButtonClick;
@@ -40,9 +40,7 @@ public sealed class MainWindowViewModel : BaseViewModel
     private bool _downloadButtonIsEnabled;
     private string? _downloadButtonText;
     private IAsyncRelayCommand? _downloadCommand;
-    private IDownloader? _downloader;
     private bool _downloadHistoryIsEnabled;
-    private IDownloadManager? _downloadManager;
     private string? _downloadMessage;
     private string? _downloadPercentText;
     private Brush? _downloadProgressColor;
@@ -61,19 +59,15 @@ public sealed class MainWindowViewModel : BaseViewModel
     private ICommand? _showDownloadedItemsButtonClick;
     private bool _showDownloadedItemsButtonIsEnabled;
     private ICommand? _stopDownloadCommand;
-    private Storage? _storage;
     private string? _userVideosFolder;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel(IDownloadManager downloadManager, Storage storage)
     {
-        var userDataFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            Resources.ManufacturerFolderName, Resources.AppFolderName);
-        Directory.CreateDirectory(userDataFolderPath);
+        _downloadManager = downloadManager;
+        _storage = storage;
 
-        Initialize(userDataFolderPath);
+        Initialize();
     }
-
-    public IConfiguration? Configuration { get; set; }
 
     public string? DownloadButtonIcon
     {
@@ -530,26 +524,8 @@ public sealed class MainWindowViewModel : BaseViewModel
         DownloadFolders.View.MoveCurrentTo(firstItem);
     }
 
-    private void Initialize(string userDataFolderPath)
+    private void Initialize()
     {
-        LogConfigurator.SetupLogs(userDataFolderPath);
-        Configuration = new ConfigurationBuilder().AddJsonFile(AppSettingsFilePath, true, true).Build();
-
-        var downloaderPath = Configuration["DownloaderPath"];
-        var converterPath = Configuration["ConverterPath"];
-        if (string.IsNullOrEmpty(downloaderPath) || string.IsNullOrEmpty(converterPath))
-        {
-            throw new InvalidOperationException(
-                $"Configuration file '{AppSettingsFilePath}' must define 'DownloaderPath' and 'ConverterPath'.");
-        }
-
-        _downloader = new Downloader(downloaderPath, converterPath);
-        _downloadManager = new DownloadManager(_downloader, Log.Logger);
-
-        var dataFolderPath = Path.Combine(userDataFolderPath, Resources.DataFolderName);
-        Directory.CreateDirectory(dataFolderPath);
-        _storage = new Storage($"Data Source={Path.Combine(dataFolderPath, Resources.DatabaseName)}");
-
         LastDownloadedItem = new DownloadedItemInfo
         {
             Name = string.Empty,

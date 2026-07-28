@@ -17,9 +17,9 @@ namespace MediaDownloader.UI.Views;
 /// </summary>
 public partial class MainWindow
 {
-    public MainWindow()
+    public MainWindow(MainWindowViewModel viewModel)
     {
-        ViewModel = new MainWindowViewModel();
+        ViewModel = viewModel;
 
         InitializeComponent();
     }

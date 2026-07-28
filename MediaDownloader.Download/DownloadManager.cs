@@ -1,29 +1,26 @@
-﻿using System.Diagnostics;
-using System.IO;
+using System.Diagnostics;
 
-using MediaDownloader.Download;
 using MediaDownloader.Download.Models;
+using MediaDownloader.Download.Properties;
 using MediaDownloader.Download.Utilities;
-using MediaDownloader.Models;
-using MediaDownloader.Properties;
 
 using Serilog;
 
-namespace MediaDownloader;
+namespace MediaDownloader.Download;
 
 public class DownloadManager : IDownloadManager
 {
     private const int DownloadRetriesNumber = 2;
     private const double ProgressValueMax = 100.0;
 
-    private readonly IDownloader? _downloader;
+    private readonly IDownloader _downloader;
     private readonly ILogger _logger;
     private double _downloadProgressSectionMin;
     private double _downloadProgressSectionStep;
 
     private IProgress<ProgressReportModel>? _progress;
 
-    public DownloadManager(IDownloader? downloader, ILogger logger)
+    public DownloadManager(IDownloader downloader, ILogger logger)
     {
         _downloader = downloader;
         _logger = logger;
@@ -137,7 +134,7 @@ public class DownloadManager : IDownloadManager
             .ConfigureAwait(false);
     }
 
-    private async Task<DownloadItem> GetItemAsync(
+    private async Task<DownloadItem?> GetItemAsync(
         string? downloadUrl,
         DownloadFormatType formatType,
         CancellationToken cancellationToken)

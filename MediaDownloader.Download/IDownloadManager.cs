@@ -1,7 +1,6 @@
-﻿using MediaDownloader.Download.Models;
-using MediaDownloader.Models;
+using MediaDownloader.Download.Models;
 
-namespace MediaDownloader;
+namespace MediaDownloader.Download;
 
 public interface IDownloadManager
 {

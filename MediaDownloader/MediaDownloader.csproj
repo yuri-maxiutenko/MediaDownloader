@@ -25,9 +25,7 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Humanizer.Core" Version="3.0.10" />
     <PackageReference Include="Humanizer.Core.ru" Version="3.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.10" />
     <PackageReference Include="Serilog" Version="4.4.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0"/>
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0"/>
@@ -89,6 +87,13 @@
     <Content Include="..\version.json">
       <Link>version.json</Link>
     </Content>
+  </ItemGroup>
+
+  <!-- Bundle yt-dlp and ffmpeg next to the executable so appsettings.json's
+       relative tool paths work in dev runs, publish output, and the installer. -->
+  <ItemGroup>
+    <None Include="..\third-party\**" Link="%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

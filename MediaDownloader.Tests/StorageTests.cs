@@ -1,6 +1,7 @@
 using MediaDownloader.Data;
 
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaDownloader.Tests;
 
@@ -9,7 +10,8 @@ public sealed class StorageTests : IDisposable
     private readonly string _dbPath =
         Path.Combine(Path.GetTempPath(), $"media-downloader-test-{Guid.NewGuid():N}.db");
 
-    private Storage CreateStorage() => new($"Data Source={_dbPath}");
+    private Storage CreateStorage() =>
+        new(new DbContextOptionsBuilder<DataContext>().UseSqlite($"Data Source={_dbPath}").Options);
 
     public void Dispose()
     {

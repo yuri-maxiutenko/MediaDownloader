@@ -177,6 +177,25 @@ namespace MediaDownloader.Download.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloading the file: {0}
+        ///Url: {1}.
+        /// </summary>
+        internal static string LogMessageDownloadingFile {
+            get {
+                return ResourceManager.GetString("LogMessageDownloadingFile", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Downloading:.
+        /// </summary>
+        internal static string MessageDownloading {
+            get {
+                return ResourceManager.GetString("MessageDownloading", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to \[download\]\s* (.*?)\s*has already been downloaded and merged.
         /// </summary>
         internal static string SearchPatternAlreadyDownloadedFilePath {

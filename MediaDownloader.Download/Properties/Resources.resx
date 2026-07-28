@@ -66,4 +66,11 @@
     <data name="SearchPatternAlreadyDownloadedFilePath" xml:space="preserve">
     <value>\[download\]\s* (.*?)\s*has already been downloaded and merged</value>
   </data>
+    <data name="LogMessageDownloadingFile" xml:space="preserve">
+    <value>Downloading the file: {0}
+Url: {1}</value>
+  </data>
+    <data name="MessageDownloading" xml:space="preserve">
+    <value>Downloading:</value>
+  </data>
 </root>
