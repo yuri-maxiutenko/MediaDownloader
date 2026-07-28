@@ -60,6 +60,11 @@ public partial class App
             return new Storage(optionsBuilder.Options);
         });
 
+        builder.Services.AddSingleton<IHistoryService, HistoryService>();
+        builder.Services.AddSingleton<IDownloadFolderService, DownloadFolderService>();
+        builder.Services.AddSingleton<IShellService, ShellService>();
+        builder.Services.AddSingleton<IClipboardService, ClipboardService>();
+
         builder.Services.AddSingleton<MainWindowViewModel>();
         builder.Services.AddSingleton<MainWindow>();
 

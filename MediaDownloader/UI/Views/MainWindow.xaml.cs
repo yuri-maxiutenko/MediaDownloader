@@ -41,11 +41,6 @@ public partial class MainWindow
         }
     }
 
-    private void MediaUrl_OnTextChanged(object sender, TextChangedEventArgs e)
-    {
-        ViewModel.ValidateDownload();
-    }
-
     private void MediaUrl_OnPasting(object sender, DataObjectPastingEventArgs e)
     {
         if (e.DataObject.GetDataPresent(typeof(string)))
