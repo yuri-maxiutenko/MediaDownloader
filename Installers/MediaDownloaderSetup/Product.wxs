@@ -30,7 +30,7 @@
     <Property Id="MSIINSTALLPERUSER" Secure="yes" Value="1" />
 
     <Property Id="ARPPRODUCTICON" Value="APPICON" />
-    <Icon Id="APPICON" SourceFile="..\Common\Images\icon.ico" />
+    <Icon Id="APPICON" SourceFile="..\..\MediaDownloader\Images\icon.ico" />
 
     <Feature Id="ProductFeature" Title="[ProductName]" Level="1">
       <ComponentGroupRef Id="MediaDownloaderComponents" />
