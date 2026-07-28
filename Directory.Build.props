@@ -1,0 +1,19 @@
+<Project>
+
+  <!-- Shared properties for the .NET projects; the WiX installer project must not inherit these. -->
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <Authors>Yuri Maxiutenko</Authors>
+    <Product>Media Downloader</Product>
+    <Copyright>Yuri Maxiutenko, 2026</Copyright>
+    <Platforms>x64</Platforms>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

@@ -8,6 +8,13 @@
         "dotnet-ef"
       ],
       "rollForward": false
+    },
+    "nbgv": {
+      "version": "3.10.91",
+      "commands": [
+        "nbgv"
+      ],
+      "rollForward": false
     }
   }
 }

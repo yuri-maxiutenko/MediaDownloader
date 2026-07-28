@@ -1,28 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Authors>Yuri Maxiutenko</Authors>
-    <Product>Media Downloader</Product>
-    <Copyright>Yuri Maxiutenko, 2023</Copyright>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TargetFramework>net10.0</TargetFramework>
-    <Platforms>x64</Platforms>
-    <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release</Configurations>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

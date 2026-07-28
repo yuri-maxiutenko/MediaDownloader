@@ -1,22 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Authors>Yuri Maxiutenko</Authors>
-    <Product>Media Downloader</Product>
-    <Copyright>Yuri Maxiutenko, 2023</Copyright>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Images\icon.ico</ApplicationIcon>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Platforms>x64</Platforms>
-    <LangVersion>latest</LangVersion>
-    <Configurations>Debug;Release</Configurations>
     <IsPackable>false</IsPackable>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,10 +29,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2"/>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0"/>
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0"/>
