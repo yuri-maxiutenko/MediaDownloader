@@ -42,6 +42,7 @@ dotnet dotnet-ef migrations add <Name> --project MediaDownloader.Data --startup-
 - x64 only — always pass `-p:Platform=x64`; solution has no AnyCPU configs.
 - **Versioning is CalVer `YYYY.MM.DD`** (UTC): `Directory.Build.props` defaults `Version` to today's date; the release workflow passes an explicit `-p:Version` (with a `.N` suffix for repeated same-day releases). There is no NBGV/version.json. The MSI's ProductVersion is a derived `YY.M.D` (`-p:MsiVersion`) because MSI caps the version major at 255.
 - **Branch flow**: `dev` is the default branch — create feature branches from `dev` and PR back into `dev`. Releasing = open a PR `dev` → `master`; merging it triggers `.github/workflows/release.yml`, which tags `vYYYY.MM.DD` and publishes the GitHub release (MSI + portable ZIP, auto-generated notes) with no manual steps. Never push to `master` directly.
+- **Attribution**: never add a `Co-Authored-By: Claude` trailer to commits. PR descriptions and PR comments written by Claude may carry a marker (e.g. a "🤖 Generated with Claude Code" footer) so they can be told apart from ones written by a human.
 - `CHANGELOG.md` follows Keep a Changelog; add user-visible changes under `[Unreleased]`.
 - Shared build settings live in `Directory.Build.props` (conditioned to `.csproj` so the wixproj is unaffected).
 - Process launches use `ProcessStartInfo.ArgumentList` only — never concatenate argument strings; user URLs are validated (http/https) and passed after `--`.
