@@ -18,6 +18,7 @@ Versions before 2026 used Semantic Versioning.
 
 ### Changed
 - Upgraded to **.NET 10** with nullable reference types enabled solution-wide (zero-warning build).
+- Upgraded the test stack to xUnit.net v3 4.x; `dotnet test` now runs on Microsoft Testing Platform (opted in via `global.json`).
 - Migrated JSON parsing from Newtonsoft.Json to System.Text.Json.
 - Replaced deprecated `Microsoft.Toolkit.Mvvm` with `CommunityToolkit.Mvvm` 8 using source-generated observable properties and commands.
 - Rebuilt application composition around the .NET Generic Host: dependency injection, options-validated configuration, and hosted database initialization.
